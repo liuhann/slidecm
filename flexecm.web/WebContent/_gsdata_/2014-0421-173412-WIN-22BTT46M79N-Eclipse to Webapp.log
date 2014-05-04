@@ -1,0 +1,29 @@
+----- 2014/4/21 17:34:12: Job 'Eclipse to Webapp': ANALYSIS started by Command Line: sync /all on computer 'WIN-22BTT46M79N' (GoodSync 8.4.2.2 on Windows 7) -----
+Eclipse to Webapp: D:\3.4workspace\flexecm.web\WebContent =forced-PropDels=> D:\apache-tomcat-6.0.37\webapps\ROOT, SavePrevVers=30d, TmpDest, EstReq, CopyLocked, FileLinksDrill, CaseSens, Reconnect=3
+Exclude /WEB-INF|licens*.rfo|cache.rfo|mru.rfo|mpp*.rfo|RoboForm Online Account.rfp|/System Volume Information|Thumbs.db|.DS_Store 
+Left: Reading State File D:\3.4workspace\flexecm.web\WebContent\_gsdata_\_file_state._gs
+Left: Files: 85 (excluded ). Folders: 8 (excluded 2). D:\ NTFS, Free: 117 GB, Total: 259 GB
+Right: Reading State File D:\apache-tomcat-6.0.37\webapps\ROOT\_gsdata_\_file_state._gs
+Right: Reading State File D:\apache-tomcat-6.0.37\webapps\ROOT\css and merge it with the root state
+Right: Files: 85 (excluded ). Folders: 8 (excluded 3). D:\ NTFS, Free: 117 GB, Total: 259 GB
+On disk D: space required for sync is 48.0 KB, you have 117 GB
+On disk D: space required for sync is 48.0 KB, you have 117 GB
+Changes: 1, Conflicts: , CopyTime: , CopyState: , Errors: 
+Left to Right: Copy File: 1 
+----- 2014/4/21 17:34:12: Analysis Completed. Time 00:00:00, Speed: Many files/s -----
+
+===== 2014/4/21 17:34:12: Job 'Eclipse to Webapp': SYNC started by Command Line: sync /all on computer 'WIN-22BTT46M79N' =====
+Eclipse to Webapp: D:\3.4workspace\flexecm.web\WebContent =forced-PropDels=> D:\apache-tomcat-6.0.37\webapps\ROOT, SavePrevVers=30d, TmpDest, EstReq, CopyLocked, FileLinksDrill, CaseSens, Reconnect=3
+Locking folder D:\3.4workspace\flexecm.web\WebContent for write
+Locking folder D:\apache-tomcat-6.0.37\webapps\ROOT for write
+Locking folder D:\apache-tomcat-6.0.37\webapps\ROOT\css for write
+Save State File D:\apache-tomcat-6.0.37\webapps\ROOT\css\_gsdata_\_file_state._gs
+Copy Over 'D:\3.4workspace\flexecm.web\WebContent\js\home.js' -> 'D:\apache-tomcat-6.0.37\webapps\ROOT\js\home.js'
+Save State File D:\3.4workspace\flexecm.web\WebContent\_gsdata_\_file_state._gs
+Save State File D:\apache-tomcat-6.0.37\webapps\ROOT\_gsdata_\_file_state._gs
+Delete lock file D:\3.4workspace\flexecm.web\WebContent\_gsdata_\lock.gsl
+Delete lock file D:\apache-tomcat-6.0.37\webapps\ROOT\_gsdata_\lock.gsl
+Delete lock file D:\apache-tomcat-6.0.37\webapps\ROOT\css\_gsdata_\lock.gsl
+Items Synced OK: 1, Errors: 
+===== 2014/4/21 17:34:13: Sync Completed. Time: 00:00:01, Speed:  =====
+

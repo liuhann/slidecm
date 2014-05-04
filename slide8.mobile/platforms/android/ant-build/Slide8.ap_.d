@@ -1,0 +1,25 @@
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\ant-build\Slide8.ap_ \
+ : D:\3.4workspace\PGTest\slide8.mobile\platforms\android\res\drawable\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\res\drawable-hdpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\res\drawable-ldpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\res\drawable-mdpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\res\drawable-xhdpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\res\values\strings.xml \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\res\xml\config.xml \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\ant-build\res\drawable\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\ant-build\res\drawable-hdpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\ant-build\res\drawable-ldpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\ant-build\res\drawable-mdpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\ant-build\res\drawable-xhdpi\icon.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\_where-is-www.txt \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\cordova.js \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\cordova_plugins.js \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\css \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\img \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\index.html \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\js \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\css\index.css \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\img\logo.png \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\assets\www\js\index.js \
+D:\3.4workspace\PGTest\slide8.mobile\platforms\android\ant-build\AndroidManifest.xml \
