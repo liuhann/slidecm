@@ -1,0 +1,3 @@
+# view AndroidManifest.xml #generated:6
+-keep class com.ever365.slide8.Slide8 { <init>(...); }
+
