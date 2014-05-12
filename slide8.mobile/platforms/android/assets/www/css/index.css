@@ -12,8 +12,8 @@ body {
     margin:0px;
     padding:0px;
     width:100%;
-    --background-color: #000;
     overflow: hidden;
+    background-color: #EDEDED;
 }
 
 a {
@@ -43,6 +43,10 @@ h1.sep {
 }
 
 .wrapper {
+}
+
+.page {
+	display: none;
 }
 
 
@@ -89,32 +93,68 @@ h1.sep {
 	margin: 0;
 }
 
-.recommend  .article {
-	float: left;
-	margin-left: 5px;
-	margin-top: 5px;
-	border: 1px solid #ccc;
+.article .meta .status {
+	float: right;
+	color: #CCFF99;
+	margin-right: 10px;
 }
 
-.index {
-	background-color: #EDEDED;
+.booting {
+	background-color: #F57E1E;
+}
+.booting h1{
+	color: white;
 }
 
-.index h1.title {
+
+.page h1.title {
 	background-color: #f57e1e;
 	height: 80px;
 	text-align: left;
+}
+
+.page h1.title .switch {
+	font-size: 32px;
+	color: white;
+	float: right;
+	margin-right: 32px;
+	line-height: 80px;
+}
+
+
+.index {
+	background-color: #EDEDED;
 }
 
 .index .splash {
 	margin-bottom: 10px;
 }
 
+.index h1.more {
+	text-align: center;
+	font-size: 48px;
+	color: #888;
+	float: left;
+	margin: 40px;
+}
+
+.recommend .article, .cachedList .article {
+	float: left;
+	margin-left: 5px;
+	margin-top: 5px;
+	border: 1px solid #ccc;
+}
+
+
+.local {
+	background-color: #EDEDED;
+}
+
 .slider {
-	--overflow: hidden;
-	display:none;
 	width: 100%;
 	height: 100%;
+	background-color: black;
+	
 }
 
 .slider .current {
@@ -147,14 +187,16 @@ h1.sep {
 	background: rgba(63, 72, 79, 0.8);
 	position: absolute;
 	bottom: 0px;
-	margin: 0 auto;
 	color: white;
-	font-size: 28x;
+	font-size: 28px;
 	line-height: 30px;
 	padding: 10px;
 	z-index: 102;
-	min-width: 240px;
-	right: 20px;
+	min-width: 50px;
+	right: 0px;
+	-webkit-border-top-left-radius: 50px;
+	border-top-left-radius: 50px;
+
 }
 .slider .operations div {
 	float: left;

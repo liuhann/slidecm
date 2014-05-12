@@ -3,8 +3,7 @@ var slide8Host = 'http://slide8.duapp.com';
 var wh = 0;
 var ww = 0;
 var currentView = "splash";
-
-
+var sk = 10;
 $(document).ready(function() {
 	document.addEventListener("deviceready", onDeviceReady, false);
 	document.addEventListener("backbutton", onBackPressed, false);
@@ -15,6 +14,7 @@ function onBackPressed() {
 		currentView="index";
 		window.plugins.orientationLock.lock("portrait");
 		window.addEventListener("orientationchange", function() {
+			uiInit();
 			$(".index").show();
 			$(".slider").hide();
 		});
@@ -25,25 +25,42 @@ function onBackPressed() {
 
 function onDeviceReady() {
 	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
-
-	console.log("deviceready  ");
+	console.log("onDeviceReady  ");
 	uiInit();
-	console.log("UI Init OK  ");
-	if ( navigator.connection.type ==Connection.NONE) {
-		
-	} else {
-		loadIndexData();
-	}
+	showSplash();
+}
+
+function showSplash() {
+	$(".booting").show();
+	setTimeout(function() {
+		if (navigator.connection.type ==Connection.NONE) {
+			$('.booting').hide();
+			loadLocalData();
+		} else {
+			loadIndexData();
+		}
+	}, 2000);
 }
 
 function uiInit() {
 	wh = Math.floor($(window).height());
 	ww = Math.floor($(window).width());
-	$(".wrapper").css("width", ww);
-	//$(".wrapper").css("height", wh);
 	
-	$(".loading").hide();
-	$(".config").hide();
+	if (ww>wh) {  //竖屏情况下，可能尚未从横屏切回
+		if(ww==screen.height) {
+			var barHeight = screen.width - wh;
+			wh += barHeight;
+			ww -= barHeight;
+		}
+		var temp = wh;
+		wh = ww;
+		ww = temp;
+	}
+	
+	$(".wrapper,body").css("width", ww);
+	$(".wrapper,body").css("height", wh);
+	
+	$(".page").hide();
 	
 	var basicHeight = wh/20;
 	
@@ -57,8 +74,43 @@ function uiInit() {
 	$("body").css("font-size", basicHeight-25);
 	*/
 	
-	$(".splash img").css("width", ww);
-	$(".splash img").css("height", ww*3/4);
+	$(".booting, .loading").css("width", ww);
+	$(".booting, .loading").css("height", wh);
+	$(".booting h1").css("top", wh/2-200);
+	
+	$(".booting img").css("width", ww);
+	$(".booting img").css("height", ww*2/5);
+	
+	$(".index h1.title div.switch").attachEvent(function() {
+		loadLocalData();
+	});
+	
+	$(".local h1.title div.switch").attachEvent(function() {
+		$(".page").hide();
+		$(".index").show();
+	});
+	
+	$(".index h1.more").attachEvent(function(t) {
+		if ($(t).html()=="加载更多") {
+			$(t).html("加载中...");
+			$.getJSON(slide8Host + "/pub/list/more",{
+				"type": encodeURI("最新资源"),
+				"skip": sk,
+				"limit": 10
+			}, function (list) {
+				if (list.length==0) {
+					$(".index h1.more").hide();
+					return;
+				}
+				sk +=10;
+				$(t).html("加载更多");
+				for ( var i = 0; i < list.length; i++) {
+					var div = initArticle(list[i]);
+					$(".recommend").append(div);
+				}
+			})
+		} 
+	});
 }
 
 function checkConnection() {
@@ -77,15 +129,24 @@ function checkConnection() {
 }
 
 function loadLocalData() {
-	$(".index").show();
-	$(".index .splash").hide();
+	$(".page").hide();
+	$(".local").show();
+	
+	var storage = window.localStorage;
+	$(".cachedList .cloned").remove();
+	for(var i=0;i<storage.length;i++) {
+		var article = JSON.parse(storage.getItem(storage.key(i)));
+		var div = initArticle(article);
+		console.log("Local article " +article.name);
+		$(".cachedList").append(div);
+	}
 }
 
-
 function loadIndexData() {
-	console.log("Loadding index Data.....");
+	console.log("Loading  " +  slide8Host + "/pub/list/all");
 	
 	$.getJSON(slide8Host + "/pub/list/all", {}, function(indexData) {
+		$(".page").hide();
 		$(".index").show();
 		initIndex(indexData);
 	}).fail(function() {
@@ -93,33 +154,38 @@ function loadIndexData() {
 	});
 }
 
+
 var currentOpening = null;
 function initIndex(indexData) {
 	console.log("indexData Loaded");
-	/*
-	$(".article img.small").css("width",ww/2 );
-	$(".article img.small").css("height",ww*3/8 );
-	*/
-	
+
 	if (indexData.splash.length>0) {
+		/**
+		 * splash这块的初始化代码和initArticle很类似，除了大小布局的处理不同， 
+		 * 因此未来有必要考虑重构
+		 */ 
 		$(".index .splash").show();
 		var article = indexData.splash[0];
 		var meta  = extractArticleMeta(article);
 		$(".index .splash .article").data("article", article);
-		$(".index .splash .article")
 		$(".index .splash .article-title").html(getFileName(article.name));
 		$(".index .splash").find("span.pages").html(meta.p + "页");
 		var splashImg = $(".splash .article-image");
+		splashImg.css("width", ww);
+		splashImg.css("height", ww * 3 /4);
 		
 		loadImg(splashImg, article.name, article.tn, 0);
+		currentOpening = null;
+		loadFullImg(article, false);
 		
 		$(".splash .article").attachEvent(function(t) {
 			var article = $(t).data("article");
 			currentOpening = article;
-			loadFullImg(article);
+			loadFullImg(article, true);
 		});
 	}
 	if (indexData.recent.length>0) {
+		$(".recommend div.cloned").remove();
 		for ( var i = 0; i < indexData.recent.length; i++) {
 			var div = initArticle(indexData.recent[i]);
 			$(".recommend").append(div);
@@ -130,31 +196,32 @@ function initIndex(indexData) {
 function fullFileDownloaded(article, fileEntry) {
 	if (currentOpening==article) {
 		console.log("打开展示文件 " + article.name);
+		$(".page").hide();
 		window.plugins.orientationLock.lock("landscape");
 		window.addEventListener("orientationchange", function() {
 			var meta = extractArticleMeta(currentOpening);
 			openSlide(fileEntry.toURL(), meta.w, meta.h, meta.p);
 		});
+	} else {
+		setTimeout(function() {
+			$("#atc-" + article.id).find("span.status").html("已缓存");
+		}, Math.random() * 500);
 	}
 }
 
 function initArticle(article) {
 	var div = $("div.article.template").clone();
-	
 	div.data("article", article);
 	div.attr("id", "atc-" + article.id);
 	loadImg(div.find("img.small"), article.name, article.tn, 0);
-	
-	div.attachEvent(function(t) {
-		var article = $(this).data("article");
-	});
 	
 	var meta  = extractArticleMeta(article);
 	
 	var imageWidth = Math.floor((ww-20)/2);
 	var imageHeight = Math.floor(imageWidth * 3/4);
 	div.show();
-	div.removeClass("template");
+	div.removeClass("template").addClass("cloned");
+	
 	div.css("width", imageWidth);
 	div.css("height", imageHeight);
 	div.find(".article-title").html(getFileName(article.name));
@@ -164,11 +231,13 @@ function initArticle(article) {
 	div.find("img.small").css("width",imageWidth);
 	div.find("img.small").css("height",imageHeight);
 	
+	//检查图片是否已经缓存
+	loadFullImg(article, false);
 	
 	div.attachEvent(function(t) {
 		var article = $(t).data("article");
 		currentOpening = article;
-		loadFullImg(article);
+		loadFullImg(article, true);
 	});
 	return div;
 }
@@ -199,7 +268,7 @@ function extractArticleMeta(article) {
 	};
 }
 function openSlide(fileUrl, w, h, p) {
-	
+	$(".page").hide();
 	currentView = "slide";
 	wh = $(window).height();
 	ww =$(window).width();
@@ -217,11 +286,16 @@ function openSlide(fileUrl, w, h, p) {
 	}
 	
 	console.log("打开展示 " + fileUrl + "  w=" + w + "  h= " + h + "  p=" + p);
-	$(".index").hide();
+	
+	$(".wrapper, body").css("width", ww);
+	$(".wrapper, body").css("height", wh);
+	$(".slider").css("width", ww);
+	$(".slider").css("height", wh);
 	$(".slider").show();
 	
 	$(".slider .operations").show();
-
+	
+	
 	$(".slider .next, .slider .prev").css("height", wh/2);
 	$(".slider .next, .slider .prev").css("width", ww);
 	$(".slider .next, .slider .prev").css("left", 0);
@@ -237,21 +311,21 @@ function openSlide(fileUrl, w, h, p) {
 	page=0;
 	slideNext();
 	$(".slider .next").attachEvent(function() {
-		/*
+		
 		if (parseInt($(".slider .next").css("opacity"))!=0) {
 			$(".slider .next,.slider .prev").css("opacity", 0);
 			return;
-		}*/
+		}
 		if (page>p) return;
 		page++;
 		slideNext(0.5);
 	});
 	
-	$(".slider .prev").attachEvent(function() {/*
+	$(".slider .prev").attachEvent(function() {
 		if (parseInt($(".slider .next").css("opacity"))!=0) {
 			$(".slider .next,.slider .prev").css("opacity", 0);
 			return;
-		}*/
+		}
 		if (page<=0) return; 
 		page--;
 		slideNext(2);
@@ -290,7 +364,8 @@ function slideNext(scaleOrigin) {
 	pageDiv.css("-webkit-transition", "translate3d(0,0,0)");
 	pageDiv.css("position", "absolute");
 	pageDiv.css("background-position",  "0px -" + page * ih + "px");
-	
+	$(".slider .front").clearQueue();
+	pageDiv.clearQueue();
 	$(".slider .front").transition({opacity:0}).removeClass("front").addClass("backend");
 	pageDiv.css("scale",scaleOrigin).transition({opacity:1, scale:1}).addClass("front").removeClass("backend");
 }
@@ -299,29 +374,26 @@ function slideNext(scaleOrigin) {
  * 本地文件操作相关处理
  */
 function loadImg(img, name, uid, size) {
-	console.log("loadding img  " + name + "   " + uid);
 	img.attr("name", name);
-	if (slide8Dir!=null) {
-		slide8Dir.getDirectory("thumb", {create: true, exclusive: false}, function(thumbDirEntry) {
-			//进入thumb文件夹
-			thumbDirEntry.getFile(name, {create: true, exclusive: false},  function(thumbFile) {
+	if (thumbDir!=null) {
+			thumbDir.getFile(name, {create: true, exclusive: false},  function(thumbFile) {
 				//获取图片文件
 				thumbFile.file(function(fileObj) {
-					console.log("get File Info : " + fileObj.name +  "  " + fileObj.size + "   " + fileObj.type);
 					if (fileObj.size>0) { //图片文件比较大 认为已经下载过了
-						console.log("using exist thumb file url: " + thumbFile.toURL());
+						console.info("Using thumb on sd card : " + thumbFile.name);
 						//$("img[name='" +name + "']").attr("src", thumbFile.toURL());
-						
-						$("img[name='" +name + "']").attr("src", thumbFile.toNativeURL());
+						setTimeout(function() {
+							$("img[name='" +name + "']").attr("src", thumbFile.toNativeURL());
+						}, Math.random()*1000);
 					} else {
-						console.log("transfer thumb from server  ");
+						console.log("Load thumb for " +  thumbFile.name);
 						var ft = new FileTransfer();
 						ft.download(
 								"http://slide8.duapp.com/pub/file/image?id=" + uid,
 								thumbFile.toURL(),
 								function(entry) {
-									console.log("File transfered " + entry.toURL());
-									$("img[name='" +name + "']").attr("src", entry.toURL());
+									console.log("File transfered " + thumbFile.name);
+									$("img[name='" +name + "']").attr("src", entry.toNativeURL());
 								},
 								function(error) {
 									console.log("File transfered  Error " + error.source + "  " + error.target);
@@ -332,16 +404,14 @@ function loadImg(img, name, uid, size) {
 						);
 					}
 				});
-			});
 		});
 	}
 }
 
 var downloadList = [];
 
-function loadFullImg(article) {
-	console.log("loadding Full Image  " + article.name);
-	
+
+function loadFullImg(article, requestDownload) {
 	if (slide8Dir!=null) {
 		slide8Dir.getFile(article.name, {create:true, exclusive: false}, function(imgFile) {
 			imgFile.file(function(fileObj) {
@@ -350,13 +420,15 @@ function loadFullImg(article) {
 					console.log("文件在SD卡已存在: " + article.name);
 					fullFileDownloaded(article, imgFile);
 				} else {
+					//未要求下载， 可能是首页在查询是否存在缓存 
+					if (!requestDownload)  return;
 					console.log("请求下载: " + article.name);
 					var ft = new FileTransfer();
 					
 					ft.onprogress = function(progressEvent) {
 					    if (progressEvent.lengthComputable) {
-					    	$("#atc-" + article.id).find("span.status").html(formatFileSize(progressEvent.loaded)  + " /"  +  formatFileSize(progressEvent.total));
-					    	console.log("下载进度： " + formatFileSize(progressEvent.loaded)  + " /"  +  formatFileSize(progressEvent.total));
+					    	$("#atc-" + article.id).find("span.status").html("缓存" + (Math.floor(100*progressEvent.loaded/progressEvent.total)) + "%");
+					    	//console.log("下载进度： " + formatFileSize(progressEvent.loaded)  + " /"  +  formatFileSize(progressEvent.total));
 					    } else {
 					    	$("#atc-" + article.id).find("span.status").html("下载中");
 					    }
@@ -366,8 +438,10 @@ function loadFullImg(article) {
 							imgFile.toURL(),
 							function(entry) {
 								console.log("文件下载完成： " + entry.toURL());
+								var storage = window.localStorage;
+								storage.setItem(article.name, JSON.stringify(article));
 								fullFileDownloaded(article,entry);
-							}, 
+							},
 							function(entry) {
 								console.log("文件下载异常： " + error.source + "  " + error.target);
 							},
@@ -379,7 +453,7 @@ function loadFullImg(article) {
 			});
 		});
 	} else {
-		
+		$("#atc-" + article.id).find("span.status").html("SD卡初始化出错");
 	}
 }
 
@@ -388,9 +462,31 @@ function loadSlideImg() {
 }
 
 var slide8Dir = null;
+var thumbDir = null;
 function gotFS(fileSystem) {
 	fileSystem.root.getDirectory("slide8", {create: true, exclusive: false}, function(dirEntry) {
 		slide8Dir = dirEntry;
+		
+		/*
+		var dirReader = slide8Dir.createReader();
+		dirReader.readEntries(function(entries) {
+			var i;
+		    for (i=0; i<entries.length; i++) {
+		    	console.info("Cached Full Image " + entries[i].name);
+		    	
+		    	if (entries[i].isFile) {
+	    			var article = localStorage.getItem(entries[i].name);
+	    			if (article!=null) {
+	    				
+	    			}
+		    	}
+		    }
+		},fail);
+		*/
+		slide8Dir.getDirectory("thumb", {create: true, exclusive: false}, function(t) {
+			thumbDir = t;
+		});
+		
 	}, fail);
 }
 
@@ -424,7 +520,6 @@ function inSlide8Entry(dirEntry) {
 }
 
 function fail(error) {
-	alert("fail  " + error.code);
     console.log(error.code);
 }
 
@@ -435,6 +530,10 @@ function getFileName (name) {
 	} else {
 		return name;
 	}
+}
+
+function percent(f) {
+	return Math.floor(f *100)/100;
 }
 
 function formatFileSize(n) {

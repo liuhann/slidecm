@@ -28,6 +28,8 @@
         <script type="text/javascript" language="javascript" src="js/jquery-2.1.0.min.js"></script>
         <script type="text/javascript" language="javascript" src="js/jquery.transit.min.js"></script>
         <script type="text/javascript" language="javascript" src="js/index.js"></script>
+        <script type="text/javascript" language="javascript" src="js/iscroll-lite.js"></script>
+        
         <!-- 
         <script type="text/javascript" language="javascript" src="cordova.js"></script>
          -->
@@ -36,48 +38,52 @@
 		
 <body>
 	<div class="wrapper">
-		<div class="loading">
-				<h1><img src="img/splash.png"></h1>
-				
-				<div class="loading">获取最新展示资源..</div>		
+		<div class="booting page">
+				<h1 style="position: absolute;"><img src="img/splash.png">分享和展示您PPT</h1>
 		</div>
 		
-		<div class="index">
+		<div class="local page">
 			<h1 class="title">
 				<img class="logo" src="img/logo.png">
-				<div class="icon config"></div>
+				<div class="switch">在线内容</div>
 			</h1>
-		
-			<div class="splash">
-				<div class="article" >
-					<img class="article-image" src="">
-					<h1 class="article-title big" >JVM基础</h1>
-					
-					<ul class="meta big">
-	          			<li>
-	          				<span class="status"></span><span class="pages">wwww</span>
-	          			</li>
-	        		</ul>
-				</div>
+			
+			<div class="cachedList">
 			</div>
-			
-			<h1 class="sep">推荐</h1>
-			
-			<div class="recommend">
-				<div class="article template" style="display:none">
-					<img class="small" src="img/thumbnail.png">
-					<div class="meta"><span class="status"></span><span class="pages">wwww</span></div>
-					<h1 class="article-title">JVM基础12</h1>
-				</div>
-			</div>
-			
-			<h1>最新</h1>
-			<div class="recent">
 				
-			</div>
 		</div>
 		
-		<div class="slider">
+		<div class="index page">
+				<h1 class="title">
+					<img class="logo" src="img/logo.png">
+					<div class="switch">本地内容</div>
+				</h1>
+			
+				<div class="splash">
+					<div class="article" >
+						<img class="article-image" src="">
+						<h1 class="article-title big" >JVM基础</h1>
+						
+						<ul class="meta big">
+		          			<li>
+		          				<span class="status"></span><span class="pages">wwww</span>
+		          			</li>
+		        		</ul>
+					</div>
+				</div>
+				
+				<h1 class="sep">推荐</h1>
+				<div class="recommend">
+					<div class="article template" style="display:none">
+						<img class="small" src="">
+						<div class="meta"><span class="status"></span><span class="pages">wwww</span></div>
+						<h1 class="article-title">JVM基础12</h1>
+					</div>
+				</div>
+				<h1 class="more">加载更多</h1>
+		</div>
+		
+		<div class="slider page">
 			
 			<div class="prev">
 				点击此区域翻上一页
@@ -94,7 +100,7 @@
 			<div class="backend">
 			</div>
 		</div>
-		<div class="config">
+		<div class="config page">
 			
 		</div>
 	</div>
