@@ -220,7 +220,7 @@ public class RepositoryService {
 		
 		String desc = null;
 		result.put(CURRENT_USER, AuthenticationUtil.getCurrentUser());
-		if (id==null) {
+		if (id==null || id.equals("")) {
 			Repository userRepo = getUserRepo();
 			if (userRepo==null) throw new HttpStatusException(HttpStatus.SERVICE_UNAVAILABLE);
 			id = userRepo.getRootEntity().getId();

@@ -24,8 +24,7 @@ List<Map<String, Object>> recList =  publicService.getList("首页推荐");
 List<Map<String, Object>> hotList =  publicService.getList("热门");
 List<Map<String, Object>> recentList =  publicService.getList("最新资源");
 %>
-
-<script type="text/javascript" language="javascript" src="js/jquery-1.7.2.min.js"></script>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 <script type="text/javascript" language="javascript" src="js/util.js"></script>
 <script type="text/javascript" language="javascript" src="js/index.js"></script>
 <link rel="StyleSheet" href="css/index.css"  type="text/css">
