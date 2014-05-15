@@ -5,8 +5,16 @@
 <title>卖家服务平台</title>
 
 <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script src="/js/seller.js"></script>
 
-<link rel="StyleSheet" href="../css/common.css"  type="text/css">
+<link rel="StyleSheet" href="/css/common.css"  type="text/css">
+
+
+<link href="http://ueditor.baidu.com/umeditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="http://ueditor.baidu.com/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="http://ueditor.baidu.com/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="http://ueditor.baidu.com//umeditor/lang/zh-cn/zh-cn.js"></script>
+
 </head>
 <body>
 	<div class="header">
@@ -21,80 +29,121 @@
 	
 		<div class="nav seller">
 			<ul>
-				<li class="title">抢购商品</li>
-				<li class="link">未提交</li>
-				<li class="link">待审核</li>
-				<li class="link">抢购进行中</li>
-				<li class="link">交易中</li>
-				<li class="link">已完成</li>				
+				<li class="link" onclick="frmRequest();">抢购活动申请</li>
+				<li class="link" onclick="getRequestings();">活动列表</li>
+				<li class="link">商家信息管理</li>
 			</ul>
-			
-			<ul>
-				<li class="link">客户管理</li>
-			</ul>
-			
-			<ul>
-				<li class="link">个人配置</li>
-			</ul>			
-						
 		</div>
 		
 		<div class="content seller">
 		
-			<div id="request">
+			<div id="dashboard" class="view">
+				
+				<div>
+					<button class="big" onclick="frmRequest();">抢购申请</button>
+				</div>
+				
+				<div class="">
+				</div>				
+			</div>
+			
+			<div id="posters" class="view">
+				
+				<div class="notice">
+					请注意
+				</div>
+				
 				<div class="form">
 					<div>
-						<span class="label">您的姓名</span>
-						<input >
-					</div>
-					<div>
-						<span class="label">您的手机</span>
-						<input >
-					</div>
-					<div>
-						<span class="label">您的邮箱</span>
-						<input>
-					</div>
-					<div style="border-bottom: 1px solid #ccc;">
-						<span class="label">其他联系方式</span>
-						<input placeholder="最好提供QQ、微博、微信等联系方式方便沟通">
-					</div>
-					
-					
-					<div>
-						<span class="label">要销售的商品</span>
-						<input placeholder="请输入产品详细型号信息">
+						<span class="label">商品标题</span>
+						<input id="title">
+						<span>示例: 吉列梅西锋隐超顺手动剃须刀刮胡刀 剃须啫喱 1刀架5刀头 送赠品</span>
 					</div>
 					
 					<div>
-						<span class="label">购买地址</span>
-						<input placeholder="请输入淘宝或可购入商品地址">
+						<span class="label">副标题</span>
+						<input id="subtitle">
+						<span>示例: 5月8号，大神降临</span>
+					</div>
+				
+					<div>
+						<span class="label">抢购数量</span>
+						<input id="count" >  	<span>因抢购并发性，最多可能卖出超过指定数量10%的商品，请知晓</span>
 					</div>
 					
 					<div>
-						<span class="label">限购数量</span>
-						<input placeholder="请输入数量，如果不限量请输入大于1000万的数字">
+						<span class="label">抢购价格</span>
+						<input id="price">  	<span>价格必须明显低于市场价。否则不予通过</span>
 					</div>
 					
 					<div>
-						<span class="label">开售时间</span>
-						<input placeholder="请输入抢购时间">
+						<span class="label">抢购时间</span>
+						<input id="time">  	<span>格式为: 2014-05-23 11:08</span>
 					</div>
 					
 					<div>
-						<button>提交</button>
+						<span class="label">抢购预约截至</span>
+						<input id="until">  	<span>格式为: 2014-05-23 11:08，如无需预约，请留空</span>
 					</div>
+					
+				</div>
+				
+					<div style="padding: 5px;">
+						<span class="label">图文介绍</span>
+						<script type="text/plain" id="editor" style="width:800px;height:480px;"></script>
+					</div>
+				<div style="padding: 20px;">
+					 <button class="big" onclick="request();">提交申请</button>
 				</div>
 			</div>
-			<table>
+			
+			
+			<div id="pendding" class="view">
+				<div class="msg">
+					正在提交中....	
+				</div>
+			</div>
+			
+			<div id="sales-list" class="view">
+				<div class="hello">
+					您好， <span id="cu"></span> 您有<span id="c_qiang"></span>个抢购进行中。
+				</div>
 				
-			</table>			
+				<table>
+					<tr>
+						<th>商品名称</th>
+						<th>抢购时间</th>
+						<th>价格</th>
+						<th>状态</th>
+						<th>操作</th>
+					</tr>
+					
+					<tr class="template">
+						<td class="name"></td>
+						<td class="time"></td>
+						<td class="price"></td>
+						<td class="status"></td>
+						<td>
+							<a class="modify" >修改</a>
+							<a class="remove" >删除</a>
+							<a class="preview" >预览</a>
+							<a class="books">预约统计</a>
+							<a class="deals">成交列表</a>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 	
 	<div class="footer">
 	</div>		
 
+<script type="text/javascript">
+
+var um = UM.getEditor('editor');
+
+</script>
 </body>
 </html>
 

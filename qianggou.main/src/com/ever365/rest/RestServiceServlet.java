@@ -26,6 +26,10 @@ import org.springframework.web.context.ContextLoaderListener;
  * Servlet implementation class RestServiceServlet
  */
 public class RestServiceServlet extends HttpServlet {
+	private static final String UTF_8 = "UTF-8";
+
+	private static final String MULTIFIELD_ENDS = "[]";
+
 	private static final long serialVersionUID = 1L;
 
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
@@ -48,7 +52,7 @@ public class RestServiceServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String strPath = URLDecoder.decode(request.getRequestURI(), "UTF-8");
+		String strPath = URLDecoder.decode(request.getRequestURI(), UTF_8);
 		String servletPath = request.getServletPath();
 		
 		int rootPos = strPath.indexOf(servletPath);
@@ -65,7 +69,7 @@ public class RestServiceServlet extends HttpServlet {
 		Map<String, Object> args = new HashMap<String, Object>();
 		while (paramNames.hasMoreElements()) {
 			String name = (String) paramNames.nextElement();
-			args.put(name, URLDecoder.decode(request.getParameter(name), "UTF-8"));
+			args.put(name, URLDecoder.decode(request.getParameter(name), UTF_8));
 		}
 		
 		try {
@@ -98,7 +102,7 @@ public class RestServiceServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			String strPath = URLDecoder.decode( request.getRequestURI(), "UTF-8");
+			String strPath = URLDecoder.decode( request.getRequestURI(), UTF_8);
 			//request.setCharacterEncoding("UTF-8"); 
 			String servletPath = request.getServletPath();
 
@@ -118,24 +122,7 @@ public class RestServiceServlet extends HttpServlet {
 			Enumeration paramNames = request.getParameterNames();
 			while (paramNames.hasMoreElements()) {
 				String name = (String) paramNames.nextElement();
-				if (name.endsWith("[]")) {
-					String pureName = name.substring(0, name.length()-2);
-					String[] values = request.getParameterValues(name);
-					
-					List<String> list = new ArrayList<String>();
-					for (int i = 0; i < values.length; i++) {
-						list.add(URLDecoder.decode(values[i], "UTF-8"));
-					}
-					args.put(pureName, list);
-				} else if (name.endsWith("]") && name.indexOf("[")>-1) {
-					String pureName = name.substring(0, name.indexOf("["));
-					if (args.get(pureName)==null) {
-						args.put(pureName, new HashMap<String, String>());
-					}
-					((Map)args.get(pureName)).put(name.substring(name.indexOf("[")+1, name.indexOf("]")), URLDecoder.decode(request.getParameter(name), "UTF-8"));
-				} else {
-					args.put(name, URLDecoder.decode(request.getParameter(name), "UTF-8"));
-				}
+				args.put(name, URLDecoder.decode(request.getParameter(name), UTF_8));
 			}
 		
  			Object result = handler.execute(args);

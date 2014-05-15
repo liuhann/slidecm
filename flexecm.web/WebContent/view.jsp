@@ -38,7 +38,7 @@ Object tags = entityMap.get("tags");
 
 <meta charset="UTF-8" >
 
-<script type="text/javascript" language="javascript" src="js/jquery-1.7.2.min.js"></script>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 <script type="text/javascript" language="javascript" src="js/util.js"></script>
 <script type="text/javascript" language="javascript" src="js/index.js"></script>
 <link rel="StyleSheet" href="css/index.css"  type="text/css">

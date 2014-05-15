@@ -11,7 +11,7 @@ button {
 	background-color: whiteSmoke;
 	color: #444;
 	border: 1px solid gainsboro;
-	padding: 10px 20px;
+	padding: 5px 15px;
 	margin: 0px 10px;
 	line-height: 16px;
 	text-align: center;
@@ -33,7 +33,7 @@ button:HOVER {
 header, div.header {
 	background-color: #CC0000;
 	color: white;
-	height: 35px;
+	height: 81px;
 }
 
 
@@ -125,6 +125,77 @@ header, div.header {
 	margin-top: 5px;
 }
 
+.content .view {
+	display: none;
+}
+
+
+#dashboard .hello {
+	font-size: 16px;
+	padding: 15px;
+}
 
 
 
+.preview  .block {
+	background: #fff;
+	font-size: 12px;
+	width: 1100px;
+	border: 1px solid #eee;
+	padding: 20px 20px 15px 20px;
+	margin: 10px;
+	float: left;
+}
+
+.preview  .block .splash {
+	float: left;
+	width: 480px;
+	height: 400px;
+}
+
+.preview  .block .des {
+	float: right;
+	width: 600px;
+}
+
+.preview  .block .des .title {
+	margin: 0;
+	line-height: 28px;
+	font-size: 24px;
+	padding: 10px 0px;
+	font-weight: 700;
+	color: #333;
+	
+}
+
+
+.preview  .block .des .subtitle {
+	color: #666;
+	font-size: 16px;
+	font-weight: normal;
+	line-height: 25px;
+}
+
+.preview  .block .des .price-wrap {
+	height: 68px;
+	display: block;
+}
+.preview  .block .des .price-wrap h3.price {
+	display: inline;
+	font-weight: normal;
+	margin: 20px;
+}
+.preview  .block .des .price-wrap h3.price .price-display {
+	font-size: 46px;
+	color: #f76120;
+}
+
+.preview  .block .des .price-wrap h3.price .price-display em {
+	font-style: normal;
+	font-size: 26px;
+}
+.preview  .block .des .price-wrap h3.price .discount {
+		color: #666;
+	font-size: 16px;
+	font-weight: normal;
+}

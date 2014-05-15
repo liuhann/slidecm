@@ -2,10 +2,37 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>申请商品抢购</title>
+<title>商家自助注册</title>
 
-<link rel="StyleSheet" href="css/common.css"  type="text/css">
+<link rel="StyleSheet" href="/css/common.css"  type="text/css">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 
+
+<script type="text/javascript">
+
+function submit() {
+	submitForm("/service/register", "form");
+}
+
+
+function submitForm(uri, name) {
+	
+	var inputs = $("#" + name + " input");
+	
+	var o = {};
+	
+	inputs.each(function() {
+		o[$(this).attr("name")] = $(this).val();
+		
+	});
+	
+	$.post(uri, o, function(data) {
+		location.href = "/seller/index.html";
+	});
+}
+
+
+</script>
 </head>
 <body>
 
@@ -19,45 +46,51 @@
 	<div class="mainleft">
 		<div class="title">商家注册</div>
 		
-		<div class="form">
-			<form method="post" target="/service/sreg">
+		<div id="form" class="form">
 			<div>
 				<span class="label">商家名称</span>
-				<input placeholder="作为登录名使用" name="name">
+				<input placeholder="作为登录名使用" name="name">  <span class="msg">作为登录名使用</span>
 			</div>
-			<div style="border-bottom: 1px solid #ccc;">
+			<div>
 				<span class="label">店铺地址</span>
-				<input placeholder="请输入淘宝、天猫等地址" name="shop">
+				<input placeholder="请输入淘宝、天猫等地址" name="shop">  <span class="msg">请输入网店的首页地址(例如天猫、淘宝网店)</span>
+			</div> 
+			<div >
+				<span class="label">登录密码</span>
+				<input name="pass" type="password">
+			</div> 
+			<div style="border-bottom: 1px solid #ccc;">
+				<span class="label">密码确认</span>
+				<input name="pass" type="password_cfm">
+			</div> 
+			
+			<div>
+				请提供相关联系方式，以下信息也可用联系找回密码
 			</div>
 			
 			<div>
-				<span class="label">您的姓名</span>
-				<input name="c_name">
+				<span class="label">联系人姓名</span>
+				<input name="user">
 			</div>
 			
 			<div>
-				<span class="label">您的手机</span>
-				<input name="c_phone">
+				<span class="label">手机</span>
+				<input name="phone">
 			</div>
 			<div>
-				<span class="label">您的邮箱</span>
-				<input name="c_email">
+				<span class="label">邮箱</span>
+				<input name="email">  
 			</div>
 			<div style="border-bottom: 1px solid #ccc;">
 				<span class="label">其他联系方式</span>
-				<input placeholder="最好提供QQ、微博、微信等联系方式方便沟通" name="c_other">
+				<input placeholder="最好提供QQ、微博、微信等联系方式方便沟通" name="other">
 			</div>
 			
 			<div>
-				<button type="submit">提交</button>
+				<button onclick="submit();">注册</button>
 			</div>
-			</form>
 		</div>
-		
-		<!-- 商品的描述信息 -->
-		<div class="desc">
-		
-		</div>
+	
 	</div>
 
 

@@ -141,7 +141,6 @@ public class BCSContentStore implements ContentStore {
 			BCSCredentials credentials = new BCSCredentials(appKey, appSecret);
 			baiduBCS = new BaiduBCS(credentials, bcsHost);
 			baiduBCS.setDefaultEncoding("UTF-8"); // Default UTF-8
-			
 		} catch (Exception e) {
 			throw new RuntimeException();
 		}
