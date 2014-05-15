@@ -2,6 +2,7 @@ package com.ever365.qiang;
 
 import com.ever365.mongo.MongoDataSource;
 import com.ever365.rest.RestParam;
+import com.ever365.rest.RestResult;
 import com.ever365.rest.RestService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -15,7 +16,7 @@ public class SellerService {
 	}
 	
 	@RestService(method="POST", uri="/sreg")
-	public void register(@RestParam(required=true, value="name") String name,
+	public RestResult register(@RestParam(required=true, value="name") String name,
 			@RestParam(required=true, value="shop") String shop,
 			@RestParam(required=true, value="user") String user,
 			@RestParam(required=true, value="phone") String phone,
@@ -35,6 +36,10 @@ public class SellerService {
 		dbo.put("pass", false);
 
 		coll.insert(dbo);
+		
+		RestResult rr = new RestResult();
+		rr.setRedirect("/wait.html");
+		return rr;
 	}
 	
 	
