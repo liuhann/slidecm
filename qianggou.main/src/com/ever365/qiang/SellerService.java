@@ -195,7 +195,6 @@ public class SellerService {
 			result.add(o.toMap());
 		}
 		return result;
-		
 	}
 	
 	
