@@ -10,7 +10,7 @@
 
 function login() {
 	
-	$.post("/service/login",
+	$.post("/pub/login",
 	
 	{
 		"name": $("#name").val(),
@@ -37,7 +37,7 @@ function login() {
 			 
 	<div >
 		<span class="label">登录密码</span>
-		<input name="pass" type="password">
+		<input id="pass" type="password">
 	</div> 
 	
 	<div>

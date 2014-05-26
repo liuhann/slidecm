@@ -130,6 +130,11 @@ public class RestServiceServlet extends HttpServlet {
 				response.setStatus(404);
 				return;
 			}
+
+			if (handler.isAuthenticated() && request.getSession().getAttribute(LoginServlet.SESSION_USER)==null) {
+				response.setStatus(403);
+				return;
+			}
 			
 			if (handler.isRunAsAdmin() && !AuthenticationUtil.isAdmin()) {
 				throw new HttpStatusException(HttpStatus.FORBIDDEN);

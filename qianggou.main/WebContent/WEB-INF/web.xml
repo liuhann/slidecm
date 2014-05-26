@@ -34,6 +34,10 @@
     <servlet-name>RestServlet</servlet-name>
     <url-pattern>/service/*</url-pattern>
   </servlet-mapping>
+   <servlet-mapping>
+    <servlet-name>RestServlet</servlet-name>
+    <url-pattern>/pub/*</url-pattern>
+  </servlet-mapping>
    
    
   <listener>

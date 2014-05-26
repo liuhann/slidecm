@@ -71,7 +71,7 @@ public class SellerService {
 		return rr;
 	}
 	
-	@RestService(method="POST", uri="/login")
+	@RestService(method="POST", uri="/login", authenticated=false)
 	public RestResult login(@RestParam(required=true, value="name") String name,
 			@RestParam(required=true, value="pass") String pass
 			) {
