@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -165,11 +166,11 @@ public class MethodInvocation {
 			return obj;
 		}
 		
-		if (clazz.getName().equals("int") || clazz==Integer.class) {
+		if (clazz.equals(Integer.class)) {
 			return new Integer(obj.toString());
 		}
 		
-		if (clazz.getName().equals("long") || clazz==Long.class) {
+		if (clazz.equals(Long.class)) {
 			return new Long(obj.toString());
 		}
 		
@@ -183,14 +184,6 @@ public class MethodInvocation {
 			}
 		}
 		
-		if (clazz==Date.class && obj instanceof String) {
-			try {
-				return dateformat.parse((String) obj);
-			} catch (ParseException e) {
-				throw new HttpStatusException(HttpStatus.BAD_REQUEST);
-			}	
-		}
-		
 		if (clazz==Map.class && obj instanceof String) {
 			JSONObject jsonObject;
 			try {
@@ -202,6 +195,22 @@ public class MethodInvocation {
 		}
 		if(clazz==Boolean.class && obj instanceof String) {
 			return Boolean.valueOf((String)obj);
+		}
+		
+		if (clazz==Date.class && obj instanceof String) {
+			try {
+				return dateformat.parse((String) obj);
+			} catch (ParseException e) {
+				throw new HttpStatusException(HttpStatus.BAD_REQUEST);
+			}
+		}
+		
+		if (clazz.equals(InputStream.class) && obj instanceof DiskFileItem) {
+			try {
+				return ((DiskFileItem)obj).getInputStream();
+			} catch (IOException e) {
+				return null;
+			}
 		}
 		throw new HttpStatusException(HttpStatus.BAD_REQUEST);
 	}

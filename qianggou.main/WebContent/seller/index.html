@@ -9,6 +9,7 @@
 
 <link rel="StyleSheet" href="/css/manage.css"  type="text/css">
 
+<script type="text/javascript" language="javascript" src="/uploader/plupload.full.js"></script>
 
 <link href="http://ueditor.baidu.com/umeditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
 <script type="text/javascript" charset="utf-8" src="http://ueditor.baidu.com/umeditor/umeditor.config.js"></script>
@@ -29,28 +30,17 @@
 	
 		<div class="nav seller">
 			<ul>
-				<li class="link" onclick="frmRequest();">抢购活动申请</li>
-				<li class="link" onclick="getRequestings();">活动列表</li>
-				<li class="link">商家信息管理</li>
+				<li class="link request" onclick="frmRequest();">抢购活动申请</li>
+				<li class="link list" onclick="getSalelist();">活动列表</li>
+				<li class="link config" onclick="config();">商家信息管理</li>
 			</ul>
 		</div>
 		
 		<div class="content seller">
-		
-			<div id="dashboard" class="view">
-				
-				<div>
-					<button class="big" onclick="frmRequest();">抢购申请</button>
-				</div>
-				
-				<div class="">
-				</div>				
-			</div>
-			
 			<div id="posters" class="view">
 				
 				<div class="notice">
-					请注意
+				
 				</div>
 				
 				<div class="form">
@@ -86,17 +76,24 @@
 						<input id="until">  	<span>格式为: 2014-05-23 11:08，如无需预约，请留空</span>
 					</div>
 					
-				</div>
-				
-					<div style="padding: 5px;">
-						<span class="label">图文介绍</span>
-						<script type="text/plain" id="editor" style="width:800px;height:480px;"></script>
+					<div>
+						<span class="label">展示图</span>
+						<a class="btn" id="btn-preview-upload">上传</a>  	<span>要求宽度400高度400，PNG或JPG格式图片</span>
+						<div id="img-preview">
+													
+						</div>
 					</div>
+				</div>
+								
+				<div style="padding: 5px;">
+					<span class="label">图文介绍</span>
+					<script type="text/plain" id="editor" style="width:800px;height:480px;"></script>
+				</div>
 				<div style="padding: 20px;">
 					 <button class="big" onclick="request();">提交申请</button>
+					 <button class="big" onclick="getSalelist();">取消</button>
 				</div>
 			</div>
-			
 			
 			<div id="pendding" class="view">
 				<div class="msg">
@@ -123,7 +120,7 @@
 						<td class="time"></td>
 						<td class="price"></td>
 						<td class="status"></td>
-						<td>
+						<td class="action">
 							<a class="modify" >修改</a>
 							<a class="remove" >删除</a>
 							<a class="preview" >预览</a>
@@ -137,6 +134,7 @@
 	</div>
 	
 	<div class="footer">
+		
 	</div>		
 
 <script type="text/javascript">

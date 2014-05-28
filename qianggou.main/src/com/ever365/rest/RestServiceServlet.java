@@ -1,9 +1,10 @@
 package com.ever365.rest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -18,8 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.ContextLoaderListener;
 
 /**
@@ -119,12 +124,30 @@ public class RestServiceServlet extends HttpServlet {
 
 			Map<String, Object> args = new HashMap<String, Object>();
 
-			Enumeration paramNames = request.getParameterNames();
-			while (paramNames.hasMoreElements()) {
-				String name = (String) paramNames.nextElement();
-				args.put(name, URLDecoder.decode(request.getParameter(name), UTF_8));
+			if (handler.isMultipart() && ServletFileUpload.isMultipartContent(request)) {
+				//这是post的上传流请求
+				DiskFileItemFactory factory = new DiskFileItemFactory();
+				ServletFileUpload upload = new ServletFileUpload(factory);
+				// Parse the request
+				List<FileItem> items = upload.parseRequest(request);
+
+				args = new HashMap<String, Object>();
+				//boolean hasFile = false;
+				for (FileItem item : items) {
+					if (item.isFormField()) {
+						args.put(item.getFieldName(), item.getString("UTF-8"));
+					} else {
+						args.put(item.getFieldName(), item);
+						args.put("size", item.getSize());
+					}
+				}
+			}  else {
+				Enumeration paramNames = request.getParameterNames();
+				while (paramNames.hasMoreElements()) {
+					String name = (String) paramNames.nextElement();
+					args.put(name, URLDecoder.decode(request.getParameter(name), UTF_8));
+				}
 			}
-		
  			Object result = handler.execute(args);
 			if (result==null) {
 				//logger.info("Request: " + request.getMethod() + "   " + request.getPathInfo() + "?" + request.getQueryString());
@@ -199,6 +222,12 @@ public class RestServiceServlet extends HttpServlet {
 				return;
 			}
 		} else {
+			
+			if (result instanceof InputStream) {
+				handleFileDownload(request, response, result);
+				return;
+			}
+			
 			response.setContentType(CONTENT_TYPE);
 			PrintWriter pw = response.getWriter();
 			if (result instanceof Collection) {
@@ -212,7 +241,13 @@ public class RestServiceServlet extends HttpServlet {
 			}
 			pw.close();
 		}
-		
 	}
+	
+	public void handleFileDownload(HttpServletRequest request,
+			HttpServletResponse response, Object result)
+			throws UnsupportedEncodingException, IOException {
+		FileCopyUtils.copy((InputStream) result, response.getOutputStream());
+	}
+	
 
 }

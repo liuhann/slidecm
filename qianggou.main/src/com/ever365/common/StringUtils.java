@@ -56,7 +56,10 @@ public class StringUtils {
 			return null;
 		}
 	}
-	
+
+	public static final String formateDate(Date source) {
+		return sdf.format(source);
+	}
 	
 	 public String convertStreamToString(InputStream is) {   
 

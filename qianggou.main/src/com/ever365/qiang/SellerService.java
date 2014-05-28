@@ -102,7 +102,6 @@ public class SellerService {
 		return rr;
 	}
 	
-
 	@RestService(method="POST", uri="/seller/request")
 	public void request(
 			@RestParam(required=false, value="id") String id,
@@ -112,6 +111,7 @@ public class SellerService {
 			@RestParam(required=true, value="price") String price,
 			@RestParam(required=true, value="time") String time,
 			@RestParam(required=true, value="until") String until,
+			@RestParam(required=false, value="preview") String preview,
 			@RestParam(required=true, value="content") String content
 			) {
 		DBCollection coll = dataSource.getCollection("sells");
@@ -124,6 +124,7 @@ public class SellerService {
 		dbo.put("price", new Integer(price));
 		dbo.put("time", StringUtils.parseDate(time).getTime());
 		dbo.put("online", false);
+		dbo.put("preview", preview);
 		
 		String contentId = UUID.randomUUID().toString();
 		
@@ -164,6 +165,26 @@ public class SellerService {
 		}
 		return result;
 	}
+	
+	@RestService(method="GET", uri="/seller/request")
+	public Map<String, Object> getRequest(@RestParam(required=true, value="id") String id) {
+		
+		DBCollection coll = dataSource.getCollection("sells");
+		DBObject dbo = new BasicDBObject();
+		dbo.put("_id", new ObjectId(id));
+		DBObject e = coll.findOne(dbo);
+		Map m = e.toMap();
+		
+		InputStream is = contentStore.getContentData(e.get("content").toString());
+		byte[] bytes;
+		try {
+			bytes = FileCopyUtils.copyToByteArray(is);
+			m.put("content", new String(bytes, "UTF-8"));
+		} catch (IOException exception) {
+		}
+		return m;
+	}
+	
 	
 	@RestService(method="POST", uri="/seller/drop")
 	public void dropSale(@RestParam(required=true, value="id") String id) {
@@ -233,5 +254,17 @@ public class SellerService {
 		} catch (IOException e) {
 			throw new HttpStatusException(HttpStatus.PRECONDITION_FAILED);
 		}
+	}
+	
+	@RestService(uri="/preview/attach", method="POST", multipart=true)
+	public String uploadPreview(@RestParam(value="file")InputStream is, @RestParam(value="size")Long size) {
+		String uid = UUID.randomUUID().toString();
+		contentStore.putContent(uid, is, "image/png", size);
+		return uid;
+	}
+	
+	@RestService(uri="/preview", method="GET", multipart=true)
+	public InputStream uploadPreview(@RestParam(value="id") String id) {
+		return contentStore.getContentData(id);
 	}
 }

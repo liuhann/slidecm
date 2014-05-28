@@ -68,7 +68,7 @@ header, div.header {
 	border-bottom: 1px solid #ccc;
 }
 .form div {
-	padding: 20px;
+	padding: 8px;
 	color: #444;
 }
 
@@ -112,7 +112,7 @@ header, div.header {
 	color: white;
 	
 }
-.wrapper .nav.seller ul li:HOVER {
+.wrapper .nav.seller ul li:HOVER, .wrapper .nav.seller ul li.on {
 	background-color: #DFDFDF;
 	cursor:pointer;
 }
@@ -161,8 +161,20 @@ table.sales-table td {
 	border: 1px solid #E6E6E6;
 	padding: 5px 4px;
 	text-align: center;
+	height: 60px;
+	vertical-align: middle;
 }
 table.sales-table td.name {
 	text-align: left;
 }
 
+table.sales-table td.action a {
+	cursor: pointer;
+	color: #005ea7;
+}
+
+
+#img-preview img {
+	width: 400px;
+	height: 400px;
+}

@@ -207,7 +207,75 @@ header, div.header {
 	padding: 3px 8px;
 }
 
+.preview .block .des .box table {
+	border-collapse: collapse;
+	border: 1px solid #E6E6E6;
+	margin: 5px;
+	width: 600px;
+	background-color: #FFFCED;
+}
+
 .preview .block .des .box table td {
-	margin: 20px 0px;
 	text-align: center;
+	padding-top: 10px;
+	border: 1px solid #E6E6E6;
+	padding: 5px 4px;
+	text-align: center;
+	height: 60px;
+	vertical-align: middle;
+	font-size: 16px;
+
+}
+.preview .block .des .box table td .grey {
+	color: #666;
+}
+
+.preview .block .des .box table td .focus {
+	color: #FF5000;
+}
+
+.preview .block .des .agree {
+	color: #666;
+	margin: 10px 0px;	
+}
+
+.preview .block .des .booki {
+	padding: 10px;
+}
+
+.preview .block .des .booki a.btn {
+	border: 1px solid #e15704;
+	background-color: #ff5f00;
+	color: #FFF;
+	width: 188px;
+	height: 42px;
+	line-height: 42px;
+	margin: 10px;
+	border-radius: 3px;
+	vertical-align: top;
+	float: left;
+	font-size: 22px;
+	text-align: center;
+}
+.preview .block .des .booki a.btn:HOVER {
+	background-color: #ff6f1a;
+	border-color: #ff5f00;
+}
+
+
+.preview .block.agreement {
+	border: 1px solid #E6E6E6;
+	background-color: #DBFFE1;
+}
+.preview .block.agreement div.title {
+	font-size: 20px;
+}
+
+.preview .block.agreement ol {
+	margin-left: 20px;
+}
+.preview .block.agreement li {
+	padding: 5px;
+	font-size: 16px;
+	list-style: decimal;
 }
