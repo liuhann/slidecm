@@ -1,6 +1,5 @@
 package com.ever365.ecm.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,22 +10,18 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.baidu.inf.iis.bcs.utils.Mimetypes;
-import com.ever365.ecm.authority.AuthenticationUtil;
-import com.ever365.ecm.clipboard.ClipboardDAO;
-import com.ever365.ecm.content.ContentDAO;
-import com.ever365.ecm.content.ContentData;
-import com.ever365.ecm.content.ContentStore;
-import com.ever365.ecm.content.ContentStoreDAO;
+import com.ever365.common.ContentStore;
 import com.ever365.ecm.entity.Entity;
 import com.ever365.ecm.entity.EntityDAO;
 import com.ever365.ecm.repo.Model;
 import com.ever365.ecm.repo.QName;
 import com.ever365.ecm.repo.Repository;
 import com.ever365.ecm.repo.RepositoryDAO;
-import com.ever365.ecm.service.listener.RepositoryListener;
 import com.ever365.mongo.AutoIncrementingHelper;
+import com.ever365.rest.AuthenticationUtil;
 import com.ever365.rest.HttpStatus;
 import com.ever365.rest.HttpStatusException;
+import com.ever365.rest.RestDownload;
 import com.ever365.rest.RestParam;
 import com.ever365.rest.RestService;
 import com.ever365.utils.HTMLParser;
@@ -60,33 +55,17 @@ public class RepositoryService {
 	private static Logger logger = Logger.getLogger(RepositoryService.class.getName());
 	
 	private EntityDAO entityDAO;
-	private ContentDAO contentDAO;
 	private RepositoryDAO repositoryDAO;
-	private ClipboardDAO clipboardDAO;
 	private AutoIncrementingHelper incrementingHelper;
+	private ContentStore contentStore;
 	
-	public void setClipboardDAO(ClipboardDAO clipboardDAO) {
-		this.clipboardDAO = clipboardDAO;
-	}
 	public void setRepositoryDAO(RepositoryDAO repositoryDAO) {
 		this.repositoryDAO = repositoryDAO;
 	}
 	
-	private ContentStoreDAO contentStoreDAO;
-	
-	private List<RepositoryListener> listeners; 
-	
-	public void setContentStoreDAO(ContentStoreDAO contentStoreDAO) {
-		this.contentStoreDAO = contentStoreDAO;
+	public void setContentStore(ContentStore contentStore) {
+		this.contentStore = contentStore;
 	}
-	public void setContentDAO(ContentDAO contentDAO) {
-		this.contentDAO = contentDAO;
-	}
-	public void setListeners(List<RepositoryListener> listeners) {
-		this.listeners = listeners;
-	}
-	
-	
 	
 	public void setIncrementingHelper(AutoIncrementingHelper incrementingHelper) {
 		this.incrementingHelper = incrementingHelper;
@@ -303,11 +282,6 @@ public class RepositoryService {
 		
 		putStremToFile(is, size, repo, entity);
 		
-		for (RepositoryListener listener : listeners) {
-			if (listener.enabled()) {
-				listener.onFileUploaded(parentEntity, entity);
-			}
-		}
 		return entity.toMap();
 	}
 	
@@ -319,19 +293,15 @@ public class RepositoryService {
 		if (entity==null) {
 			throw new HttpStatusException(HttpStatus.BAD_REQUEST);
 		}
+		String uid = UUID.generate();
 		
-		ContentStore contentStore = contentStoreDAO.getContentStore(entity.getRepository().toString());
-		
-		String url = contentStore.putContent(is, size);
-		
-		String contentDataId = contentDAO.createContentData(entity.getRepository().toString(), url, 
-				Mimetypes.getInstance().getMimetype("png"), size, "UTF-8");
+		contentStore.putContent(uid, is, Mimetypes.getInstance().getMimetype("png"), size);
 		
 		Map<QName, Serializable> contentProperties = new HashMap<QName, Serializable>();
-		contentProperties.put(Model.PROP_FILE_THUMBNAIL, contentDataId);
+		contentProperties.put(Model.PROP_FILE_THUMBNAIL, uid);
 		contentProperties.put(Model.PROP_FILE_THUMBNAIL_SIZE, size);
 		entityDAO.updateEntityProperties(entity, contentProperties);
-		return contentDataId;
+		return uid;
 	}
 	
 	@RestService(uri="/file/thumbnail/remove", method="POST", multipart=true)
@@ -343,10 +313,10 @@ public class RepositoryService {
 		String iconId = entity.getPropertyStr(Model.PROP_FILE_ICON);
 		
 		if (thumbnailId!=null) {
-			contentDAO.deleteContentData(thumbnailId);
+			contentStore.deleteContent(thumbnailId);
 		}
 		if (iconId!=null) {
-			contentDAO.deleteContentData(iconId);
+			contentStore.deleteContent(iconId);
 		}
 
 		Map<QName, Serializable> contentProperties = new HashMap<QName, Serializable>();
@@ -356,59 +326,18 @@ public class RepositoryService {
 		entityDAO.updateEntityProperties(entity, contentProperties);
 	}
 	
-	@RestService(uri="/file/thumbnail/crop", method="POST", multipart=true)
-	public String cropFileThumbNail(
-			@RestParam(value="eid")String entityid,
-			@RestParam(value="id")String fileid,
-			@RestParam(value="x")Integer x,
-			@RestParam(value="y")Integer y,
-			@RestParam(value="w")Integer w,
-			@RestParam(value="h")Integer h,
-			@RestParam(value="zw")Integer zw,
-			@RestParam(value="zh")Integer zh
-	) {
-		ContentData data = getContentData(fileid);
-		javaxt.io.Image image = new javaxt.io.Image(data.getInputStream());
-		image.crop(x, y, w, h);
-		image.resize(zw, zh);
-		byte[] raw = image.getByteArray();
-		
-		Entity entity = getEntityDAO().getEntityById(entityid);
-		
-		ContentStore contentStore = contentStoreDAO.getContentStore(entity.getRepository().toString());
-		
-		String contentUrl = contentStore.putContent(new ByteArrayInputStream(raw), new Long(raw.length));
-		
-		String contentData = contentDAO.createContentData(entity.getRepository().toString(), contentUrl, "image/jpeg", raw.length, null);
-		
-		image.crop((zw-zh)/2, 0, zh, zh);
-		image.resize(80, 80);
-		byte[] icon = image.getByteArray();
-		String iconUrl = contentStore.putContent(new ByteArrayInputStream(icon), new Long(icon.length));
-		String iconContentData = contentDAO.createContentData(entity.getRepository().toString(), iconUrl, "image/jpeg", icon.length, null);
-		
-		Map<QName, Serializable> contentProperties = new HashMap<QName, Serializable>();
-		contentProperties.put(Model.PROP_FILE_THUMBNAIL, contentData);
-		contentProperties.put(Model.PROP_FILE_ICON, iconContentData);
-		
-		entityDAO.updateEntityProperties(entity, contentProperties);
-		return	contentData;
-	}
-	
 	
 	@RestService(uri="/file/image", method="GET", authenticated=false, cached=true)
-	public ContentData getFileThumbNail(
+	public RestDownload getFileThumbNail(
 			@RestParam(value="id")String contentDataId
 	) {
-		ContentData contentData = contentDAO.getContentData(contentDataId);
-		ContentStore contentStore = contentStoreDAO.getContentStore(contentData.getRepo());
-		
-		InputStream is = contentStore.getContentData(contentData.getContentUrl());
+		RestDownload rd = new RestDownload();
+		InputStream is = contentStore.getContentData(contentDataId);
 		
 		if (is!=null) {
-			contentData.setFileName("thumbnail.png");
-			contentData.setInputStream(is);
-			return contentData;
+			rd.setFileName("thumbnail.png");
+			rd.setInputStream(is);
+			return rd;
 		} else {
 			throw new HttpStatusException(HttpStatus.INSUFFICIENT_STORAGE);
 		}
@@ -417,15 +346,11 @@ public class RepositoryService {
 	
 	public void putStremToFile(InputStream is, Long size, Repository repo,
 			Entity entity) {
-		
-		ContentStore contentStore = contentStoreDAO.getContentStore(repo.toString());
-		
-		String url = contentStore.putContent(is, size);
-		
-		String contentDataId = contentDAO.createContentData(repo.toString(), url, Mimetypes.getInstance().getMimetype(entity.getPropertyStr(Model.PROP_FILE_EXT)), size, "UTF-8");
+		String uid = UUID.generate();
+		contentStore.putContent(uid, is, Mimetypes.getInstance().getMimetype(entity.getPropertyStr(Model.PROP_FILE_EXT)), size);
 		
 		Map<QName, Serializable> contentProperties = new HashMap<QName, Serializable>();
-		contentProperties.put(Model.PROP_FILE_URL, contentDataId);
+		contentProperties.put(Model.PROP_FILE_URL, uid);
 		contentProperties.put(Model.PROP_FILE_SIZE, size);
 		
 		entityDAO.updateEntityProperties(entity, contentProperties);
@@ -552,11 +477,6 @@ public class RepositoryService {
 		Entity entity = entityDAO.addEntity(parentEntity.getRepository(), parentEntityId, Model.FS_CONTAINS, 
 				uuid, Model.TYPE_FOLDER, childNodeName, null, specialProperties);
 		
-		for (RepositoryListener listener : listeners) {
-			if (listener.enabled()) {
-				listener.onFolderCreated(parentEntity, entity);
-			}
-		}
 		return entity.toMap();
 	}
 	
@@ -634,11 +554,6 @@ public class RepositoryService {
 			Entity src = entityDAO.getEntityById(path);
 			if (src == null) continue;
 			entityDAO.move(src, target, null);
-			for (RepositoryListener listener : this.listeners) {
-				if (listener.enabled()) {
-					listener.onMoved(src, target);
-				}
-			}
 		}
 	}
 	
@@ -714,12 +629,6 @@ public class RepositoryService {
 		map.put(Model.PROP_MODIFIER, AuthenticationUtil.getCurrentUser());
 		
 		entityDAO.move(entity, originalParent, map);
-		
-		for (RepositoryListener listener : this.listeners) {
-			if (listener.enabled()) {
-				listener.onRecovered(entity);
-			}
-		}
 	}
 
 	@RestService(uri="/file/recoverAll", method="POST")
@@ -948,19 +857,6 @@ public class RepositoryService {
 		return pinfo;
 	}
 	*/
-	@RestService(uri="/file/clipboard/copyAll", method="POST")
-	public void copyFromClipboard(@RestParam(value="target", required=true)String target) {
-		List<Map<String, Object>> clips = clipboardDAO.list();
-		
-		for (Map<String, Object> map : clips) {
-			
-			try {
-				
-			} catch (HttpStatusException e) {
-				//do nothing
-			}
-		}
-	}
 	
 	@RestService(uri="/file/copy", method="POST")
 	public void copy(@RestParam(value="srcs",required=true) List<String> srcPaths, @RestParam(value="target")String targetId
@@ -971,18 +867,13 @@ public class RepositoryService {
 			if (src == null) continue; 
 			try {
 				entityDAO.copy(src, target, null);
-				for (RepositoryListener listener : this.listeners) {
-					if (listener.enabled()) {
-						listener.onCopied(src, target);
-					}
-				}
 			} catch (Exception e) {
 			}
 		}
 	}
 	
 	@RestService(uri="/file/download", method="GET", authenticated=false)
-	public ContentData getContentData(@RestParam(value="id", required=true)String id) {
+	public RestDownload getContentData(@RestParam(value="id", required=true)String id) {
 		
 		Entity entity = entityDAO.getEntityById(id);
 		
@@ -990,22 +881,19 @@ public class RepositoryService {
 			throw new HttpStatusException(HttpStatus.NOT_FOUND);
 		}
 		
-		ContentStore contentStore = contentStoreDAO.getContentStore(entity.getRepository().toString());
-		
 		String fileUrl = entity.getPropertyStr(Model.PROP_FILE_URL);
 		
-		ContentData contentData = contentDAO.getContentData(fileUrl);
+		InputStream is = contentStore.getContentData(fileUrl);
 		
-		if (contentData==null) {
-			throw new HttpStatusException(HttpStatus.FAILED_DEPENDENCY);
-		}
-		
-		InputStream is = contentStore.getContentData(contentData.getContentUrl());
 		
 		if (is!=null) {
-			contentData.setFileName(entity.getName());
-			contentData.setInputStream(is);
-			return contentData;
+			RestDownload  rd = new RestDownload();
+			rd.setFileName(entity.getName());
+			rd.setInputStream(is);
+			rd.setSize(new Integer(entity.getPropertyStr(Model.PROP_FILE_SIZE)));
+			rd.setLastModified(entity.getModified());
+			rd.setMimeType(Mimetypes.getInstance().getMimetype(entity.getPropertyStr(Model.PROP_FILE_EXT)));
+			return rd;
 		} else {
 			throw new HttpStatusException(HttpStatus.INSUFFICIENT_STORAGE);
 		}

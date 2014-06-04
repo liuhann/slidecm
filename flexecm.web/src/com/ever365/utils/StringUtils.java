@@ -1,6 +1,13 @@
 package com.ever365.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class StringUtils {
 
@@ -40,21 +47,19 @@ public class StringUtils {
 		return size + "B";
 	}
 	
-	/*
-	SimpleDateFormat sFormat = new SimpleDateFormat("yyyy年M月dd日");
-	public static final String formateTime(Long time) {
-		if (size > 1073741824) {
-			return df2.format(size/1073741824) + "G"; 
-		}
-		if (size > 1048576) {
-			return df2.format(size/1048576)  + " M";
-		}
-		if (size > 1024) {
-			return df2.format(size/1024) + " K";
-		}
-		return size + "B";
+	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	public static final String formateDate(Date source) {
+		return sdf.format(source);
 	}
-	*/
+	public static final Date parseDate(String source) {
+		try {
+			return sdf.parse(source);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	
 	public static final String getFileName(String file) {
 		if (file==null) return "";
@@ -81,4 +86,28 @@ public class StringUtils {
 		return source.substring(posx, posy);
 	}
 	
+	
+	 public static String convertStreamToString(InputStream is) {   
+		 try {
+			 BufferedReader reader = new BufferedReader(new InputStreamReader(is,
+					 "UTF-8"));
+			 StringBuilder sb = new StringBuilder();
+			 String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "/n");
+			}
+			return sb.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		 return null;
+	 }   
 }
+
+

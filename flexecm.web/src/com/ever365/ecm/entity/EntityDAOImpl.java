@@ -11,16 +11,17 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import com.ever365.ecm.authority.AuthenticationUtil;
-import com.ever365.ecm.content.ContentDAO;
+import com.ever365.common.ContentStore;
 import com.ever365.ecm.repo.Model;
 import com.ever365.ecm.repo.QName;
 import com.ever365.ecm.repo.Repository;
 import com.ever365.mongo.AutoIncrementingHelper;
 import com.ever365.mongo.MongoDataSource;
+import com.ever365.rest.AuthenticationUtil;
 import com.ever365.rest.HttpStatus;
 import com.ever365.rest.HttpStatusException;
 import com.ever365.utils.MapUtils;
+import com.ever365.utils.UUID;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -39,11 +40,10 @@ public class EntityDAOImpl implements EntityDAO {
 
 	private MongoDataSource dataSource;
 	private AutoIncrementingHelper autoIncrementingHelper;
+	private ContentStore contentStore;
 	
-	private ContentDAO contentDAO;
-	
-	public void setContentDAO(ContentDAO contentDAO) {
-		this.contentDAO = contentDAO;
+	public void setContentStore(ContentStore contentStore) {
+		this.contentStore = contentStore;
 	}
 
 	public void setAutoIncrementingHelper(
@@ -200,7 +200,7 @@ public class EntityDAOImpl implements EntityDAO {
 		
 		if (entity.getType().equals(Model.TYPE_FILE)) {
 			if (entity.getProperty(Model.PROP_FILE_URL)!=null) {
-				contentDAO.deleteContentData(entity.getProperty(Model.PROP_FILE_URL).toString());
+				contentStore.deleteContent(entity.getPropertyStr(Model.PROP_FILE_URL));
 			}
 		}
 		getEntityCollection().remove(new BasicDBObject("_id", new ObjectId(entity.getId())));
@@ -619,9 +619,10 @@ public class EntityDAOImpl implements EntityDAO {
 		entitydbo.put(getQNameKey(Model.PROP_COPYED_FROM), src.getId());
 		
 		if (src.getType().equals(Model.TYPE_FILE)) {
-			contentDAO.copyContentData(src.getProperty(Model.PROP_FILE_URL).toString());
+			String newUid = UUID.generate();
+			contentStore.copyContent(src.getPropertyStr(Model.PROP_FILE_URL), newUid);
+			entitydbo.put(getQNameKey(Model.PROP_FILE_URL), newUid);
 		}
-		
 		getEntityCollection().insert(entitydbo);
 		
 		Entity entity = extractEntity(entitydbo);
@@ -693,23 +694,4 @@ public class EntityDAOImpl implements EntityDAO {
 		}
 		return getAssocCollection().remove(dbo).getN();
 	}
-
-	@Override
-	public List<Assoc> getNodeAssocs(String sourceId) {
-		DBObject query = new BasicDBObject();
-		
-		query.put("src", sourceId);
-		List<Assoc> result = new ArrayList<Assoc>();
-		DBCursor cursor = getAssocCollection().find(query);
-		
-		while(cursor.hasNext()) {
-			DBObject o = cursor.next();
-			MongoDBOWrapper wrapper  = new MongoDBOWrapper(o);
-			Assoc assoc = new Assoc(wrapper.getId("src"), wrapper.getId("target"), wrapper.getQName("type"), wrapper.getString("value"));
-			result.add(assoc);
-		}
-		
-		return result;
-	}
-
 }

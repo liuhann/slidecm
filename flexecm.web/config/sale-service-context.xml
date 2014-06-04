@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="http.registry" class="com.ever365.rest.HttpServiceRegistry">
+	    <property name="injectedServices">
+	        <list>
+	            <ref bean="rest.seller"/>
+	        </list>
+	    </property>
+	</bean>
+  
+	 <bean id="rest.seller" class="com.ever365.sale.SellerService">
+	     <property name="dataSource">
+			<ref bean="dataSource"/>	         
+	     </property>
+	     <property name="contentStore">
+	        <ref bean="contentStore"/> 
+	     </property>
+	</bean>
+	
+	 <bean id="dataSource" class="com.ever365.mongo.LocalMongoDataSource">
+	    <property name="host">
+	    	<value>${mongodb.host}</value>
+	    </property>
+	    <property name="port">
+	    	<value>${mongodb.port}</value>
+	    </property>
+	    <property name="db">
+	    	<value>${mongodb.dbname}</value>
+	    </property>
+	    <property name="username">
+	    	<value>${app.key}</value>
+	    </property>
+	    <property name="password">
+	    	<value>${app.secret}</value>
+	    </property>
+	    <property name="connectionPerhost">
+	        <value>10</value>
+	    </property>
+	</bean>
+	
+	 <bean id="contentStore" class="com.ever365.common.ContentStore">
+	     <property name="localPath">
+	       <value>D:/temp</value>  
+	     </property>
+	     <property name="appKey">
+	         <value>${app.key}</value>
+	     </property>
+	     <property name="appSecret">
+	         <value>${app.secret}</value>
+	     </property>
+	     <property name="bcsHost">
+	         <value>${bcs.host}</value>
+	     </property>
+	     <property name="bucketName">
+	         <value>${bcs.bucket.name}</value>
+	     </property>
+	 </bean>
+	
+</beans>

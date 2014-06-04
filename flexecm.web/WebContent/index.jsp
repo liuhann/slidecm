@@ -1,8 +1,8 @@
+<%@page import="com.ever365.rest.AuthenticationUtil"%>
 <%@page import="com.ever365.utils.StringUtils"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<%@page import="com.ever365.ecm.service.servlet.LoginServlet"%>
-<%@page import="com.ever365.ecm.authority.PersonService"%>
+
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@page import="org.springframework.web.context.ContextLoaderListener"%>
@@ -17,7 +17,7 @@
 response.setContentType("text/html;charset=UTF-8");
 
 PublicService publicService = (PublicService)ContextLoaderListener.getCurrentWebApplicationContext().getBean("rest.public");
-Object user = session.getAttribute(LoginServlet.SESSION_USER);
+Object user = session.getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
 
 List<Map<String, Object>> splash =  publicService.getList("展示");
 List<Map<String, Object>> recList =  publicService.getList("首页推荐");
@@ -31,8 +31,8 @@ List<Map<String, Object>> recentList =  publicService.getList("最新资源");
 
 <script type="text/javascript">
 	var person = null; 
-	<%if (session.getAttribute(LoginServlet.SESSION_USER)!=null) { %>
-	person = "<%=session.getAttribute(LoginServlet.SESSION_USER)%>";
+	<%if (session.getAttribute(AuthenticationUtil.SESSION_CURRENT_USER)!=null) { %>
+	person = "<%=session.getAttribute(AuthenticationUtil.SESSION_CURRENT_USER)%>";
 	<%}%>
 </script>
 </head>

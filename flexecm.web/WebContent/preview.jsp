@@ -1,11 +1,11 @@
-<%@page import="com.ever365.common.StringUtils"%>
+<%@page import="com.ever365.utils.StringUtils"%>
 <%@page import="java.util.Date"%>
 <%@ page language="java" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
 <%@page import="java.util.Map"%>
 <%@page import="org.springframework.web.context.ContextLoaderListener"%>
-<%@page import="com.ever365.qiang.SellerService"%>
+<%@page import="com.ever365.sale.SellerService"%>
 <html>
 <head>
 <%

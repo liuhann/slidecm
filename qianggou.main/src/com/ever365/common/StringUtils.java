@@ -61,7 +61,7 @@ public class StringUtils {
 		return sdf.format(source);
 	}
 	
-	 public String convertStreamToString(InputStream is) {   
+	 public static String convertStreamToString(InputStream is) {   
 
 
 		 try {

@@ -6,34 +6,40 @@ html,body,h1,h2,h3,p,form,ul,ol,li,dl,dt,dd,form{padding:0;margin:0;list-style:n
 .fl {
 	float: left;
 }
+.fr {
+	float: right;
+}
 
-button {
-	background-color: whiteSmoke;
-	color: #444;
-	border: 1px solid gainsboro;
-	padding: 5px 15px;
-	margin: 0px 10px;
-	line-height: 16px;
+a {
+	color: #0f71c7;
+	text-decoration: none;
+}
+
+
+
+button , a.btn {
+	border: 1px solid #e15704;
+	background-color: #ff5f00;
+	color: #FFF;
+	padding: 4px 12px;
+	margin: 10px;
+	border-radius: 3px;
+	vertical-align: top;
+	float: left;
 	text-align: center;
-	display: inline-block;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
-	font-size: 18px;
-	cursor: pointer;
 }
 
-button:HOVER {
-	background-image: -webkit-gradient(linear,left top,left bottom,from(#4787ED),to(#4D90FE));
-	background-color: #4787ED;
-	background-image: -webkit-linear-gradient(top,#4787ED,#4D90FE);
-	background-image: linear-gradient(top,#4787ED,#4D90FE);
-	color: white;
+button:HOVER, a.btn:HOVER {
+	background-color: #ff6f1a;
+	border-color: #ff5f00;
 }
+
+
 
 header, div.header {
-	background-color: #CC0000;
-	color: white;
-	height: 81px;
+	---background-color: #CC0000;
+	---color: white;
+	----height: 81px;
 }
 
 
@@ -42,10 +48,14 @@ header, div.header {
 	margin: 0 auto;
 }
 
-.logo {
-	width: 180px;
-	height: 35px;
-	border-right: 1px solid #B80000;
+
+
+.header .logo {
+	width: 240px;
+	height: 70px;
+}
+.header .site {
+	margin-right: 50px;
 }
 
 .operations {
@@ -95,6 +105,8 @@ header, div.header {
 	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
 	width: 300px;
 }
+
+
 
 .wrapper .nav.seller {
 	float: left;
@@ -240,7 +252,7 @@ header, div.header {
 }
 
 .preview .block .des .booki {
-	padding: 10px;
+	padding: 10px;61
 }
 
 .preview .block .des .booki a.btn {
@@ -278,4 +290,99 @@ header, div.header {
 	padding: 5px;
 	font-size: 16px;
 	list-style: decimal;
+}
+
+
+
+
+
+
+
+
+#modal {
+	display: none;
+}
+
+.modal-wrapper {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 11;
+	margin: -180px 0 0 -210px;
+	width: 460px;
+	background: #FFF;
+}
+
+
+.modal-wrapper h2 {
+	border-bottom: 1px solid #ebeced;
+	font-size: 18px;
+	line-height: 50px;
+}
+.modal-wrapper h2 span {
+	margin-left: 10px;
+}
+
+.modal-wrapper .dialog-handle {
+	position: absolute;
+	top: 12px;
+	right: 15px;
+}
+.modal-wrapper .dialog-handle a {
+	float: left;
+	margin-left: 15px;
+	width: 16px;
+	height: 16px;
+	line-height: 10;
+	overflow: hidden;
+	background-image: url(/img/icon_dialog_handle.gif);
+	background-repeat: no-repeat;
+}
+
+.modal-wrapper .body {
+	padding: 10px 0;
+}
+
+.modal-wrapper .body .msg {
+	margin: 10px 25px;
+	text-align: right;	
+}
+
+.modal-wrapper .body .item {
+	margin: 0 0 20px;
+	height: 40px;
+}
+
+.modal-wrapper .body .item .label {
+	display: block;
+	float: left;
+	margin-left: 25px;
+	width: 65px;
+	line-height: 40px;
+}
+
+.modal-wrapper .body .item  input {
+	margin: 5px;
+	padding: 0 10px;
+	height: 34px;
+	color: #404040;
+	background: white;
+	border: 1px solid;
+	border-color: #c4c4c4 #d1d1d1 #d4d4d4;
+	border-radius: 2px;
+	outline: 5px solid #eff4f7;
+	-moz-outline-radius: 3px;
+	-webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+	width: 300px;
+}
+
+.modal-bg {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 10;
+	background: rgba(63, 72, 79, 0.3);
 }

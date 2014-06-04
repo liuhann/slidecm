@@ -100,8 +100,6 @@ public interface EntityDAO
      */
     public int removeNodeAssoc(String sourceId, String targetId, QName assocType);
     
-    public List<Assoc> getNodeAssocs(String sourceId);
-    
     public List<Entity> filter(Map<String, Object> filters, Map<String, Object> order,Integer skip, Integer limit);
    
 }

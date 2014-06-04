@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -26,16 +26,13 @@ import org.json.JSONObject;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.ContextLoaderListener;
 
-import com.ever365.ecm.authority.AuthenticationUtil;
-import com.ever365.ecm.content.ContentData;
-import com.ever365.ecm.service.servlet.LoginServlet;
 
 /**
  * Servlet implementation class RestServiceServlet
  */
 public class RestServiceServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private static final String UTF_8 = "UTF-8";
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
 	private HttpServiceRegistry registry;
 	Logger logger = Logger. getLogger(RestServiceServlet.class.getName());
@@ -56,6 +53,14 @@ public class RestServiceServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		Object user = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
+		if (user!=null) {
+			AuthenticationUtil.setCurrentUser((String)user);
+		} else {
+			AuthenticationUtil.setCurrentUser(null);
+		}
+		
 		String strPath = URLDecoder.decode(request.getRequestURI(), "UTF-8");
 		String servletPath = request.getServletPath();
 		
@@ -68,14 +73,13 @@ public class RestServiceServlet extends HttpServlet {
 			response.setStatus(404);
 			return;
 		}
-
-		if (handler.isAuthenticated() && request.getSession().getAttribute(LoginServlet.SESSION_USER)==null) {
-			response.setStatus(403);
+		if (handler.isAuthenticated() && AuthenticationUtil.getCurrentUser()==null) {
+			response.setStatus(401);
 			return;
 		}
-		
 		if (handler.isRunAsAdmin() && !AuthenticationUtil.isAdmin()) {
-			throw new HttpStatusException(HttpStatus.FORBIDDEN);
+			response.setStatus(403);
+			return;
 		}
 		
 		Enumeration paramNames = request.getParameterNames();
@@ -130,16 +134,15 @@ public class RestServiceServlet extends HttpServlet {
 				response.setStatus(404);
 				return;
 			}
-
-			if (handler.isAuthenticated() && request.getSession().getAttribute(LoginServlet.SESSION_USER)==null) {
+			if (handler.isAuthenticated() && AuthenticationUtil.getCurrentUser()==null) {
+				response.setStatus(401);
+				return;
+			}
+			if (handler.isRunAsAdmin() && !AuthenticationUtil.isAdmin()) {
 				response.setStatus(403);
 				return;
 			}
 			
-			if (handler.isRunAsAdmin() && !AuthenticationUtil.isAdmin()) {
-				throw new HttpStatusException(HttpStatus.FORBIDDEN);
-			}
-
 			Map<String, Object> args = new HashMap<String, Object>();
 			
 			if (handler.isMultipart() && ServletFileUpload.isMultipartContent(request)) {
@@ -153,7 +156,7 @@ public class RestServiceServlet extends HttpServlet {
 				//boolean hasFile = false;
 				for (FileItem item : items) {
 					if (item.isFormField()) {
-						args.put(item.getFieldName(), item.getString("UTF-8"));
+						args.put(item.getFieldName(), item.getString(UTF_8));
 					} else {
 						args.put(item.getFieldName(), item);
 						args.put("size", item.getSize());
@@ -163,24 +166,7 @@ public class RestServiceServlet extends HttpServlet {
 				Enumeration paramNames = request.getParameterNames();
 				while (paramNames.hasMoreElements()) {
 					String name = (String) paramNames.nextElement();
-					if (name.endsWith("[]")) {
-						String pureName = name.substring(0, name.length()-2);
-						String[] values = request.getParameterValues(name);
-						
-						List<String> list = new ArrayList<String>();
-						for (int i = 0; i < values.length; i++) {
-							list.add(URLDecoder.decode(values[i], "UTF-8"));
-						}
-						args.put(pureName, list);
-					} else if (name.endsWith("]") && name.indexOf("[")>-1) {
-						String pureName = name.substring(0, name.indexOf("["));
-						if (args.get(pureName)==null) {
-							args.put(pureName, new HashMap<String, String>());
-						}
-						((Map)args.get(pureName)).put(name.substring(name.indexOf("[")+1, name.indexOf("]")), URLDecoder.decode(request.getParameter(name), "UTF-8"));
-					} else {
-						args.put(name, URLDecoder.decode(request.getParameter(name), "UTF-8"));
-					}
+					args.put(name, URLDecoder.decode(request.getParameter(name), UTF_8));
 				}
 			}
 			
@@ -196,7 +182,6 @@ public class RestServiceServlet extends HttpServlet {
 				response.getWriter().println(extractError(e));
 				response.sendError(((HttpStatusException)e).getCode(), ((HttpStatusException)e).getDescription());
 			} else {
-				e.printStackTrace();
 				response.sendError(501);
 				response.getWriter().println(extractError(e));
 			}
@@ -228,44 +213,61 @@ public class RestServiceServlet extends HttpServlet {
 			return;
 		}
 		
-		if (result instanceof ContentData) {
-			handleFileDownload(request, response, result);
-		} else {
-			response.setContentType(CONTENT_TYPE);
-			PrintWriter pw = response.getWriter();
-			if (result instanceof Collection) {
-				JSONArray ja = new JSONArray((Collection) result);
-				pw.print(ja.toString());
-			} else if (result instanceof Map){
-				JSONObject jo = new JSONObject((Map) result);
-				pw.print(jo.toString());
-			} else {
-				pw.print(result.toString());
+		if (result instanceof RestResult) {
+			RestResult rr = (RestResult) result;
+			
+			if (rr.getSession()!=null) {
+				HttpSession session = request.getSession();
+				for (String key : rr.getSession().keySet()) {
+					session.setAttribute(key, rr.getSession().get(key));
+				}
 			}
-			pw.close();
+			
+			if (rr.getRedirect()!=null) {
+				response.sendRedirect(rr.getRedirect());
+			}
+			return;
 		}
+		
+		if (result instanceof RestDownload) {
+			handleFileDownload(request, response, (RestDownload)result);
+			return;
+		} 
+		
+		response.setContentType(CONTENT_TYPE);
+		PrintWriter pw = response.getWriter();
+		if (result instanceof Collection) {
+			JSONArray ja = new JSONArray((Collection) result);
+			pw.print(ja.toString());
+		} else if (result instanceof Map){
+			JSONObject jo = new JSONObject((Map) result);
+			pw.print(jo.toString());
+		} else {
+			pw.print(result.toString());
+		}
+		pw.close();
 	}
 
 	public void handleFileDownload(HttpServletRequest request,
-			HttpServletResponse response, Object result)
+			HttpServletResponse response, RestDownload result)
 			throws UnsupportedEncodingException, IOException {
-		ContentData contentData = (ContentData)result; 
 		
 		long modifiedSince = request.getDateHeader("If-Modified-Since");
+		
 		if (modifiedSince>0L) {
-			if (contentData.getLastModified()<=modifiedSince) {
+			if (result.getLastModified()<=modifiedSince) {
 				response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 				return;
 			}
 		} else {
-			response.setDateHeader("Last-Modified", contentData.getLastModified());
+			response.setDateHeader("Last-Modified", result.getLastModified());
 			response.setHeader("Cache-Control", "must-revalidate");
-			response.setHeader("ETag", "\"" + contentData.getMd5() + "\"");
+			response.setHeader("ETag", "\"" + result.getLastModified() + "\"");
 		}
 		
 		String userAgent = request.getHeader("User-Agent");
-		if (contentData.getFileName()!=null) {
-			String fileDwnName = new String(contentData.getFileName().getBytes("UTF-8"), "ISO-8859-1");
+		if (result.getFileName()!=null) {
+			String fileDwnName = new String(result.getFileName().getBytes("UTF-8"), "ISO-8859-1");
 			if (userAgent!=null && userAgent.contains("MSIE")) {
 				fileDwnName = new String(fileDwnName.getBytes("gb2312"), "ISO8859-1");
 			}
@@ -283,15 +285,15 @@ public class RestServiceServlet extends HttpServlet {
 			
 		}
 		
-		response.setContentType(contentData.getMimeType());
-		int size = contentData.getLength();
+		response.setContentType(result.getMimeType());
+		int size = result.getSize();
 		response.setHeader("Content-Range", "bytes 0-"
 				+ Long.toString(size - 1L) + "/"
 				+ Long.toString(size));
 		response.setContentLength(size);
 		response.setHeader("Content-Length", Integer.toString(size));
 		
-		FileCopyUtils.copy(contentData.getInputStream(), response.getOutputStream());
+		FileCopyUtils.copy(result.getInputStream(), response.getOutputStream());
 	}
 
 }

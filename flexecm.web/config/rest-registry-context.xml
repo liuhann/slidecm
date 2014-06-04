@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	<import resource="classpath:ecm-service-context.xml"/>
+	<import resource="classpath:sale-service-context.xml"/>
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="location" value="classpath:config.properties"/>  
+    </bean> 
+	
+	<bean id="http.registry" class="com.ever365.rest.HttpServiceRegistry">
+	    <property name="injectedServices">
+	        <list>
+	            <ref bean="rest.seller"/>
+	            <ref bean="rest.repository"/>
+	            <ref bean="rest.faceted"/>
+	            <ref bean="rest.public"/>
+	        </list>
+	    </property>
+	</bean>
+</beans>

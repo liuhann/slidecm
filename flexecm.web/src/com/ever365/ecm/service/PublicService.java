@@ -1,25 +1,17 @@
 package com.ever365.ecm.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.jws.WebParam.Mode;
-
 import org.bson.types.ObjectId;
-import org.json.JSONArray;
 
-import com.ever365.ecm.authority.AuthenticationUtil;
-import com.ever365.ecm.authority.PersonService;
-import com.ever365.ecm.content.ContentDAO;
+import com.ever365.auth.AuthorityService;
 import com.ever365.ecm.entity.Entity;
 import com.ever365.ecm.entity.EntityDAO;
 import com.ever365.ecm.repo.Model;
-import com.ever365.ecm.repo.QName;
 import com.ever365.ecm.repo.Repository;
 import com.ever365.ecm.repo.RepositoryDAO;
 import com.ever365.rest.RestParam;
@@ -28,7 +20,6 @@ import com.ever365.rest.RestService;
 public class PublicService {
 	
 	private EntityDAO entityDAO;
-	private ContentDAO contentDAO;
 	private RepositoryDAO repositoryDAO;
 	
 	public void setRepositoryDAO(RepositoryDAO repositoryDAO) {
@@ -41,14 +32,6 @@ public class PublicService {
 
 	public void setEntityDAO(EntityDAO entityDAO) {
 		this.entityDAO = entityDAO;
-	}
-	
-	public ContentDAO getContentDAO() {
-		return contentDAO;
-	}
-	
-	public void setContentDAO(ContentDAO contentDAO) {
-		this.contentDAO = contentDAO;
 	}
 	
 	private Map<String, List<Map<String, Object>>> homeData = new HashMap<String, List<Map<String,Object>>>();
@@ -72,7 +55,7 @@ public class PublicService {
 		List<Map<String,Object>> data = homeData.get(type);
 		
 		if (data ==null) {
-			Repository adminRepo = repositoryDAO.getRepository("usr://" + PersonService.ADMIN, false);
+			Repository adminRepo = repositoryDAO.getRepository("usr://" + AuthorityService.ADMIN, false);
 			if (adminRepo==null) {
 				return Collections.EMPTY_LIST;
 			}
@@ -99,7 +82,7 @@ public class PublicService {
 	public List<Map<String, Object>> getList(@RestParam(value="type")String type, @RestParam(value="skip") Integer skip
 			, @RestParam(value="limit") Integer limit) {
 		
-		Repository adminRepo = repositoryDAO.getRepository("usr://" + PersonService.ADMIN, false);
+		Repository adminRepo = repositoryDAO.getRepository("usr://" + AuthorityService.ADMIN, false);
 		if (adminRepo==null) {
 			return Collections.EMPTY_LIST;
 		}

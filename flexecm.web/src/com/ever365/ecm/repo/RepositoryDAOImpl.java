@@ -8,8 +8,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import com.ever365.ecm.authority.AuthenticationUtil;
-import com.ever365.ecm.authority.PersonService;
+import com.ever365.auth.AuthorityService;
 import com.ever365.ecm.entity.Entity;
 import com.ever365.ecm.entity.EntityDAO;
 import com.ever365.mongo.MongoDataSource;
@@ -118,7 +117,7 @@ public class RepositoryDAOImpl implements RepositoryDAO {
 		
 		if (found==null) {
 			if (autoCreate) {
-				return addRepository(name, PersonService.ADMIN, "", null);
+				return addRepository(name, AuthorityService.ADMIN, "", null);
 			} else {
 				return null;
 			}
