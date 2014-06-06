@@ -64,7 +64,7 @@ List<Map<String, Object>> recentList =  publicService.getList("最新资源");
 	%>		
 		<div class="article slide">
 			<a href="/view.jsp?seq=<%=splashOne.get("seq")%>" target="_blank">
-				<img class="article-image" src="/pub/file/image?id=<%=splashOne.get("tn")%>">
+				<img class="article-image" src="/service/file/image?id=<%=splashOne.get("id")%>">
 				<h1 class="article-title"><%=StringUtils.getFileName((String)splashOne.get("name")) %></h1>
 				
 				<ul class="meta">
@@ -94,7 +94,7 @@ List<Map<String, Object>> recentList =  publicService.getList("最新资源");
 			%>
 					<div class="view">
 						<a  href="/view.jsp?seq=<%=recommend.get("seq")%>" target="_blank">
-						<img class="article-image" src="/pub/file/image?id=<%=recommend.get("tn")%>">
+						<img class="article-image" src="/service/file/image?id=<%=recommend.get("id")%>">
 						<h1 class="article-title"><%=StringUtils.getFileName((String)recommend.get("name")) %></h1>
 						</a>
 					</div>			
@@ -117,7 +117,7 @@ List<Map<String, Object>> recentList =  publicService.getList("最新资源");
 					<div class="article">
 						<a href="/view.jsp?seq=<%=recent.get("seq")%>" target="_blank">
 						
-							<img class="article-image" src="/pub/file/image?id=<%=recent.get("tn")%>">
+							<img class="article-image" src="/service/file/image?id=<%=recent.get("id")%>">
 							<h1 class="article-title"><%=StringUtils.getFileName((String)recent.get("name")) %></h1>
 							
 							<ul class="meta">
@@ -144,7 +144,7 @@ List<Map<String, Object>> recentList =  publicService.getList("最新资源");
 		<div class="article template" style="display: none;">
 			<a class="seq" href="/view.jsp?seq=19" target="_blank">
 			
-				<img class="article-image" src="/pub/file/image?id=53547ff0e4b0c07f638d8fd8" style="width: 338.6666666666667px; margin-top: 0px;">
+				<img class="article-image" src="" style="width: 338.6666666666667px; margin-top: 0px;">
 				<h1 class="article-title">时间管理技能（布衣公子作品）@teliss</h1>
 				
 				<ul class="meta">

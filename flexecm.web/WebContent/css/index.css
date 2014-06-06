@@ -387,7 +387,7 @@ div.recommend h2 {
 	display: none;
 }
 
-.modal-wrapper {
+#modal .modal-wrapper {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -399,21 +399,21 @@ div.recommend h2 {
 
 
 
-.modal-wrapper h2 {
+#modal .modal-wrapper h2 {
 	border-bottom: 1px solid #ebeced;
 	font-size: 18px;
 	line-height: 50px;
 }
-.modal-wrapper h2 span {
+#modal .modal-wrapper h2 span {
 	margin-left: 10px;
 }
 
-.modal-wrapper .dialog-handle {
+#modal .modal-wrapper .dialog-handle {
 	position: absolute;
 	top: 12px;
 	right: 15px;
 }
-.modal-wrapper .dialog-handle a {
+#modal .modal-wrapper .dialog-handle a {
 	float: left;
 	margin-left: 15px;
 	width: 16px;
@@ -424,20 +424,20 @@ div.recommend h2 {
 	background-repeat: no-repeat;
 }
 
-.modal-wrapper .body {
+#modal .modal-wrapper .body {
 	padding: 10px 0;
 }
 
-.modal-wrapper .body .msg {
+#modal .modal-wrapper .body .msg {
 	margin: 10px 25px;
 	text-align: right;	
 }
 
-.modal-wrapper .body .item {
+#modal .modal-wrapper .body .item {
 	margin: 0 0 20px;
 }
 
-.modal-wrapper .body .item .label {
+#modal .modal-wrapper .body .item .label {
 	display: block;
 	float: left;
 	margin-left: 25px;
@@ -445,7 +445,7 @@ div.recommend h2 {
 	line-height: 40px;
 }
 
-.modal-wrapper .body .item  input {
+#modal .modal-wrapper .body .item  input {
 	margin: 5px;
 	padding: 0 10px;
 	height: 34px;
@@ -461,7 +461,7 @@ div.recommend h2 {
 	width: 300px;
 }
 
-.modal-bg {
+#modal .modal-bg {
 	position: fixed;
 	top: 0;
 	right: 0;

@@ -1,7 +1,25 @@
+var cu = null;
+
+var datePickerOptions = {
+		lang: "ch",
+		format: "Y-m-d H:i"
+};
 
 $(document).ready(function() {
-	getSalelist();
-	initUploader();
+
+	$.getJSON("/service/seller/info", {}, function(data) {
+		cu = data;
+		$("span.cu").html(cu.name);
+		getSalelist();
+		initUploader();
+		
+		$("#time").datetimepicker(datePickerOptions);
+		$("#until").datetimepicker(datePickerOptions);
+		
+	}).fail(function() {
+		alert("会话超时，请重新登陆");
+		location.href = "/seller/login.html";
+	});
 });
 
 function frmRequest() {
@@ -11,12 +29,16 @@ function frmRequest() {
 }
 
 function request() {
+	if ($("#btn_request").hasClass("disabled")) {
+		return;
+	}
 	//首先进行有效性检查
 	var o = {
 			"title": $("#title").val(),
 			"subtitle": $("#subtitle").val(),
 			"count": $("#count").val(),
 			"price": $("#price").val(),
+			"oprice": $("#oprice").val(), 
 			"time": $("#time").val(),
 			"until": $("#until").val(),
 			"content": encodeURI(um.getContent())
@@ -30,11 +52,15 @@ function request() {
 		o.preview = $("#posters").data("preview");
 	}
 	
-	$(".view").hide();
-	$("#pendding").show();
-	
+	//$(".view").hide();
+	//$("#pendding").show();
+	$("#btn_request").addClass("disabled");
 	$.post("/service/seller/request ", o, function() {
+		$("#btn_request").removeClass("disabled");
 		getSalelist();
+	}).fail(function() {
+		alert("输入无效");
+		$("#btn_request").removeClass("disabled");
 	});
 }
 
@@ -86,6 +112,8 @@ function getSalelist() {
 						cloned.find("td.action a.remove").show();
 					} else {
 						status = "已失效";
+						cloned.find("td.action a.remove").show();
+						cloned.find("td.action a.modify").show();
 					}
 				}
 				cloned.find(".status").html(status);
@@ -98,9 +126,9 @@ function getSalelist() {
 				
 				cloned.find("a.remove").click(function() {
 					var sale = $(this).pd("sale");
-					if (!sale.online) {
-						$.post("/service/seller/drop", {
-							"_id": sale._id
+					if (!sale.online && confirm("确认删除抢购活动？ 删除后无法恢复！")) {
+						$.post("/service/seller/sale/drop", {
+							"id": sale._id
 						}, function() {
 							getSalelist();
 						});
@@ -109,7 +137,34 @@ function getSalelist() {
 				
 				cloned.find("a.preview").click(function() {
 					var sale = $(this).pd("sale");
-					window.open("/preview.jsp?id="  + sale._id);
+					if (sale.seq!=null) {
+						window.open("/book.html?id="  + sale.seq);
+					} else {
+						window.open("/book.html?oid="  + sale._id);
+					}
+				});
+				
+				cloned.find("a.books").click(function() {
+					var sale = $(this).pd("sale");
+					
+					$("div.content div.view").hide();
+					$("#books-list").show();
+				
+					$.getJSON("/service/seller/sale/books", {
+						"id": sale.seq,
+						"skip": 0,
+						"limit": 100
+					}, function(data) {
+						$("#books-list table tr.item").remove();		
+						for ( var i = 0; i < data.list.length; i++) {
+							var book = data.list[i];
+							var cloned = $(".books-table tr.template").clone();
+							cloned.addClass("item").removeClass("template");
+							cloned.find(".user").html(book.u);
+							
+							$("#books-list table").append(cloned);
+						}
+					});
 				});
 				
 				$("#sales-list table").append(cloned);
@@ -131,6 +186,7 @@ function initForm(sale) {
 		if (sale.preview) {
 			 var img = $("<img src='/service/preview?id=" + sale.preview + "'>");
 			 $('#img-preview').append(img);
+			 $("#posters").data("preview", sale.preview);
 		}
 		
 		$("#title").val(sale.title);
@@ -138,12 +194,12 @@ function initForm(sale) {
 		$("#posters #count").val(sale.count);
 		$("#posters #price").val(sale.price);
 		$("#posters #time").val(formateTime(sale.time));
-		$("#posters #until").val(sale.until);
+		$("#posters #until").val(formateTime(sale.until));
 	
-		$.get("/service/content", {
-			"id": sale.content
+		$.getJSON("/service/seller/sale", {
+			"id": sale._id
 		}, function(data) {
-			um.setContent(data);
+			um.setContent(data.content);
 		});
 	} else {
 		$("#title").val("");

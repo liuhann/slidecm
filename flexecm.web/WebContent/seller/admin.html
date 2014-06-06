@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>管理平台</title>
+
+<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
+<script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
+
+<link rel="StyleSheet" href="seller.css"  type="text/css">
+
+<SCRIPT type=text/javascript src="admin.js"></SCRIPT>
+
+</head>
+<body>
+	
+	
+<div id="site-map">
+	<div class="wrapper">
+		<div class="logo">
+			<img src="/img/shen.png">
+		</div>
+	</div>
+</div>
+	
+<div class="wrapper">
+
+	<div class="nav seller">
+		<ul>
+			<li class="link request" onclick="getRequesting();">待审批</li>
+			<li class="link list" onclick="getOnlines();">已通过未完成</li>
+			<li class="link config" onclick="config();">已完成</li>
+			<li class="link config" onclick="config();">所有</li>
+		</ul>
+	</div>
+	
+	<div class="content seller">
+		<div id="sales-list" class="view">
+			
+			<table class="sales-table">
+				<tr>
+					<th width="350px;">商品名称</th>
+					<th width="130px;">抢购时间</th>
+					<th width="130px;">预约时间</th>
+					<th width="50px;">价格</th>
+					<th width="100px;">商家</th>
+					<th width="50px;">数量</th>
+					<th >操作</th>
+				</tr>
+				
+				<tr class="template">
+					<td class="name"></td>
+					<td class="time"></td>
+					<td class="until"></td>
+					<td class="price"></td>
+					<td class="seller"></td>
+					<td class="count"></td>
+					<td class="action">
+						<a class="approve">通过</a>
+						<a class="preview">预览</a>
+						<a class="books">预约统计</a>
+						<a class="deals">成交列表</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div class="footer">
+	
+</div>		
+</body>
+</html>
+

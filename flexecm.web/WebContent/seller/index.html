@@ -4,12 +4,18 @@
 <meta charset="UTF-8">
 <title>卖家服务平台</title>
 
-<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-<script src="/js/seller.js"></script>
+<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
+<script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
 
-<link rel="StyleSheet" href="/css/manage.css"  type="text/css">
+<script src="seller.js"></script>
 
-<script type="text/javascript" language="javascript" src="/uploader/plupload.full.js"></script>
+<link rel="StyleSheet" href="seller.css"  type="text/css">
+
+<script type="text/javascript" src="plupload.full.js"></script>
+
+<link rel="stylesheet" type="text/css" href="jquery.datetimepicker.css">
+
+<script src="jquery.datetimepicker.js"></script>
 
 <link href="http://ueditor.baidu.com/umeditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
 <script type="text/javascript" charset="utf-8" src="http://ueditor.baidu.com/umeditor/umeditor.config.js"></script>
@@ -18,124 +24,171 @@
 
 </head>
 <body>
-	<div class="header">
-		<div class="wrapper">
-			<div class="logo fl"></div>
-			
-			<div class="operations fl">抢购申请</div>
-		</div>
-	</div>
 	
+	
+<div id="site-map">
 	<div class="wrapper">
-	
-		<div class="nav seller">
-			<ul>
-				<li class="link request" onclick="frmRequest();">抢购活动申请</li>
-				<li class="link list" onclick="getSalelist();">活动列表</li>
-				<li class="link config" onclick="config();">商家信息管理</li>
-			</ul>
-		</div>
-		
-		<div class="content seller">
-			<div id="posters" class="view">
-				
-				<div class="notice">
-				
-				</div>
-				
-				<div class="form">
-					<div>
-						<span class="label">商品标题</span>
-						<input id="title">
-						<span>示例: 吉列梅西锋隐超顺手动剃须刀刮胡刀 剃须啫喱 1刀架5刀头 送赠品</span>
-					</div>
-					
-					<div>
-						<span class="label">副标题</span>
-						<input id="subtitle">
-						<span>示例: 5月8号，大神降临</span>
-					</div>
-				
-					<div>
-						<span class="label">抢购数量</span>
-						<input id="count" >  	<span>因抢购并发性，最多可能卖出超过指定数量10%的商品，请知晓</span>
-					</div>
-					
-					<div>
-						<span class="label">抢购价格</span>
-						<input id="price">  	<span>价格必须明显低于市场价。否则不予通过</span>
-					</div>
-					
-					<div>
-						<span class="label">抢购时间</span>
-						<input id="time">  	<span>格式为: 2014-05-23 11:08</span>
-					</div>
-					
-					<div>
-						<span class="label">抢购预约截至</span>
-						<input id="until">  	<span>格式为: 2014-05-23 11:08，如无需预约，请留空</span>
-					</div>
-					
-					<div>
-						<span class="label">展示图</span>
-						<a class="btn" id="btn-preview-upload">上传</a>  	<span>要求宽度400高度400，PNG或JPG格式图片</span>
-						<div id="img-preview">
-													
-						</div>
-					</div>
-				</div>
-								
-				<div style="padding: 5px;">
-					<span class="label">图文介绍</span>
-					<script type="text/plain" id="editor" style="width:800px;height:480px;"></script>
-				</div>
-				<div style="padding: 20px;">
-					 <button class="big" onclick="request();">提交申请</button>
-					 <button class="big" onclick="getSalelist();">取消</button>
-				</div>
-			</div>
-			
-			<div id="pendding" class="view">
-				<div class="msg">
-					正在提交中....	
-				</div>
-			</div>
-			
-			<div id="sales-list" class="view">
-				<div class="hello">
-					您好， <span id="cu"></span> 您有<span id="c_qiang"></span>个抢购进行中。
-				</div>
-				
-				<table class="sales-table">
-					<tr>
-						<th width="500px;">商品名称</th>
-						<th width="130px;">抢购时间</th>
-						<th width="50px;">价格</th>
-						<th width="100px;">状态</th>
-						<th >操作</th>
-					</tr>
-					
-					<tr class="template">
-						<td class="name"></td>
-						<td class="time"></td>
-						<td class="price"></td>
-						<td class="status"></td>
-						<td class="action">
-							<a class="modify" >修改</a>
-							<a class="remove" >删除</a>
-							<a class="preview" >预览</a>
-							<a class="books">预约统计</a>
-							<a class="deals">成交列表</a>
-						</td>
-					</tr>
-				</table>
-			</div>
+		<div class="logo">
+			<img src="/img/shen.png">
 		</div>
 	</div>
 	
-	<div class="footer">
+</div>
+	
+<div class="wrapper">
+
+	<div class="nav seller">
+		<ul>
+			<li>您好, <span class="cu"></span></li>
+		</ul>
+	
+		<ul>
+			<li class="link list" onclick="getSalelist();">活动列表</li>
+			<li class="link config" onclick="config();">商家信息管理</li>
+		</ul>
 		
-	</div>		
+		<ul>
+			<li><a href="/service/seller/logout">退出</a></li>
+		</ul>
+		
+	</div>
+	
+	<div class="content seller">
+		<div id="posters" class="view">
+			
+			<div class="notice">
+			
+			</div>
+			
+			<div class="form">
+				<div>
+					<h1>抢购商品编辑</h1>
+				</div>
+				<div>
+					<span class="label">商品标题</span>
+					<input id="title">
+					<span>填写一个心动的标题把</span>
+				</div>
+				
+				<div>
+					<span class="label">副标题</span>
+					<input id="subtitle">
+					<span></span>
+				</div>
+			
+				<div>
+					<span class="label">抢购数量</span>
+					<input id="count" >  	<span>因抢购并发性，最多可能卖出超过指定数量10%的商品，请知晓</span>
+				</div>
+				
+				<div>
+					<span class="label">抢购价格</span>
+					<input id="price">  	
+					<span>价格必须明显低于市场价。否则不予通过</span>
+				</div>
+				
+				<div>
+					<span class="label">原价</span>
+					<input id="oprice"> 
+				</div>
+				
+				
+				<div>
+					<span class="label">抢购时间</span>
+					<input id="time">  	<span>格式为: YYYY-MM-DD hh:mm</span>
+				</div>
+				
+				<div>
+					<span class="label">抢购预约截至</span>
+					<input id="until">  	<span>格式同抢购时间，如无需预约，请留空</span>
+				</div>
+				
+				<div>
+					<span class="label">展示图</span>
+					<a class="btn" id="btn-preview-upload">上传</a>  	<span>要求宽度480高度400，PNG或JPG格式图片</span>
+					<div id="img-preview">
+					</div>
+				</div>
+			</div>
+							
+			<div style="padding: 5px;">
+				<span class="label">图文介绍</span>
+				<script type="text/plain" id="editor" style="width:800px;height:480px;"></script>
+			</div>
+			<div style="padding: 20px;">
+				 <a class="btn" onclick="request();" id="btn_request">提交申请</a>
+				 <a class="btn" onclick="getSalelist();">取消</a>
+			</div>
+		</div>
+		
+		<div id="pendding" class="view">
+			<div class="msg">
+				正在提交中....	
+			</div>
+		</div>
+		
+		<div id="sales-list" class="view">
+			<div class="hello">
+				<span id="cu"></span> 您有<span id="c_qiang">0</span>个抢购进行中。 
+				<a class="btn" onclick="frmRequest();">抢购活动申请</a>
+			</div>
+			
+			<table class="sales-table">
+				<tr>
+					<th width="500px;">商品名称</th>
+					<th width="130px;">抢购时间</th>
+					<th width="50px;">价格</th>
+					<th width="100px;">状态</th>
+					<th >操作</th>
+				</tr>
+				
+				<tr class="template">
+					<td class="name"></td>
+					<td class="time"></td>
+					<td class="price"></td>
+					<td class="status"></td>
+					<td class="action">
+						<a class="modify" >修改</a>
+						<a class="remove" >删除</a>
+						<a class="preview" >预览</a>
+						<a class="books">预约统计</a>
+						<a class="deals">成交列表</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div id="books-list" class="view">
+			<div class="hello">
+				
+			</div>
+			
+			<table class="books-table">
+				<tr>
+					<th width="100px;">用户</th>
+					<th width="130px;">预约时间</th>
+					<th width="130px;">预约号</th>
+					<th width="130px;">IP地址</th>
+					<th >操作</th>
+				</tr>
+				
+				<tr class="template">
+					<td class="user"></td>
+					<td class="time"></td>
+					<td class="code"></td>
+					<td class="ip"></td>
+					<td class="action">
+						<a class="remove" >删除</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div class="footer">
+	
+</div>		
 
 <script type="text/javascript">
 

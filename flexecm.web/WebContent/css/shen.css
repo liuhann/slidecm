@@ -1,0 +1,365 @@
+@CHARSET "UTF-8";
+html,body{font:12px/1 "Microsoft Yahei","微软雅黑","黑体","SimHei",Arial,sans-serif;color:#2E2E2E;height:100%;}
+html,body,h1,h2,h3,p,form,ul,ol,li,dl,dt,dd,form{padding:0;margin:0;list-style:none;}
+
+::-webkit-scrollbar{height:8px;width:8px;background:rgba(222, 222, 222, 0.5);}
+::-webkit-scrollbar-button{display:none;}
+::-webkit-scrollbar-track{background-color:#ffffff;}
+::-webkit-scrollbar-track-piece{background:#ffffff;}
+::-webkit-scrollbar-thumb{width:8px;min-height:15px;background:rgba(0, 0, 0, 0.3);}
+::-webkit-scrollbar-thumb:hover{background:rgba(0, 0, 0, 0.6);}
+::-webkit-scrollbar-thumb:active{background:rgba(0, 0, 0, 0.8);}
+
+
+img{border:none;}
+table td{padding:0;}
+table{border-collapse:collapse;border-spacing:0;}
+.right, .fr {float: right; }
+ul, ol {list-style: none; }
+i {font-style: normal; }
+a {outline: none;text-decoration: none;cursor: pointer; color: #444; }
+a:HOVER {text-decoration: none}
+input:FOCUS{outline: none;}
+
+
+.wrapper {
+	width: 1200px;
+	margin: 0 auto;
+}
+
+
+
+a.btn {
+	color: white;
+	background-color: #2eb7aa;
+	border-color: #0e8177;
+	vertical-align: middle;
+	padding: 7px 20px 6px;
+	font-size: 14px;
+	font-weight: bold;
+	display: inline-block;
+	border-radius: 2px;
+}
+
+a.btn:hover {
+	background-color: #2ec3b4;
+}
+
+.red {
+	color: red;
+}
+
+#site-map {
+	height: 40px;
+	background: #fbfbfb;
+	box-shadow: 0 0 0 1px #FFF,0 0 0 2px #dfdfdf,0 0 5px 3px #f0f0f0;
+}
+#site-map  .logo {
+	float: left;
+}
+
+#site-map .item {
+	float: right;
+	font-size: 14px;
+	line-height: 40px;
+	border-left: 1px solid #FFF;
+	border-right: 1px solid #EEE;
+	padding: 0px 8px;
+}
+
+#site-map .dropdown {
+	background: #fbfbfb;
+	color: #444;
+	position: absolute;
+	border-radius: 2px;
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+	border-color: #B8B8B8;
+	z-index: 70;
+	top: 40px;
+	display: none;
+}
+
+
+
+#dialog {
+	display: none;
+}
+
+#dialog .content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 11;
+	margin: -180px 0 0 -210px;
+	width: 420px;
+	background: #FFF;
+}
+
+#dialog .content h2.title {
+	border-bottom: 1px solid #ebeced;
+	font-size: 16px;
+	line-height: 50px;
+	padding: 4px 10px;
+}
+
+#dialog .content h2.title a.close {
+	float: right;
+}
+
+#dialog .content ul.list li {
+	margin: 10px;
+	padding: 5px;
+	font-size: 14px;
+}
+
+#dialog .content ul.list li.account img {
+	top: 4px;
+	position: relative;
+	margin-right: 5px;
+}
+
+#dialog .bg {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 10;
+	background: rgba(63, 72, 79, 0.3);
+}
+
+#main {
+	margin-top: 5px;
+}
+
+#main .left {
+	width: 840px;
+	float: left;
+}
+
+#main .left a.ads {
+	display: block;
+	width: 800px;
+	height: 200px;
+	position: relative;
+	margin-top: 20px;
+	overflow: hidden;
+	border: 1px solid #ddd;
+}
+
+#main .left a.ads:HOVER {
+	border-width: 1px;
+	border-color: #2eb6aa;
+	---box-shadow: inset 0 -1px 0 0 #2eb6aa;
+}
+
+#main .left a.ads div.img {
+	float: right;
+	width: 540px;
+}
+
+#main .left a.ads div.img img.spla {
+	width: 540px;
+	height: 200px;
+}
+
+
+#main .left a.ads div.tips {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 260px;
+	height: 200px;
+}
+#main .left a.ads div.tips .title {
+	margin-top: 20px;
+	font-size: 16px;
+	text-align: center;
+	color: #333;
+	height: 65px;
+}
+
+#main .left a.ads div.tips .price {
+	font-size: 26px;
+	color: red;
+	text-align: center;
+}
+
+
+
+#main .left a.ads div.tips .time {
+	position: absolute;
+	bottom: 0px;
+	text-align: center;
+	background-color: #2eb6aa;
+	color: white;
+	padding: 10px 0px;
+	width: 100%;
+	font-size: 14px;
+}
+
+#main .left a.ads div.tips .book {
+	position: absolute;
+	bottom: 50px;
+	text-align: center;
+	width: 100%;
+	font-size: 16px;
+	color: #666;
+}
+#main .left a.ads div.tips .book span {
+	color: #f40;
+}
+
+#main .timeline {
+	width: 360px;
+	float: right;
+}
+
+#timeline {
+	border-left: 3px solid #FF4400;
+}
+#timeline li.item {
+	position: relative;
+	margin-top: 15px;
+	margin-left: 10px;
+}
+
+#timeline li.item img.bg {
+	width: 350px;
+	height: 140px;
+}
+
+#timeline li.item div.dot {
+	width: 16px;
+	height: 16px;
+	background: url("../img/dot.png");
+	position: absolute;
+	left: -20px;
+	display: inline-block;
+	top: 5px;
+}
+
+#timeline li.item div.time {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background: rgba(0,0,0,0.5);
+	background: #666\9;
+	color: white;
+	padding: 5px;
+}
+
+#timeline li.item div.title {
+	position: absolute;
+	bottom: 30px;
+	background: rgba(255,255,255,0.8);
+	padding: 10px 3px;
+	width: 345px;
+	font-size: 16px;
+}
+
+#timeline li.item div.status {
+	left: 0px;
+	position: absolute;
+	bottom: 0px;
+	background:white;
+	background: rgba(255,255,255,0.8);
+	width: 350px;
+	font-size: 12px;
+	
+}
+
+#timeline li.item div.status .title {
+	font-size: 16px;
+	color: #555;
+	padding: 5px;
+	font-weight: normal;
+}
+
+#timeline li.item div.status .tips {
+	padding: 5px;
+}
+
+#timeline li.item div.status .price {
+	font-size: 16px;
+	line-height: 30px;
+	color: red;
+	float: left;
+}
+#timeline li.item div.status .online {
+	float: right;
+	line-height: 24px;
+}
+
+#timeline li.item div.status .online .count {
+	color: red;
+}
+
+#timeline li.item div.status .go {
+	margin-left:10px;
+	line-height: 24px;
+	float: right;
+	text-align: center;
+	color: #fff;
+	padding:0px 5px;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	-ms-border-radius: 2px;
+	-o-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-box-shadow: #ddd 0 1px 1px;
+	-moz-box-shadow: #ddd 0 1px 1px;
+	box-shadow: #ddd 0 1px 1px;
+	background: #f40;
+}
+
+.footer {
+	border-top: 3px solid #3aa2a2;
+	background: #f6f6f6;
+	padding-bottom: 30px;
+	clear: both;
+}
+
+
+
+#seller-reg {
+	margin: 20px;
+	border: 1px solid #ccc;
+}
+
+#seller-reg .title {
+	border-bottom: 1px solid #ebeced;
+	font-size: 16px;
+	line-height: 50px;
+	padding: 4px 10px;
+}
+#seller-reg .form>div{
+	padding: 8px;
+	
+}
+
+#seller-reg .form>div span.label {
+	display: block;
+	float: left;
+	margin-left: 25px;
+	width: 95px;
+	line-height: 40px;
+}
+
+
+#seller-reg .form>div input {
+	margin: 5px;
+	padding: 0 10px;
+	height: 34px;
+	color: #404040;
+	background: white;
+	border: 1px solid;
+	border-color: #c4c4c4 #d1d1d1 #d4d4d4;
+	border-radius: 2px;
+	-moz-outline-radius: 3px;
+	-webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+	width: 300px;
+}
+
+

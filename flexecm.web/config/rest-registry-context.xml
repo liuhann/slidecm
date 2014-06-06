@@ -17,7 +17,25 @@
 	            <ref bean="rest.repository"/>
 	            <ref bean="rest.faceted"/>
 	            <ref bean="rest.public"/>
+	            <ref bean="rest.manage"/>
+	            <ref bean="rest.authority"/>
 	        </list>
 	    </property>
 	</bean>
+	
+	<bean id="rest.authority" class="com.ever365.auth.AuthorityService">
+	     <property name="dataSource">
+			<ref bean="ecmDataSource"/>	         
+	     </property>
+	     <property name="ap" value="overlord123">
+	     </property>
+	</bean>
+	
+	<bean id="rest.cookie" class="com.ever365.rest.CookieService">
+	    <property name="dataSource">
+			<ref bean="ecmDataSource"/>	         
+	     </property>
+	</bean>
+	 
+		 
 </beans>

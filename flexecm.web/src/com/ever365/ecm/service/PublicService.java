@@ -41,7 +41,6 @@ public class PublicService {
 	@RestService(uri="/list/all", method="GET", authenticated=false)
 	public Map<String, List<Map<String, Object>>> getIndex() {
 		Map<String, List<Map<String, Object>>> index = new HashMap<String, List<Map<String,Object>>>();
-		
 		index.put("splash", getList("展示"));
 		index.put("recent", getList("最新资源"));
 		index.put("recommend", getList("首页推荐"));

@@ -35,6 +35,7 @@ public class RestServiceServlet extends HttpServlet {
 	private static final String UTF_8 = "UTF-8";
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
 	private HttpServiceRegistry registry;
+	private CookieService cookieService;
 	Logger logger = Logger. getLogger(RestServiceServlet.class.getName());
     /**
      * @see HttpServlet#HttpServlet()
@@ -47,26 +48,18 @@ public class RestServiceServlet extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		registry = (HttpServiceRegistry)ContextLoaderListener.getCurrentWebApplicationContext().getBean("http.registry");
+		Object o = ContextLoaderListener.getCurrentWebApplicationContext().getBean("rest.cookie");
+		if (o!=null) {
+			cookieService = (CookieService) o;
+		}
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		Object user = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
-		if (user!=null) {
-			AuthenticationUtil.setCurrentUser((String)user);
-		} else {
-			AuthenticationUtil.setCurrentUser(null);
-		}
-		
-		String strPath = URLDecoder.decode(request.getRequestURI(), "UTF-8");
-		String servletPath = request.getServletPath();
-		
-		int rootPos = strPath.indexOf(servletPath);
-		if ( rootPos != -1)
-			strPath = strPath.substring( rootPos + servletPath.length());
+		setUser(request);
+		String strPath = getServicePath(request);
 		
 		MethodInvocation handler = registry.getGet(strPath);
 		if (handler==null) {
@@ -93,6 +86,7 @@ public class RestServiceServlet extends HttpServlet {
 			Object result = handler.execute(args);
 			render(request, response, result);
 		} catch (Exception e) {
+			logger.info("Exception " + e.getMessage());
 			if (e instanceof HttpStatusException) {
 				response.sendError(((HttpStatusException)e).getCode(), ((HttpStatusException)e).getDescription());
 			} else {
@@ -109,6 +103,32 @@ public class RestServiceServlet extends HttpServlet {
 		}
 	}
 
+	public String getServicePath(HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		String strPath = URLDecoder.decode(request.getRequestURI(), "UTF-8");
+		String servletPath = request.getServletPath();
+		
+		int rootPos = strPath.indexOf(servletPath);
+		if ( rootPos != -1)
+			strPath = strPath.substring( rootPos + servletPath.length());
+		return strPath;
+	}
+
+	public void setUser(HttpServletRequest request) {
+		Object user = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
+		AuthenticationUtil.setCurrentUser(null);
+		if (user!=null) {
+			AuthenticationUtil.setCurrentUser((String)user);
+		} else {
+			if (cookieService!=null) {
+				user = cookieService.getCurrentUser(request);
+				if (user!=null) {
+					AuthenticationUtil.setCurrentUser((String)user);
+				} 
+			}
+		}
+	}
+
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -119,14 +139,9 @@ public class RestServiceServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		setUser(request);
 		try {
-			String strPath = URLDecoder.decode( request.getRequestURI(), "UTF-8");
-			//request.setCharacterEncoding("UTF-8"); 
-			String servletPath = request.getServletPath();
-
-			int rootPos = strPath.indexOf(servletPath);
-			if ( rootPos != -1)
-				strPath = strPath.substring( rootPos + servletPath.length());
+			String strPath = getServicePath(request);
 
 			MethodInvocation handler = registry.getPost(strPath);
 			
@@ -182,7 +197,8 @@ public class RestServiceServlet extends HttpServlet {
 				response.getWriter().println(extractError(e));
 				response.sendError(((HttpStatusException)e).getCode(), ((HttpStatusException)e).getDescription());
 			} else {
-				response.sendError(501);
+				response.sendError(502);
+				e.printStackTrace();
 				response.getWriter().println(extractError(e));
 			}
 		} finally {
@@ -206,20 +222,26 @@ public class RestServiceServlet extends HttpServlet {
 
 	private void render(HttpServletRequest request, HttpServletResponse response, Object result)
 			throws IOException {
-		
-		//logger.info("Request: " + request.getMethod() + "   " + request.getPathInfo() + "?" + request.getQueryString());
 		if (result==null) {
-			response.setStatus(201);
+			response.setStatus(200);
 			return;
 		}
 		
 		if (result instanceof RestResult) {
 			RestResult rr = (RestResult) result;
-			
 			if (rr.getSession()!=null) {
 				HttpSession session = request.getSession();
 				for (String key : rr.getSession().keySet()) {
 					session.setAttribute(key, rr.getSession().get(key));
+					if (key.equals(AuthenticationUtil.SESSION_CURRENT_USER)) {
+						if (cookieService!=null) {
+							if (rr.getSession().get(key)==null) { //log out
+								cookieService.removeCookieTicket(request, response);
+							} else {
+								cookieService.bindUserCookie(request, response, rr.getSession().get(key).toString());
+							}
+						}
+					}
 				}
 			}
 			
@@ -229,8 +251,8 @@ public class RestServiceServlet extends HttpServlet {
 			return;
 		}
 		
-		if (result instanceof RestDownload) {
-			handleFileDownload(request, response, (RestDownload)result);
+		if (result instanceof StreamObject) {
+			handleFileDownload(request, response, (StreamObject)result);
 			return;
 		} 
 		
@@ -249,9 +271,10 @@ public class RestServiceServlet extends HttpServlet {
 	}
 
 	public void handleFileDownload(HttpServletRequest request,
-			HttpServletResponse response, RestDownload result)
+			HttpServletResponse response, StreamObject result)
 			throws UnsupportedEncodingException, IOException {
 		
+		logger.info("handle file download " + result.getFileName() + "  " + result.getSize() + " " + result.getMimeType());
 		long modifiedSince = request.getDateHeader("If-Modified-Since");
 		
 		if (modifiedSince>0L) {
@@ -286,13 +309,15 @@ public class RestServiceServlet extends HttpServlet {
 		}
 		
 		response.setContentType(result.getMimeType());
-		int size = result.getSize();
-		response.setHeader("Content-Range", "bytes 0-"
-				+ Long.toString(size - 1L) + "/"
-				+ Long.toString(size));
-		response.setContentLength(size);
-		response.setHeader("Content-Length", Integer.toString(size));
+		long size = result.getSize();
 		
+		if (size!=0) {
+			response.setHeader("Content-Range", "bytes 0-"
+					+ Long.toString(size - 1L) + "/"
+					+ Long.toString(size));
+			response.setContentLength(new Long(size).intValue());
+			response.setHeader("Content-Length", Long.toString(size));
+		}
 		FileCopyUtils.copy(result.getInputStream(), response.getOutputStream());
 	}
 

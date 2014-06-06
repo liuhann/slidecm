@@ -2,19 +2,17 @@ package com.ever365.rest;
 
 import java.io.InputStream;
 
-public class RestDownload {
+public class StreamObject {
 	private long lastModified;
 	private String mimeType;
 	private String fileName;
 	private InputStream inputStream;
-	private int size;
+	private long size;
 	
-	
-	
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
-	public void setSize(int size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 	public long getLastModified() {

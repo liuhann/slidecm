@@ -78,7 +78,7 @@ Object tags = entityMap.get("tags");
 <div class="main">
 	<div class="slideview">
 		<%if(entityMap.get("ext").equals("png") || entityMap.get("ext").equals("jpg")) { %>
-			<div class="img" style="background-image: url('/pub/file/download?id=<%=entityMap.get("id")%>')">
+			<div class="img" style="background-image: url('/service/file/download?id=<%=entityMap.get("id")%>')">
 				<div class="upper" onclick="onUpper();">
 					点击进入上一页
 				</div>
@@ -87,7 +87,7 @@ Object tags = entityMap.get("tags");
 				</div>
 			</div>
 		<% } else {%>
-			<div class="img" style="background-image: url('/pub/file/download?id=<%=entityMap.get("tn")%>')">
+			<div class="img" style="background-image: url('/service/file/download?id=<%=entityMap.get("tn")%>')">
 			
 			</div>
 		<%} %>

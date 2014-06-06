@@ -125,7 +125,8 @@ public class MethodInvocation {
 		} catch (InvocationTargetException e) {
 			if (e.getTargetException()!=null && (e.getTargetException() instanceof RuntimeException)) {
 				throw (RuntimeException) e.getTargetException();
-			} 
+			} else {
+			}
 		}
 		return null;
 	}

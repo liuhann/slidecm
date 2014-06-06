@@ -1,26 +1,8 @@
 package com.ever365.auth;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ever365.utils.WebUtils;
@@ -48,7 +30,6 @@ public class TopOAuthProvider implements OAuthProvider {
 		 props.put("view","web");
   
 		 JSONObject jso = WebUtils.doPost(url, props);
-		 
 		 
 		 Map<String, Object> map = WebUtils.jsonObjectToMap(jso);
 		 

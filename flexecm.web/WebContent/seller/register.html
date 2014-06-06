@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>神购_购物抢购就来这里_爱生活更爱抢</title>
+
+<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
+<script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
+
+
+
+<link rel="StyleSheet" href="/css/shen.css"  type="text/css">
+
+
+<script type="text/javascript">
+
+function submit() {
+	
+	if ($("a.btn").hasClass("disabled")) {
+		return;
+	}
+	
+	$("span.red").removeClass("red").html("");
+	
+	var o = extract(form);
+	
+	if (o.name=="" || o.name.length<=1) {
+		$("span.name").html("商家名至少为2个字符").addClass("red");
+	}
+	
+	
+	if (o.shop=="" || o.shop.indexOf("http://")!=0) {
+		$("span.shop").html("请输入正确的店铺网址").addClass("red");
+	}
+	
+	if (o.pass=="") {
+		$("span.pass").html("请输入密码").addClass("red");
+	}
+	
+	if (o.pass!=o.pass_cfm) {
+		$("span.pass_cfm").html("2次输入密码必须一致").addClass("red");
+	}
+	
+	if ($("span.red").length>0) {
+		return;
+	} else {
+		$("a.btn").addClass("disabled");
+		
+		$("a.btn").html("正在注册中");
+		
+		$.post("/service/seller/register", o , function () {
+			location.href = "/seller/index.html";
+		});
+	}
+}
+
+
+function submitForm(uri, name) {
+	
+	var inputs = $("#" + name + " input");
+	
+	var o = {};
+	
+	inputs.each(function() {
+		o[$(this).attr("name")] = $(this).val();
+		
+	});
+	
+	$.post(uri, o, function(data) {
+		location.href = "/seller/index.html";
+	});
+}
+
+
+function extract(form) {
+	var o = {};
+	$(form).find("input, select").each(function() {
+		o[$(this).attr("name")] = $(this).val();
+	});
+	return o;
+}
+
+</script>
+
+
+</head>
+<body>
+
+
+
+<div id="site-map">
+	<div class="wrapper">
+		<div class="logo">
+				<img src="/img/shen.png">
+			</div>
+		<div class="item"  >
+			<a href="/index.html">返回首页</a>
+		</div>
+	</div>
+</div>
+
+<div class="wrapper" >
+	<div class="mainleft" id="seller-reg">
+		<div class="title">商家注册</div>
+		
+		<div id="form" class="form">
+			<div>
+				<span class="label">商家名称(必填)</span>
+				<input placeholder="作为登录名使用" name="name">  <span class="msg name">作为登录名使用</span>
+			</div>
+			<div>
+				<span class="label">店铺地址(必填)</span>
+				<input placeholder="请输入淘宝、天猫等地址" name="shop">  <span class="msg shop">请输入网店的首页地址(例如天猫、淘宝网店)</span>
+			</div> 
+			<div >
+				<span class="label">登录密码(必填)</span>
+				<input name="pass" type="password">  <span class="msg pass"></span>
+			</div> 
+			<div style="border-bottom: 1px solid #ccc;">
+				<span class="label">密码确认(必填)</span>
+				<input name="pass_cfm" type="password">  <span class="msg pass_cfm"></span>
+			</div> 
+			
+			<div>
+				请提供相关联系方式，以下信息也可用联系找回密码
+			</div>
+			
+			<div>
+				<span class="label">联系人姓名</span>
+				<input name="user">
+			</div>
+			
+			<div>
+				<span class="label">手机</span>
+				<input name="phone">
+			</div>
+			<div>
+				<span class="label">邮箱</span>
+				<input name="email">  
+			</div>
+			<div style="border-bottom: 1px solid #ccc;">
+				<span class="label">其他联系方式</span>
+				<input placeholder="最好提供QQ、微博、微信等联系方式方便沟通" name="other">
+			</div>
+			
+			<div>
+				<a class="btn" onclick="submit();">注册</a>
+			</div>
+		</div>
+	
+	</div>
+
+
+	<div class="side">
+	
+	</div>
+	
+</div>
+
+</body>
+</html>

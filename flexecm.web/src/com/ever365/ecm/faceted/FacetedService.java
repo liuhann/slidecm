@@ -31,16 +31,13 @@ public class FacetedService {
 	}
 
 	@RestService(uri="/faceted/set", method="POST")
-	public void setEntityFaceted(@RestParam(value="id") List<String> id, @RestParam(value="list") List<String> list) {
-		for (String string : id) {
-			Entity entity = entityDAO.getEntityById(string);
-			if (entity==null) throw new HttpStatusException(HttpStatus.BAD_REQUEST);
+	public void setEntityFaceted(@RestParam(value="id") String id, @RestParam(value="list") List<String> list) {
+		Entity entity = entityDAO.getEntityById(id);
+		if (entity==null) throw new HttpStatusException(HttpStatus.BAD_REQUEST);
 			
-			Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
-			properties.put(Model.FACETED, (Serializable) list);
-			
-			entityDAO.updateEntityProperties(entity, properties);
-		}
+		Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+		properties.put(Model.FACETED, (Serializable) list);
+		entityDAO.updateEntityProperties(entity, properties);
 	}
 
 	@RestService(uri="/faceted/add", method="POST")

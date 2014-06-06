@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 import org.springframework.util.FileCopyUtils;
 
@@ -19,6 +20,7 @@ import com.baidu.inf.iis.bcs.request.DeleteObjectRequest;
 import com.baidu.inf.iis.bcs.request.GetObjectRequest;
 import com.baidu.inf.iis.bcs.request.PutObjectRequest;
 import com.baidu.inf.iis.bcs.response.BaiduBCSResponse;
+import com.ever365.rest.StreamObject;
 
 /**
  * 根据ID读写文件流。  可以本地读写，也可以配置为百度云的地址
@@ -27,6 +29,7 @@ import com.baidu.inf.iis.bcs.response.BaiduBCSResponse;
  */
 public class ContentStore {
 
+	private static final String SLASH = "/";
 	private String appKey;
 	private String appSecret;
 	private String bcsHost;
@@ -35,6 +38,8 @@ public class ContentStore {
 	private BaiduBCS baiduBCS;
 	
 	private String localPath;
+	private static Logger logger = Logger.getLogger(ContentStore.class.getName());
+	
 	
 	public void setLocalPath(String localPath) {
 		this.localPath = localPath;
@@ -82,21 +87,32 @@ public class ContentStore {
 		}
 	}
 	
-	public InputStream getContentData(String uid) {
+	public StreamObject getContentData(String uid) {
+		StreamObject so = new StreamObject();
 		if (localPath!=null) {
 			File f = new File(localPath, uid);
 			if (f.exists()) {
 				try {
-					return new FileInputStream(f);
+					so.setFileName(f.getName());
+					so.setInputStream(new FileInputStream(f));
+					so.setLastModified(f.lastModified());
+					so.setSize(f.length());
+					return so;
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
 			}
 			return null;
 		} else {
+			if (!uid.startsWith(SLASH)) {
+				uid = SLASH + uid;
+			}
 			GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, uid);
 			BaiduBCSResponse<DownloadObject> result = getBCS().getObject(getObjectRequest);
-			return result.getResult().getContent();
+			so.setInputStream(result.getResult().getContent());
+			so.setLastModified(result.getResult().getObjectMetadata().getLastModified().getTime());
+			so.setSize(result.getResult().getObjectMetadata().getContentLength());
+			return so;
 		}
 	}
 	
@@ -125,7 +141,7 @@ public class ContentStore {
 			ObjectMetadata objectMetadata = new ObjectMetadata();
 			objectMetadata.setContentType(contentType);
 			objectMetadata.setContentLength(size);
-			String object = "/" + uid;
+			String object = SLASH + uid;
 			
 			BaiduBCS baiduBCS = getBCS();
 			

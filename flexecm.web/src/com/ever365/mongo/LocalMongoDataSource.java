@@ -12,7 +12,6 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
-
 /**
  * 
  * @author Administrator

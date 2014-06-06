@@ -1,8 +1,14 @@
 package com.ever365.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.ever365.mongo.MongoDataSource;
 import com.ever365.rest.AuthenticationUtil;
+import com.ever365.rest.HttpStatus;
+import com.ever365.rest.HttpStatusException;
 import com.ever365.rest.RestParam;
+import com.ever365.rest.RestResult;
 import com.ever365.rest.RestService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -14,11 +20,15 @@ public class AuthorityService {
 	private static final String P = "p";
 	private static final String U = "u";
 	public static final String ADMIN = "admin";
-	private MongoDataSource mongoDataSource;
+	private String ap;
+	private MongoDataSource dataSource;
 
-	public void setMongoDataSource(MongoDataSource mongoDataSource) {
-		this.mongoDataSource = mongoDataSource;
-		mongoDataSource.getCollection(COLL_AUTHORITIES).ensureIndex(U);
+	public void setAp(String ap) {
+		this.ap = ap;
+	}
+
+	public void setDataSource(MongoDataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	@RestService(method="GET", uri="/person/exist")
@@ -28,11 +38,10 @@ public class AuthorityService {
 	}
 
 	public DBCollection getAuthorityCollection() {
-		return mongoDataSource.getCollection(COLL_AUTHORITIES);
+		return dataSource.getCollection(COLL_AUTHORITIES);
 	}
-	
 
-	@RestService(method="GET", uri="/person/current")
+	@RestService(method="GET", uri="/person/current", authenticated=false)
 	public String getCurrentPerson() {
 		return AuthenticationUtil.getCurrentUser();
 	}
@@ -49,9 +58,6 @@ public class AuthorityService {
 			getAuthorityCollection().update(new BasicDBObject(U, AuthenticationUtil.getCurrentUser()), p);
 		}
 	}
-	
-	
-	
 	
 	@RestService(method="POST", uri="/person/add", runAsAdmin=true)
 	public boolean createPerson(@RestParam(value="userId")String userName,
@@ -82,6 +88,33 @@ public class AuthorityService {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	@RestService(method="POST", uri="/person/login", authenticated=false)
+	public RestResult login(@RestParam(value="name")String userName,
+			@RestParam(value="password")String password) {
+		if (userName.equals(ADMIN) && password.equals(ap)) {
+			RestResult rr = new RestResult();
+			Map<String, Object> session = new HashMap<String, Object>();
+			session.put(AuthenticationUtil.SESSION_CURRENT_USER, userName);
+			rr.setSession(session);
+			return rr;			
+		}
+		
+		DBObject one = getAuthorityCollection().findOne(new BasicDBObject(U, userName));
+		if (one==null) {
+			throw new HttpStatusException(HttpStatus.UNAUTHORIZED);
+		} else {
+			if (password.equals(one.get(P))) {
+				RestResult rr = new RestResult();
+				Map<String, Object> session = new HashMap<String, Object>();
+				session.put(AuthenticationUtil.SESSION_CURRENT_USER, userName);
+				rr.setSession(session);
+				return rr;
+			} else {
+				throw new HttpStatusException(HttpStatus.UNAUTHORIZED);
+			}	
 		}
 	}
 	

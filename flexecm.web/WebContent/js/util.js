@@ -228,7 +228,7 @@ function showAlert(text, func) {
 }
 
 function logout() {
-	location.href = "/logout";
+	location.href = "/service/person/logout";
 }
 
 function showMessage(m, h) {

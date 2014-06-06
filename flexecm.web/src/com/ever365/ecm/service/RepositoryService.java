@@ -21,7 +21,7 @@ import com.ever365.mongo.AutoIncrementingHelper;
 import com.ever365.rest.AuthenticationUtil;
 import com.ever365.rest.HttpStatus;
 import com.ever365.rest.HttpStatusException;
-import com.ever365.rest.RestDownload;
+import com.ever365.rest.StreamObject;
 import com.ever365.rest.RestParam;
 import com.ever365.rest.RestService;
 import com.ever365.utils.HTMLParser;
@@ -301,7 +301,7 @@ public class RepositoryService {
 		contentProperties.put(Model.PROP_FILE_THUMBNAIL, uid);
 		contentProperties.put(Model.PROP_FILE_THUMBNAIL_SIZE, size);
 		entityDAO.updateEntityProperties(entity, contentProperties);
-		return uid;
+		return entityid;
 	}
 	
 	@RestService(uri="/file/thumbnail/remove", method="POST", multipart=true)
@@ -327,22 +327,22 @@ public class RepositoryService {
 	}
 	
 	
-	@RestService(uri="/file/image", method="GET", authenticated=false, cached=true)
-	public RestDownload getFileThumbNail(
-			@RestParam(value="id")String contentDataId
+	@RestService(uri="/file/image", method="GET", authenticated=false)
+	public StreamObject getFileThumbNail(
+			@RestParam(value="id")String id
 	) {
-		RestDownload rd = new RestDownload();
-		InputStream is = contentStore.getContentData(contentDataId);
-		
-		if (is!=null) {
-			rd.setFileName("thumbnail.png");
-			rd.setInputStream(is);
-			return rd;
-		} else {
-			throw new HttpStatusException(HttpStatus.INSUFFICIENT_STORAGE);
+		Entity entity = entityDAO.getEntityById(id);
+		if (entity==null) {
+			throw new HttpStatusException(HttpStatus.NOT_FOUND);
 		}
+		
+		String fileUrl = entity.getPropertyStr(Model.PROP_FILE_THUMBNAIL);
+		StreamObject so = contentStore.getContentData(fileUrl);
+		so.setFileName(entity.getName());
+		so.setMimeType(Mimetypes.getInstance().getMimetype(entity.getPropertyStr(Model.PROP_FILE_EXT)));
+
+		return so;
 	}
-	
 	
 	public void putStremToFile(InputStream is, Long size, Repository repo,
 			Entity entity) {
@@ -370,7 +370,6 @@ public class RepositoryService {
 				null, Model.TYPE_FILE, childNodeName, null, specialProperties);
 		return entity;
 	}
-	
 	
 	public Entity checkParent(String parentEntityId) {
 		if (parentEntityId==null) {
@@ -484,28 +483,26 @@ public class RepositoryService {
 	
 	@RestService(uri="/file/moveToTrash", method="POST")
 	public void moveToTrash(
-			@RestParam(value="files", required=true) List<String> files) {
+			@RestParam(value="id", required=true) String id) {
 		
-		for (String id : files) {
-			Entity entity = entityDAO.getEntityById(id);
-			if (entity==null) continue;
-			
-			if (entity.getProperty(Model.PROP_ORIGIN_NAME)!=null) {
-				continue;
-			}
-			
-			Repository repo = repositoryDAO.getRepository(entity.getRepository().toString(), false);
-			
-			Map<QName, Serializable> map = new HashMap<QName, Serializable>();
-			
-			String randomName = UUID.generate();
-			map.put(Model.PROP_ORIGIN_NAME, entity.getName());
-			map.put(Model.PROP_ORIGIN_PATH, entity.getParentId());
-			map.put(Model.PROP_NAME, randomName);
-			map.put(Model.PROP_MODIFIED, System.currentTimeMillis());
-			map.put(Model.PROP_MODIFIER, AuthenticationUtil.getCurrentUser());
-			entityDAO.move(entity, repo.getTrashEntity(), map);
+		Entity entity = entityDAO.getEntityById(id);
+		if (entity==null) return;
+		
+		if (entity.getProperty(Model.PROP_ORIGIN_NAME)!=null) {
+			return;
 		}
+		
+		Repository repo = repositoryDAO.getRepository(entity.getRepository().toString(), false);
+		
+		Map<QName, Serializable> map = new HashMap<QName, Serializable>();
+		
+		String randomName = UUID.generate();
+		map.put(Model.PROP_ORIGIN_NAME, entity.getName());
+		map.put(Model.PROP_ORIGIN_PATH, entity.getParentId());
+		map.put(Model.PROP_NAME, randomName);
+		map.put(Model.PROP_MODIFIED, System.currentTimeMillis());
+		map.put(Model.PROP_MODIFIER, AuthenticationUtil.getCurrentUser());
+		entityDAO.move(entity, repo.getTrashEntity(), map);
 	}
 	
 	@RestService(uri="/entity/trash/list", method="GET")
@@ -546,15 +543,13 @@ public class RepositoryService {
 	
 	@RestService(uri="/file/move", method="POST")
 	public void move(
-			@RestParam(value="srcPath",required=true) List<String> srcPaths,
-			@RestParam(value="targetPath")String targetPath) {
+			@RestParam(value="src",required=true) String path,
+			@RestParam(value="target")String targetPath) {
 		Entity target = getNotNullEntity(targetPath);
 		
-		for (String path : srcPaths) {
-			Entity src = entityDAO.getEntityById(path);
-			if (src == null) continue;
-			entityDAO.move(src, target, null);
-		}
+		Entity src = entityDAO.getEntityById(path);
+		if (src == null) return;
+		entityDAO.move(src, target, null);
 	}
 	
 	/**
@@ -859,21 +854,19 @@ public class RepositoryService {
 	*/
 	
 	@RestService(uri="/file/copy", method="POST")
-	public void copy(@RestParam(value="srcs",required=true) List<String> srcPaths, @RestParam(value="target")String targetId
+	public void copy(@RestParam(value="src",required=true) String path, @RestParam(value="target")String targetId
 			) {
 		Entity target = getNotNullEntity(targetId);
-		for (String path : srcPaths) {
-			Entity src = entityDAO.getEntityById(path);
-			if (src == null) continue; 
-			try {
-				entityDAO.copy(src, target, null);
-			} catch (Exception e) {
-			}
+		Entity src = entityDAO.getEntityById(path);
+		if (src == null) return; 
+		try {
+			entityDAO.copy(src, target, null);
+		} catch (Exception e) {
 		}
 	}
 	
 	@RestService(uri="/file/download", method="GET", authenticated=false)
-	public RestDownload getContentData(@RestParam(value="id", required=true)String id) {
+	public StreamObject getContentData(@RestParam(value="id", required=true)String id) {
 		
 		Entity entity = entityDAO.getEntityById(id);
 		
@@ -883,20 +876,12 @@ public class RepositoryService {
 		
 		String fileUrl = entity.getPropertyStr(Model.PROP_FILE_URL);
 		
-		InputStream is = contentStore.getContentData(fileUrl);
-		
-		
-		if (is!=null) {
-			RestDownload  rd = new RestDownload();
-			rd.setFileName(entity.getName());
-			rd.setInputStream(is);
-			rd.setSize(new Integer(entity.getPropertyStr(Model.PROP_FILE_SIZE)));
-			rd.setLastModified(entity.getModified());
-			rd.setMimeType(Mimetypes.getInstance().getMimetype(entity.getPropertyStr(Model.PROP_FILE_EXT)));
-			return rd;
-		} else {
-			throw new HttpStatusException(HttpStatus.INSUFFICIENT_STORAGE);
+		StreamObject so = contentStore.getContentData(fileUrl);
+		if (so!=null) {
+			so.setFileName(entity.getName());
+			so.setMimeType(Mimetypes.getInstance().getMimetype(entity.getPropertyStr(Model.PROP_FILE_EXT)));
 		}
+		return so;
 	}
 	
 	@RestService(uri="/file/filter", method="GET")

@@ -112,10 +112,11 @@ function login() {
 		$("#logon-result").html("密码不能为空"); return;
 	}
 	
-	$.post("/login", {
+	$.post("/service/person/login", {
 		'name': $("#user_login").val(),
 		'password': $("#user_pass").val()
-	},  function() {
+	},  function(r) {
+		alert(r);
 		person = $("#user_login").val();
 		userLogon(person);
 		closeDialog();

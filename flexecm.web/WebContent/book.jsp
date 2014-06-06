@@ -25,12 +25,11 @@ Long time = (Long)sale.get("time");
 Date timed = new Date(time);
 Date left = new Date((Long)sale.get("time") - System.currentTimeMillis());
 
-
 %>
 <title></title>
 
 <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-<link rel="StyleSheet" href="/css/common.css"  type="text/css">
+<link rel="StyleSheet" href="/css/preview.css"  type="text/css">
 <script src="/js/common.js"></script>
 </head>
 <body>
@@ -109,10 +108,7 @@ Date left = new Date((Long)sale.get("time") - System.currentTimeMillis());
 	<div class="block">
 		<%=sale.get("content") %>
 	</div>
-	
-
 </div>
-
 
 
 <div id="modal" class="">

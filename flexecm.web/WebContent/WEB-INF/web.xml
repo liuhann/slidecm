@@ -39,12 +39,11 @@
   
   
   <servlet>
-    <display-name>OAuthServlet</display-name>
     <servlet-name>OAuthServlet</servlet-name>
-    <servlet-class>com.ever365.oauth.OAuthServlet</servlet-class>
+    <servlet-class>com.ever365.auth.OAuthServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>OAuthServlet</servlet-name>
-    <url-pattern>/oauth</url-pattern>
+    <url-pattern>/oauth/*</url-pattern>
   </servlet-mapping>
 </web-app>

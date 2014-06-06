@@ -290,11 +290,12 @@ function toggleDropDown() {
 	}
 }
 
-function copy() {
+function copy(id) {
 	hideDropDown();
 	showDialog("copy-move-dialog");
 	$("#copyToUL>li").remove();
 	$("#copy-move-dialog").data("action", "copy");
+	$("#copy-move-dialog").data("src", id);
 	$("#copyToUL>li").remove();
 	$("#copy-move-dialog div.title span").html("复制文件到");
 	
@@ -302,9 +303,10 @@ function copy() {
 	//addDialogTreeNode(null, "_public_root", "公共目录", "public", true);
 	//addDialogTreeNode(null, "_shared_root", "分享的目录", "shared", true);
 }
-function move() {
+function move(id) {
 	hideDropDown();
 	$("#copy-move-dialog").data("action", "move");
+	$("#copy-move-dialog").data("src", id);
 	showDialog("copy-move-dialog");
 	$("#copyToUL>li").remove();
 	$("#copy-move-dialog div.title span").html("移动文件到");
@@ -389,17 +391,12 @@ function confirmCopyOrMove() {
 			return;
 		}
 	}
-	var srcs = getCheckedFiles();
-	var srcids = [];
-	for ( var i = 0; i < srcs.length; i++) {
-		srcids.push(srcs[i]._id);
-	}
+	var src = $("#copy-move-dialog").data("src");
 	
 	if ($("#copy-move-dialog").data("action")=="copy") {
 		hideDialog();
-		showPenddingMsg("正在拷贝" + srcs.length + "个文件中");
 		$.post("/service/file/copy", {
-			"srcs" : JSON.stringify(srcids),
+			"src" : src,
 			"target": targetId
 		}, function() {
 			hideDialog();
@@ -414,10 +411,9 @@ function confirmCopyOrMove() {
 		});
 	} else if ($("#copy-move-dialog").data("action")=="move") {
 		hideDialog();
-		showPenddingMsg("正在移动" + srcs.length + "个文件中");
 		$.post("/service/file/move", {
-			"srcPath" : JSON.stringify(srcids),
-			"targetPath": targetId
+			"src" : src,
+			"target": targetId
 		}, function() {
 			hideDialog();
 			refreshFolder("文件已经移动完成");
@@ -597,13 +593,13 @@ function clearTrash() {
 
 
 function confirmName() {
-	var fileData = $("#name-dialog").data("file");
+	var id = $("#name-dialog").data("file");
 	var newName = $("#name-dialog input.name").val();
 	if (newName=="") {
 		$("#name-dialog .msg").html("文件名称不能为空");
 		return;
 	}
-	if (fileData==null) { //add Folder
+	if (id==null) { //add Folder
 		showPenddingMsg("正在创建文件夹");
 		$("name-dialog .msg").html();
 		$.post("/service/folder/create", {
@@ -620,7 +616,7 @@ function confirmName() {
 	} else {
 		showPenddingMsg("正在重命名");
 		$.post("/service/file/rename", {
-			"src": fileData._id,
+			"src": id,
 			"newName": newName
 		}, function() {
 			if (currentEntity.type="s:file") {
@@ -637,28 +633,23 @@ function confirmName() {
 	}
 }
 
-function rename() {
-	var files = getCheckedFiles();
-	if (files.length==0) return;
-	$("#name-dialog").data("file", files[0]);
+function rename(id) {
+	$("#name-dialog").data("file", id);
 	$("#name-dialog input.name").val(files[0].name);
 	showDialog("name-dialog");
 }
 
-function remove(files) {
-	if (files==null) {
-		files = getCheckedFiles();
-	}
-	var ids = Utils.arrayProject(files, "_id");
+function remove(id) {
 	$.post("/service/file/moveToTrash",
-			{"files":ids},
+			{
+				"id":id
+			},
 			function() {
 				$("#listing ul.files li.checked").slideUp('fast');
 				if (currentEntity.type=="s:file") {
 					parent();
 				}
 				showMessage("文件已经移除到回收站");
-				//listFolder(currentEntity._id, "已经移除" + files.length + "个文件到回收站");
 			}
 	);
 }
@@ -859,30 +850,6 @@ function renderFileItem(cloned, entity) {
 			var entity = $(this).parentData("entity");
 			viewFileDetail(entity);
 		});
-		/*
-		if (entity.baidu) {
-			var baidulink = $("<a><img src='../img/baiduyun.png'></a>");
-			baidulink.click(function() {
-				var entity = $(this).parentData("entity");
-				window.open(entity.baidu);
-			});
-			cloned.find(".name").after(baidulink);
-		}
-		if (entity.y115) {
-			var link115 = $("<a><img src='../img/115.png'></a>");
-			link115.click(function() {
-				var entity = $(this).parentData("entity");
-				window.open(entity.y115);
-			});
-			cloned.find(".name").after(link115);
-		}
-		if (entity.url) {
-			cloned.find(".name").click(function() {
-				var entity = $(this).parentData("entity");
-				window.open("/service/file/download?id=" + entity._id);
-			});
-		}
-		*/
 	}
 	
 	if(entity.keep!=null && entity.keep.indexOf(currentUser)>-1) {
@@ -899,21 +866,21 @@ function renderFileItem(cloned, entity) {
 		faceted();
 	});
 	
-	cloned.find("a.move").click(function(t) {
-		markContainer($(this));
-		move();
+	cloned.find("a.move").click(function() {
+		var entity = $(this).parentData("entity");
+		move(entity._id);
 	});
 	cloned.find("a.copy").click(function(t) {
-		markContainer($(this));
-		copy();
+		var entity = $(this).parentData("entity");
+		copy(entity._id);
 	});
 	cloned.find("a.rename").click(function(t) {
-		markContainer($(this));
-		rename();
+		var entity = $(this).parentData("entity");
+		rename(entity._id);
 	});
-	cloned.find("a.trash").click(function(t) {
-		markContainer($(this));
-		remove();
+	cloned.find("a.trash").click(function() {
+		var entity = $(this).parentData("entity");
+		remove(entity._id);
 	});
 	
 	cloned.find("a.keep").click(function() {
@@ -936,6 +903,7 @@ function viewFileDetail(entity) {
 	$("#listing ul.files").hide();
 	$("#file-detail").show();
 	
+	$("#file-detail").data("entity", entity);
 	$("#file-detail .name").html(entity.name);
 	$("#file-detail .created").html(Utils.formatTime(entity.created));
 	$("#file-detail .modified").html(Utils.formatTime(entity.modified));
@@ -944,7 +912,7 @@ function viewFileDetail(entity) {
 	$("#file-detail .owner").html(entity.owner);
      cleanPreview();
      if (entity.tn) {
-    	 $('#preview-img').attr("src", "/service/file/image?id=" + entity.tn);
+    	 $('#preview-img').attr("src", "/service/file/image?id=" + entity._id);
     	 $("#no-preview").hide();
      } else {
     	 $('#preview-img').attr("src", "../img/spacer.gif");
@@ -1498,18 +1466,16 @@ function pageFaceted() {
 }
 
 
-function faceted(files) {
-	hideDropDown();
-	if (files==null) {
-		files = getCheckedFiles();
+function faceted(entity) {
+	if (entity==null) {
+		entity = $("#file-detail").data("entity");
 	}
-	if (files.length==0) return;
 	$("#faceted-dialog ul.faceted-list li").remove();
-	
-	if (files[0].faceted) {
-		for ( var i = 0; i < files[0].faceted.length; i++) {
-			if (files[0].faceted[i]=="") continue;
-			addFacetedLi(files[0].faceted[i]);
+	$("#faceted-dialog").data("entity", entity);
+	if (entity.faceted) {
+		for ( var i = 0; i < entity.faceted.length; i++) {
+			if (entity.faceted[i]=="") continue;
+			addFacetedLi(entity.faceted[i]);
 		}
 	}
 	
@@ -1546,11 +1512,7 @@ function newFaceted() {
 }
 
 function confirmFacetedSet() {
-	var files = getCheckedFiles();
-	var ids = [];
-	for ( var i = 0; i < files.length; i++) {
-		ids.push(files[i]._id);
-	}
+	var entity = $("#faceted-dialog").data("entity");
 	var faceteds = [];
 	
 	$("#faceted-dialog ul.faceted-list li").each(function() {
@@ -1558,13 +1520,14 @@ function confirmFacetedSet() {
 	}) ;
 	
 	$.post("/service/faceted/set", {
-		"id": JSON.stringify(ids),
+		"id": entity._id,
 		"list": JSON.stringify(faceteds)
 	}, function() {
 		closeDialog();
 		refreshFolder("已为" +files.length + "个文件设置标签" );
 	});
 }
+
 
 function confirmAddFaceted() {
 	var val =  $("#newFacetedField").val();

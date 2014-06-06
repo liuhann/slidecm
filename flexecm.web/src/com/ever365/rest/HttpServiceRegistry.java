@@ -38,14 +38,9 @@ public class HttpServiceRegistry {
 				MethodInvocation mi = new MethodInvocation();
 				mi.setMethod(method);
 				mi.setService(object);
-				mi.setTransactional(rs.transactional());
 				mi.setRunAsAdmin(rs.runAsAdmin());
 				mi.setMultipart(rs.multipart());
 				mi.setUri(rs.uri());
-				mi.setCached(rs.cached());
-				mi.setCachePublic(rs.cachePublic());
-				mi.setCacheExpire(rs.cacheExpire());
-				mi.setUseDAOCache(rs.useDAOCache());
 				mi.setAuthenticated(rs.authenticated());
 				Annotation[][] paramAnno = method.getParameterAnnotations();
 				Class<?>[] paramTypes = method.getParameterTypes();

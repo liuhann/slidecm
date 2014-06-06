@@ -2,8 +2,6 @@
 $(document).ready(function(){
 	
 	toList();
-	
-	
 	attachEvent($(".cusr"), function() {
 		$("#listing").hide();
 		$("#user-form").show();

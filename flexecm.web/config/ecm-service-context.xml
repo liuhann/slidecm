@@ -8,12 +8,16 @@
 		<property name="facetedDAO" ref="facetedDao"></property>
 		<property name="entityDAO" ref="entityDao"></property>
 	</bean>
+
+	<bean id="rest.manage" class="com.ever365.ecm.ManageService">
+	    <property name="dataSource" ref="ecmDataSource"></property>
+	</bean>	
 	
 	<bean id="rest.repository" class="com.ever365.ecm.service.RepositoryService">
 	    <property name="entityDAO" ref="entityDao"></property>
 	    <property name="repositoryDAO" ref="repositoryDao"></property>
 	    <property name="incrementingHelper" ref="autoIncrementingHelper"></property>
-	    <property name="contentStore" ref="contentStore"></property>
+	    <property name="contentStore" ref="ecmFileStore"></property>
 	</bean>
 	
 	<bean id="rest.public" class="com.ever365.ecm.service.PublicService">
@@ -22,59 +26,76 @@
 	</bean>
 	
 	<bean id="entityDao" class="com.ever365.ecm.entity.EntityDAOImpl" init-method="init">
-	    <property name="dataSource" ref="dataSource"></property>
+	    <property name="dataSource" ref="ecmDataSource"></property>
 	    <property name="autoIncrementingHelper" ref="autoIncrementingHelper"></property>
-	    <property name="contentStore" ref="contentStore"></property>
+	    <property name="contentStore" ref="ecmFileStore"></property>
 	</bean>
 	
 	<bean id="repositoryDao" class="com.ever365.ecm.repo.RepositoryDAOImpl">
-		<property name="dataSource" ref="dataSource"></property>
+		<property name="dataSource" ref="ecmDataSource"></property>
 		<property name="entityDAO" ref="entityDao"></property>
 	</bean>
 	
 	<bean id="facetedDao" class="com.ever365.ecm.faceted.FacetedDAOImpl">
-		<property name="dataSource" ref="dataSource"></property>
+		<property name="dataSource" ref="ecmDataSource"></property>
 	</bean>
 	
 		
 	<bean id="autoIncrementingHelper" class="com.ever365.mongo.AutoIncrementingHelper">
-  		<property name="dataSource" ref="dataSource"></property>
+  		<property name="dataSource" ref="ecmDataSource"></property>
   	</bean>
 	
-	<bean id="dataSource" class="com.ever365.mongo.LocalMongoDataSource">
+	
+	<!-- 
+	<bean id="ecmDataSource" class="com.ever365.mongo.LocalMongoDataSource">
 	    <property name="host">
-	    	<value>${mongodb.host}</value>
+	    	<value>mongo.duapp.com</value>
 	    </property>
 	    <property name="port">
-	    	<value>${mongodb.port}</value>
+	    	<value>8908</value>
 	    </property>
 	    <property name="db">
-	    	<value>${mongodb.dbname}</value>
+	    	<value>jlFXhWgDafRpUOifnWLj</value>
 	    </property>
 	    <property name="username">
-	    	<value>${app.key}</value>
+	    	<value>i29vPdGTUyjE6HD0xaKsfq6Y</value>
 	    </property>
 	    <property name="password">
-	    	<value>${app.secret}</value>
+	    	<value>bHAU6NrGLVOD710kHinHMUjeeC4UVoiN</value>
 	    </property>
 	</bean>
 	
 	
-	 <bean id="contentStore" class="com.ever365.common.ContentStore">
-	     <property name="localPath">
-	       <value>D:/temp</value>  
-	     </property>
+	 <bean id="ecmFileStore" class="com.ever365.common.ContentStore">
 	     <property name="appKey">
-	         <value>${app.key}</value>
+	         <value>i29vPdGTUyjE6HD0xaKsfq6Y</value>
 	     </property>
 	     <property name="appSecret">
-	         <value>${app.secret}</value>
+	         <value>bHAU6NrGLVOD710kHinHMUjeeC4UVoiN</value>
 	     </property>
 	     <property name="bcsHost">
-	         <value>${bcs.host}</value>
+	         <value>bcs.duapp.com</value>
 	     </property>
 	     <property name="bucketName">
-	         <value>${bcs.bucket.name}</value>
+	         <value>slide8</value>
+	     </property>
+	 </bean>
+	 -->
+	<bean id="ecmDataSource" class="com.ever365.mongo.LocalMongoDataSource">
+	    <property name="host">
+	    	<value>127.0.0.1</value>
+	    </property>
+	    <property name="port">
+	    	<value>27017</value>
+	    </property>
+	    <property name="db">
+	    	<value>ecm</value>
+	    </property>
+	</bean>
+	
+	<bean id="ecmFileStore" class="com.ever365.common.ContentStore">
+	     <property name="localPath">
+	         <value>d:/temp</value>
 	     </property>
 	 </bean>
 	
