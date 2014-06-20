@@ -18,7 +18,6 @@ public class AuthenticationUtil
 	
     private static ThreadLocal<String> currentUser = new ThreadLocal<String>();
     
-    
 	public static List<String> getCurrentAuthorities()  {
 		List<String> r = new ArrayList<String>();
 		r.add(currentUser.get());

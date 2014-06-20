@@ -59,30 +59,16 @@ public class RestServiceServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		setUser(request);
-		String strPath = getServicePath(request);
-		
-		MethodInvocation handler = registry.getGet(strPath);
-		if (handler==null) {
-			response.setStatus(404);
-			return;
-		}
-		if (handler.isAuthenticated() && AuthenticationUtil.getCurrentUser()==null) {
-			response.setStatus(401);
-			return;
-		}
-		if (handler.isRunAsAdmin() && !AuthenticationUtil.isAdmin()) {
-			response.setStatus(403);
-			return;
-		}
-		
-		Enumeration paramNames = request.getParameterNames();
+		MethodInvocation handler = null;
 		Map<String, Object> args = new HashMap<String, Object>();
-		while (paramNames.hasMoreElements()) {
-			String name = (String) paramNames.nextElement();
-			args.put(name, URLDecoder.decode(request.getParameter(name), "UTF-8"));
-		}
-		
 		try {
+			handler = getMethod(request);
+			
+			Enumeration paramNames = request.getParameterNames();
+			while (paramNames.hasMoreElements()) {
+				String name = (String) paramNames.nextElement();
+				args.put(name, URLDecoder.decode(request.getParameter(name), "UTF-8"));
+			}
 			Object result = handler.execute(args);
 			render(request, response, result);
 		} catch (Exception e) {
@@ -115,8 +101,8 @@ public class RestServiceServlet extends HttpServlet {
 	}
 
 	public void setUser(HttpServletRequest request) {
-		Object user = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
 		AuthenticationUtil.setCurrentUser(null);
+		Object user = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
 		if (user!=null) {
 			AuthenticationUtil.setCurrentUser((String)user);
 		} else {
@@ -124,11 +110,12 @@ public class RestServiceServlet extends HttpServlet {
 				user = cookieService.getCurrentUser(request);
 				if (user!=null) {
 					AuthenticationUtil.setCurrentUser((String)user);
+					request.getSession().setAttribute(AuthenticationUtil.SESSION_CURRENT_USER, user);
 				} 
 			}
 		}
 	}
-
+	
 	@Override
 	protected void doPut(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -141,22 +128,7 @@ public class RestServiceServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		setUser(request);
 		try {
-			String strPath = getServicePath(request);
-
-			MethodInvocation handler = registry.getPost(strPath);
-			
-			if (handler==null) {
-				response.setStatus(404);
-				return;
-			}
-			if (handler.isAuthenticated() && AuthenticationUtil.getCurrentUser()==null) {
-				response.setStatus(401);
-				return;
-			}
-			if (handler.isRunAsAdmin() && !AuthenticationUtil.isAdmin()) {
-				response.setStatus(403);
-				return;
-			}
+			MethodInvocation handler = getMethod(request);
 			
 			Map<String, Object> args = new HashMap<String, Object>();
 			
@@ -187,7 +159,6 @@ public class RestServiceServlet extends HttpServlet {
 			
  			Object result = handler.execute(args);
 			if (result==null) {
-				//logger.info("Request: " + request.getMethod() + "   " + request.getPathInfo() + "?" + request.getQueryString());
 				response.setStatus(200);
 			} else {
 				render(request, response, result);
@@ -197,7 +168,7 @@ public class RestServiceServlet extends HttpServlet {
 				response.getWriter().println(extractError(e));
 				response.sendError(((HttpStatusException)e).getCode(), ((HttpStatusException)e).getDescription());
 			} else {
-				response.sendError(502);
+				response.sendError(500);
 				e.printStackTrace();
 				response.getWriter().println(extractError(e));
 			}
@@ -206,8 +177,30 @@ public class RestServiceServlet extends HttpServlet {
 		}
 	}
 
-	public void doCleanUp() {
+	public MethodInvocation getMethod(HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		String strPath = getServicePath(request);
 
+		MethodInvocation handler = registry.getMethod(request.getMethod(), strPath);
+		
+		if (handler==null) {
+			throw new HttpStatusException(HttpStatus.NOT_FOUND);
+		}
+		if (handler.isAuthenticated() && AuthenticationUtil.getCurrentUser()==null) {
+			throw new HttpStatusException(HttpStatus.UNAUTHORIZED);
+		}
+		if (handler.isRunAsAdmin() && !AuthenticationUtil.isAdmin()) {
+			throw new HttpStatusException(HttpStatus.FORBIDDEN);
+		}
+		if (handler.isWebcontext()) {
+			WebContext.setRemoteAddr(WebContext.getRemoteAddr(request));
+		}
+		return handler;
+	}
+
+	public void doCleanUp() {
+		AuthenticationUtil.clearCurrentSecurityContext();
+		WebContext.setRemoteAddr(null);
 	}
 
 	public String extractError(Exception e) {

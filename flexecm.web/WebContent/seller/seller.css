@@ -151,9 +151,12 @@ header, div.header {
 	border: 1px solid #E6E6E6;
 	padding: 5px 4px;
 	text-align: center;
-	height: 60px;
 	vertical-align: middle;
 }
+.content .view  table.sales-table td {
+	height: 60px;
+}
+
 .content .view  table td.name {
 	text-align: left;
 }

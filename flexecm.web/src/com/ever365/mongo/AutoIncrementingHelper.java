@@ -39,4 +39,15 @@ public class AutoIncrementingHelper {
 		return (Long) dbo.get("seq");
 	}
 	
+	public Long getCurrentSequence(String name) {
+		BasicDBObject query = new BasicDBObject("_id", name);
+		
+		DBObject q = dataSource.getCollection("counters").findOne(query);
+		if (q==null) {
+			return -1L;
+		} else {
+			return (Long) q.get("seq");
+		}
+	}
+	
 }

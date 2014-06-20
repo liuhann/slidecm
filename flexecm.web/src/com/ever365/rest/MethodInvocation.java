@@ -34,24 +34,20 @@ public class MethodInvocation {
 	private Method method;
 	private String uri;
 	private Object service;
-	private boolean transactional;
+	
 	private boolean runAsAdmin;
 	private boolean multipart;
 	private boolean authenticated;
 	
 	private boolean cached;
-	private boolean cachePublic;
-	private int cacheExpire;
-	private boolean useDAOCache;
+	private boolean webcontext;
 	
-	public boolean useDAOCache() {
-		return useDAOCache;
+	public boolean isWebcontext() {
+		return webcontext;
 	}
-
-	public void setUseDAOCache(boolean useDAOCache) {
-		this.useDAOCache = useDAOCache;
+	public void setWebcontext(boolean webcontext) {
+		this.webcontext = webcontext;
 	}
-	
 	public boolean isAuthenticated() {
 		return authenticated;
 	}
@@ -65,30 +61,6 @@ public class MethodInvocation {
 
 	public void setCached(boolean cached) {
 		this.cached = cached;
-	}
-
-	public boolean isCachePublic() {
-		return cachePublic;
-	}
-
-	public void setCachePublic(boolean cachePublic) {
-		this.cachePublic = cachePublic;
-	}
-
-	public int getCacheExpire() {
-		return cacheExpire;
-	}
-
-	public void setCacheExpire(int cacheExpire) {
-		this.cacheExpire = cacheExpire;
-	}
-
-	public boolean isTransactional() {
-		return transactional;
-	}
-
-	public void setTransactional(boolean transactional) {
-		this.transactional = transactional;
 	}
 
 	private LinkedHashMap<String, Class> paramsMap = new LinkedHashMap<String, Class>();

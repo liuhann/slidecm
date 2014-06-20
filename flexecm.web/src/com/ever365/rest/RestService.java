@@ -10,4 +10,5 @@ public @interface RestService {
 	boolean runAsAdmin() default false;
 	boolean multipart() default false;
 	boolean authenticated() default true;
+	boolean webcontext() default false;
 }

@@ -161,7 +161,9 @@ function getSalelist() {
 							var cloned = $(".books-table tr.template").clone();
 							cloned.addClass("item").removeClass("template");
 							cloned.find(".user").html(book.u);
-							
+							cloned.find(".time").html(formateTime(book.t));
+							cloned.find(".code").html(book.o);
+							//cloned.find(".ip").html(book.c);
 							$("#books-list table").append(cloned);
 						}
 					});

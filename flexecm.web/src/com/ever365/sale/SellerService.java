@@ -24,6 +24,7 @@ import com.ever365.rest.RestParam;
 import com.ever365.rest.RestResult;
 import com.ever365.rest.RestService;
 import com.ever365.rest.StreamObject;
+import com.ever365.rest.WebContext;
 import com.ever365.utils.MapUtils;
 import com.ever365.utils.StringUtils;
 import com.mongodb.BasicDBObject;
@@ -33,21 +34,29 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
 public class SellerService {
-	private static final String FIELD_BOOK_CODE = "o";
-	private static final String FIELD_BOOK_TIME = "t";
-	private static final String FIELD_BOOK_USER = "u";
-	private static final String FIELD_BOOK_SALE_ID = "m";
+	
 	private static final String COLL_BOOKS = "books";
 	private static final String COLL_SALES = "sales";
 	private static final String COLL_SELLER = "sellers";
 	
+	
+	private static final String FIELD_BOOK_TIME = "t";
+	private static final String FIELD_BOOK_USER = "u";
+	private static final String FIELD_BOOK_SALE_ID = "m";
+	
+	private static final String FIELD_PRICE = "price";
+	private static final String FIELD_TITLE = "title";
+	private static final String FIELD_SELLER = "seller";
+	private static final String FIELD_BOOK_CODE = "o";
 	private static final String FIELD_COUNT = "count";
-	private static final String STRING_EMPTY = "";
 	private static final String FIELD_IS_ONLINE = "online";
 	private static final String FIELD_ONLINE_SEQ = "seq";
 	private static final String FIELD_CONTENT = "content";
 	private static final String FIELD_ID = "_id";
-	private static final String EMPTY = STRING_EMPTY;
+
+	
+	private static final String STRING_EMPTY = "";
+	
 	private MongoDataSource dataSource;
 	private ContentStore contentStore;
 	private AutoIncrementingHelper incrementingHelper;
@@ -134,17 +143,17 @@ public class SellerService {
 		Map<String, Object> session = new HashMap<String, Object>();
 		session.put(AuthenticationUtil.SESSION_CURRENT_USER, null);
 		rr.setSession(session);
+		rr.setRedirect("/");
 		return rr;
 	}
 	
 	@RestService(method="GET", uri="/seller/info")
 	public Map<String, Object> getSellerInfo() {
 		DBCollection coll = dataSource.getCollection(COLL_SELLER);
-
 		DBObject exist = coll.findOne(new BasicDBObject("name",AuthenticationUtil.getCurrentUser()));
 		if (exist==null) {
 			throw new HttpStatusException(HttpStatus.BAD_REQUEST);
-		} else{
+		} else {
 			return exist.toMap();
 		}
 	}
@@ -152,26 +161,25 @@ public class SellerService {
 	@RestService(method="POST", uri="/seller/request")
 	public void request(
 			@RestParam(required=false, value="id") String id,
-			@RestParam(required=true, value="title") String title,
+			@RestParam(required=true, value=FIELD_TITLE) String title,
 			@RestParam(required=true, value="subtitle") String subtitle,
 			@RestParam(required=true, value=FIELD_COUNT) String count,
-			@RestParam(required=true, value="price") String price,
+			@RestParam(required=true, value=FIELD_PRICE) String price,
 			@RestParam(required=true, value="oprice") String oprice,
 			@RestParam(required=true, value="time") String time,
 			@RestParam(required=true, value="until") String until,
 			@RestParam(required=false, value="preview") String preview,
 			@RestParam(required=true, value=FIELD_CONTENT) String content
 			) {
-		
 		try {
 			DBCollection coll = dataSource.getCollection(COLL_SALES);
 			DBObject dbo = new BasicDBObject();
-			dbo.put("seller", AuthenticationUtil.getCurrentUser());
+			dbo.put(FIELD_SELLER, AuthenticationUtil.getCurrentUser());
 			
-			dbo.put("title", title);
+			dbo.put(FIELD_TITLE, title);
 			dbo.put("subtitle", subtitle);
 			dbo.put(FIELD_COUNT, new Integer(count));
-			dbo.put("price", new Integer(price));
+			dbo.put(FIELD_PRICE, new Integer(price));
 			dbo.put("time", StringUtils.parseDate(time).getTime());
 			dbo.put(FIELD_IS_ONLINE, false);
 			dbo.put("oprice", new Integer(oprice));
@@ -181,8 +189,8 @@ public class SellerService {
 			
 			dbo.put(FIELD_CONTENT, contentId);
 			
-			if (until.equals(EMPTY)) {
-				dbo.put("until", EMPTY);
+			if (until.equals(STRING_EMPTY)) {
+				dbo.put("until", STRING_EMPTY);
 			} else {
 				dbo.put("until", StringUtils.parseDate(until).getTime());
 			}
@@ -193,7 +201,9 @@ public class SellerService {
 				e.printStackTrace();
 			}
 			
-			if (id==null) {
+			if (id==null) { 
+				//初始化一个序列号的号码，就作为销售次序码
+				dbo.put(FIELD_ONLINE_SEQ, incrementingHelper.getNextSequence("sales"));
 				coll.insert(dbo);
 			} else {
 				coll.update(new BasicDBObject(FIELD_ID, new ObjectId(id)), dbo, true, false);
@@ -207,7 +217,7 @@ public class SellerService {
 	public List<Map<String, Object>> listRequesting() {
 		DBCollection coll = dataSource.getCollection(COLL_SALES);
 		DBObject dbo = new BasicDBObject();
-		dbo.put("seller", AuthenticationUtil.getCurrentUser());
+		dbo.put(FIELD_SELLER, AuthenticationUtil.getCurrentUser());
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		 
 		DBCursor cursor = coll.find(dbo);
@@ -252,7 +262,7 @@ public class SellerService {
 		DBObject dbo = new BasicDBObject();
 		dbo.put(FIELD_ID, new ObjectId(id));
 		DBObject e = coll.findOne(dbo);
-		if (!Boolean.TRUE.equals(e.get(FIELD_IS_ONLINE)) && AuthenticationUtil.getCurrentUser().equals(e.get("seller"))) {
+		if (!Boolean.TRUE.equals(e.get(FIELD_IS_ONLINE)) && AuthenticationUtil.getCurrentUser().equals(e.get(FIELD_SELLER))) {
 			coll.remove(dbo);
 		}
 	}
@@ -264,8 +274,8 @@ public class SellerService {
 		return uid;
 	}
 	
-	@RestService(uri="/preview", method="GET", multipart=true)
-	public StreamObject uploadPreview(@RestParam(value="id") String id) {
+	@RestService(uri="/preview", method="GET", authenticated=false)
+	public StreamObject getPreview(@RestParam(value="id") String id) {
 		return contentStore.getContentData(id);
 	}
 	
@@ -282,7 +292,7 @@ public class SellerService {
 		if (e==null) {
 			throw new HttpStatusException(HttpStatus.NOT_FOUND);
 		}
-		if (!AuthenticationUtil.getCurrentUser().equals(e.get("seller")) && !AuthenticationUtil.isAdmin()) {
+		if (!AuthenticationUtil.getCurrentUser().equals(e.get(FIELD_SELLER)) && !AuthenticationUtil.isAdmin()) {
 			throw new HttpStatusException(HttpStatus.NOT_FOUND);
 		}
 		
@@ -295,9 +305,7 @@ public class SellerService {
 		while (cursor.hasNext()) {
 			list.add(cursor.next().toMap());
 		}
-		
 		result.put("list", list);
-		
 		return result;
 	}
 	
@@ -368,39 +376,38 @@ public class SellerService {
 	}
 	
 	@RestService(uri="/sale", method="GET", authenticated=false)
-	public Map<String, Object> getSale(@RestParam(value="id") String id, @RestParam(value="oid") String oid) {
-		
+	public Map<String, Object> getSale(@RestParam(value="id") Integer id) {
 		try {
-			DBCollection coll = dataSource.getCollection(COLL_SALES);
-			DBObject dbo = new BasicDBObject();
-			if (oid!=null && !oid.equals(STRING_EMPTY)) {
-				dbo.put(FIELD_ID, new ObjectId(oid));
-			} else {
-				dbo.put(FIELD_ONLINE_SEQ, Integer.parseInt(id));
-			}
-			DBObject e = coll.findOne(dbo);
-			if (e==null) {
-				throw new HttpStatusException(HttpStatus.NOT_FOUND);
-			}
-			Map m = e.toMap();
-			if (oid==null) {
-				m.remove(FIELD_COUNT);
-			}
-			m.put(FIELD_CONTENT, loadContent(e.get(FIELD_CONTENT).toString()));
+			Map m = getSaleBySeq(id);
 			
+			if (!m.get(FIELD_SELLER).equals(AuthenticationUtil.getCurrentUser())) {
+				m.remove(FIELD_COUNT);
+				m.remove(FIELD_ID);
+			}
 			if (AuthenticationUtil.getCurrentUser()!=null) {
 				m.putAll(bookDetail(id));
 			}
-			
 			return m;
 		} catch (Exception e) {
 			throw new HttpStatusException(HttpStatus.NOT_FOUND);
 		}
 	}
-	
+
+	public Map getSaleBySeq(Integer id) {
+		DBCollection coll = dataSource.getCollection(COLL_SALES);
+		DBObject dbo = new BasicDBObject();
+		dbo.put(FIELD_ONLINE_SEQ, id);
+		DBObject e = coll.findOne(dbo);
+		if (e==null) {
+			throw new HttpStatusException(HttpStatus.NOT_FOUND);
+		}
+		Map m = e.toMap();
+		m.put(FIELD_CONTENT, loadContent(e.get(FIELD_CONTENT).toString()));
+		return m;
+	}
 
 	@RestService(uri="/book", method="GET", authenticated=false) 
-	public Map<String, Object> bookDetail(@RestParam(value="id") String id) {
+	public Map<String, Object> bookDetail(@RestParam(value="id") Integer id) {
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("cu", AuthenticationUtil.getCurrentUser());
 		
@@ -417,7 +424,7 @@ public class SellerService {
 		return m;
 	}
 	
-	@RestService(uri="/book", method="POST") 
+	@RestService(uri="/book", method="POST", webcontext=true) 
 	public Map<String, Object> book(@RestParam(value="id") Integer id) {
 		DBCollection bookColl = dataSource.getCollection(COLL_BOOKS);
 		DBObject exsitQuery = BasicDBObjectBuilder.start(FIELD_BOOK_USER, AuthenticationUtil.getCurrentUser())
@@ -427,12 +434,44 @@ public class SellerService {
 		book.put(FIELD_BOOK_USER, AuthenticationUtil.getCurrentUser());
 		book.put(FIELD_BOOK_TIME, System.currentTimeMillis());
 		book.put(FIELD_BOOK_SALE_ID, id);
+		book.put("ip", WebContext.getRemoteAddr());
 		Long n = incrementingHelper.getNextSequence("S" + id);
 		
 		Date now = new Date();
-		book.put(FIELD_BOOK_CODE, new StringBuilder().append(FIELD_BOOK_CODE).append(id).append(now.getDate()).append(n).append(now.getTime()%1000).toString());
-		
+		book.put(FIELD_BOOK_CODE, new StringBuilder().append("M").append(1000+id).append(now.getDate()).append(1000+n).append(now.getTime()%1000).toString());
 		bookColl.update(exsitQuery, book, true, false);
 		return book.toMap();
+	}
+	
+	@RestService(uri="/buy", method="POST", webcontext=true) 
+	public Map<String, Object> buy(@RestParam(value="id") Integer id) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> book = bookDetail(id);
+		if (book.get(FIELD_BOOK_CODE)==null) {
+			result.put("error", 9);
+			return result;
+		}
+		
+		Map sale = getSaleBySeq(id);
+		Integer count = (Integer)sale.get(FIELD_COUNT);
+		Long current = incrementingHelper.getCurrentSequence("B" + id);
+		if (current.intValue()>count) {
+			result.put("error", 8);
+			return result;
+		}
+		
+		Long bn = incrementingHelper.getNextSequence("B" + id);
+		
+		DBObject dbo = new BasicDBObject();
+		dbo.put(FIELD_BOOK_SALE_ID, id);
+		dbo.put(FIELD_BOOK_USER, AuthenticationUtil.getCurrentUser());
+		dbo.put(FIELD_BOOK_TIME, System.currentTimeMillis());
+		dbo.put("order", com.ever365.utils.UUID.generateShortUuid());
+		
+		DBCollection buyCollection = dataSource.getCollection("deals");
+		result.putAll(dbo.toMap());
+		
+		buyCollection.insert(dbo);
+		return result;
 	}
 }

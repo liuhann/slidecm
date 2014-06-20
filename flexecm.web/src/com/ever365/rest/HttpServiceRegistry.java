@@ -28,6 +28,19 @@ public class HttpServiceRegistry {
 		return posts.get(postUri);
 	}
 	
+	public MethodInvocation getMethod(String method, String uri) {
+		if (METHOD_GET.equalsIgnoreCase(method)) {
+			return gets.get(uri);
+		}
+		
+		if (METHOD_POST.equalsIgnoreCase(method)) {
+			return posts.get(uri);
+		}
+		
+		return null;
+	}
+	
+	
 	public void setInjectedResouce(Object object)  {
 
 		Method[] methods = object.getClass().getMethods();
@@ -42,6 +55,7 @@ public class HttpServiceRegistry {
 				mi.setMultipart(rs.multipart());
 				mi.setUri(rs.uri());
 				mi.setAuthenticated(rs.authenticated());
+				mi.setWebcontext(rs.webcontext());
 				Annotation[][] paramAnno = method.getParameterAnnotations();
 				Class<?>[] paramTypes = method.getParameterTypes();
 				for (int i = 0; i < paramAnno.length; i++) {
