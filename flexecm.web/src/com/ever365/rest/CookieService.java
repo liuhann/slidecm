@@ -74,6 +74,21 @@ public class CookieService {
 		}
 	}
 	
+	
+	public String getCurrentAccessToken(HttpServletRequest request) {
+		String ticket = getCookieTicket(request);
+		if (ticket==null) return null;
+		
+		DBCollection cookiesCol = dataSource.getCollection("cookies");
+		DBObject ticDoc = cookiesCol.findOne(new BasicDBObject("ticket", ticket));
+		if (ticDoc==null) {
+			return null;
+		} else {
+			return (String)ticDoc.get("at");
+		}
+	}
+	
+	
 	/**
 	 * 为登陆的用户保存cookie和用户名称对应关系
 	 * @param request
@@ -81,7 +96,7 @@ public class CookieService {
 	 * @param username
 	 */
 	public void bindUserCookie(HttpServletRequest request,
-			HttpServletResponse response, String username) {
+			HttpServletResponse response, String username, String at) {
 		String ticket = getCookieTicket(request);
 		DBCollection cookiesCol = dataSource.getCollection("cookies");
 		if (ticket != null) {
@@ -90,9 +105,11 @@ public class CookieService {
 				cookiesCol.insert(BasicDBObjectBuilder.start()
 						.add("user", username).add("ticket", ticket)
 						.add("remote", request.getRemoteAddr())
-						.add("created", new Date()).get());
+						.add("created", new Date())
+						.add("at", at).get());
 			} else {
 				ticDoc.put("user", username);
+				ticDoc.put("at", at);
 				cookiesCol.update(new BasicDBObject("ticket", ticket), ticDoc);
 			}
 		} else {
@@ -102,6 +119,7 @@ public class CookieService {
 					.add("user", username).add("ticket", ticket)
 					.add("remote", WebContext.getRemoteAddr(request))
 					.add("agent", request.getHeader("User-Agent"))
+					.add("at", at)
 					.add("created", new Date()).get());
 		}
 	}

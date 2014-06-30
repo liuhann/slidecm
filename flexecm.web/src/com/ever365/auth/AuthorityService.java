@@ -46,7 +46,6 @@ public class AuthorityService {
 		return AuthenticationUtil.getCurrentUser();
 	}
 	
-	
 	@RestService(method="POST", uri="/password/modify")
 	public void modifyPassword(@RestParam(value="old",required=true)String old,
 			@RestParam(value="new", required=true)String newpass) {
@@ -116,6 +115,20 @@ public class AuthorityService {
 				throw new HttpStatusException(HttpStatus.UNAUTHORIZED);
 			}	
 		}
+	}
+	
+	@RestService(method="GET", uri="/logout", authenticated=false)
+	public RestResult logout(@RestParam(value="re") String redirect) {
+		RestResult rr = new RestResult();
+		Map<String, Object> session = new HashMap<String, Object>();
+		session.put(AuthenticationUtil.SESSION_CURRENT_USER, null);
+		rr.setSession(session);
+		if (redirect==null) {
+			rr.setRedirect("/");
+		} else {
+			rr.setRedirect(redirect);
+		}
+		return rr;
 	}
 	
 	public void addOAuthPerson(@RestParam(value="id")String id, @RestParam(value="from") String from, @RestParam(value="at") String access_token) {

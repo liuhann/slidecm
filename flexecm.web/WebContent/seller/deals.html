@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>卖家服务平台 成交列表</title>
+
+<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
+<script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
+
+<link rel="StyleSheet" href="seller.css"  type="text/css">
+
+<script type="text/javascript">
+
+var currentCur = 0;
+
+$(document).ready(function() {
+	var id = query_string("id");
+	if (id==null) return;
+	getDeals();
+});
+
+
+function getDeals() {
+	$(".view").show();
+	
+	$.getJSON("/service/seller/deals", {
+		"id": query_string("id")
+	}, function(data) {
+		$(".deals-table tr.item").remove();		
+		for ( var i = 0; i < data.length; i++) {
+			var deal = data[i];
+			var cloned = $(".deals-table tr.template").clone();
+			cloned.addClass("item").removeClass("template");
+			cloned.find(".user").html(deal.u);
+			cloned.find(".code").html(deal.c);
+			$(".deals-table").append(cloned);
+		}
+	});
+}
+
+function query_string(key) {
+	return (document.location.search.match(new RegExp("(?:^\\?|&)"+key+"=(.*?)(?=&|$)"))||['',null])[1];
+}
+
+function formate_time(time) {
+	var d = new Date(time);
+	return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + ((d.getMinutes()<10)?("0" + d.getMinutes()): d.getMinutes()); 
+}
+
+</script>
+
+</head>
+<body>
+
+<div id="site-map">
+	<div class="wrapper">
+		<div class="logo">
+			<img src="/img/shen.png">
+		</div>
+	</div>
+</div>
+	
+<div class="wrapper content">
+
+
+<div  class="view">
+	
+	<table class="deals-table">
+		<tr>
+			<th width="200px;">用户</th>
+			<th width="200px;">神购码</th>
+		</tr>
+				
+		<tr class="template">
+			<td class="user"></td>
+			<td class="code"></td>
+		</tr>
+	</table>
+</div>
+		
+
+</div>	
+
+</body>
+</html>

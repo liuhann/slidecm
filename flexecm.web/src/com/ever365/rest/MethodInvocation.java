@@ -42,6 +42,14 @@ public class MethodInvocation {
 	private boolean cached;
 	private boolean webcontext;
 	
+	private boolean requireAt;
+	
+	public boolean isRequireAt() {
+		return requireAt;
+	}
+	public void setRequireAt(boolean requireAt) {
+		this.requireAt = requireAt;
+	}
 	public boolean isWebcontext() {
 		return webcontext;
 	}
@@ -107,6 +115,7 @@ public class MethodInvocation {
 		Set<String> requiredParams = paramsRequired.keySet();
 		for (String key : requiredParams) {
 			if (map.get(key)==null) {
+				System.out.println("Post key Required: " + key);
 				throw new HttpStatusException(HttpStatus.BAD_REQUEST);
 			}
 		}
@@ -122,7 +131,7 @@ public class MethodInvocation {
 	}
 	
 	public Object convert(Class clazz, Object obj) {
-		if (obj==null || NULL.equals(obj))  {
+		if (obj==null || NULL.equals(obj) || "".equals(obj))  {
 			if (clazz.equals(boolean.class)) {
 				return Boolean.FALSE;
 			}
@@ -137,6 +146,10 @@ public class MethodInvocation {
 		
 		if (clazz.isInstance(obj)) {
 			return obj;
+		}
+		
+		if(clazz==Boolean.class && obj instanceof String) {
+			return Boolean.valueOf((String)obj);
 		}
 		
 		if (clazz.getName().equals("int") || clazz==Integer.class) {
@@ -174,11 +187,6 @@ public class MethodInvocation {
 				return null;
 			}
 		}
-		
-		if(clazz==Boolean.class && obj instanceof String) {
-			return Boolean.valueOf((String)obj);
-		}
-		
 		if (clazz==InputStream.class && obj instanceof FileItem) {
 			FileItem fi = (FileItem) obj;
 			try {
@@ -188,6 +196,7 @@ public class MethodInvocation {
 			}
 		}
 		
+		System.out.println("Param not match: " + clazz + "-->" + obj);
 		
 		throw new HttpStatusException(HttpStatus.BAD_REQUEST);
 	}

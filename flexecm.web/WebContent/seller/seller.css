@@ -7,6 +7,13 @@ html,body,h1,h2,h3,p,form,ul,ol,li,dl,dt,dd,form{padding:0;margin:0;list-style:n
 	float: left;
 }
 
+.template {
+	display: none;
+}
+
+a {
+	text-decoration: none;
+}
 
 a.btn {
 	color: white;
@@ -25,6 +32,10 @@ a.btn:hover {
 	background-color: #2ec3b4;
 }
 
+a.btn.disabled {
+	background-color: #D6D6D6;
+	color: #696969;
+}
 
 header, div.header {
 	background-color: #CC0000;
@@ -32,6 +43,11 @@ header, div.header {
 	height: 40px;
 }
 
+#site-map {
+	box-shadow: 0 1px 2px rgba(0,0,0,.1);
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.1);
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
 
 .wrapper {
 	width: 1200px;
@@ -86,6 +102,10 @@ header, div.header {
 	width: 300px;
 }
 
+.form span.msg.error {
+	color: red;
+}
+
 .wrapper .nav.seller {
 	float: left;
 	width: 160px;
@@ -100,11 +120,18 @@ header, div.header {
 .wrapper .nav.seller ul li.title {
 	background-color: #677E93;
 	color: white;
-	
 }
-.wrapper .nav.seller ul li.link:HOVER, .wrapper .nav.seller ul li.link.on {
+
+.wrapper .nav.seller ul li.link {
+	cursor:pointer;
+}
+.wrapper .nav.seller ul li.link:hover {
 	background-color: #DFDFDF;
 	cursor:pointer;
+}
+
+.wrapper .nav.seller ul li.link.on {
+	background-color: #DFDFDF;
 }
 
 .wrapper .content.seller {
@@ -120,7 +147,7 @@ header, div.header {
 }
 
 
-#sales-list .hello {
+.content .view  .hello {
 	margin: 5px;
 	font-size: 16px;
 	padding: 15px;
@@ -167,7 +194,195 @@ header, div.header {
 }
 
 
+.wrapper .content.post {
+	float: left;
+	width: 800px;
+	height: 800px;
+}
+
+.wrapper .nav.recommend {
+	float: right;
+	width: 300px;
+	height: 740px;
+	margin-top: 20px;
+	border: 1px solid #ccc;
+}
+
+
+
+.waterfall {
+	width: 242px;
+	font-size: 12px;
+	background-color: #fff;
+	box-shadow: 0 1px 3px rgba(0,0,0,.3);
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,.3);
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,.3);
+	height: 360px;
+	float: left;
+	margin: 10px 0px 0px 10px;
+}
+
+.waterfall .bg {
+	width: 242px;
+	height: 242px;
+	background-size: cover;
+	-webkit-transition: background 0.4s ease;
+}
+
+.waterfall .desc {
+	margin: 10px 0px;
+	padding: 0px 16px;
+	line-height: 1.35em;
+	overflow: hidden;
+	word-wrap: break-word;
+	height: 2.7em;
+}
+
+
+.waterfall .panel {
+	color: #999;
+	border-top: 1px solid #F2F2F2;
+	background: #FAFAFA;
+	position: relative;
+	height: 77px;
+}
+.waterfall .panel .from {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+}
+
+.waterfall .panel .method {
+	position: absolute;
+	left: 10px;
+	top: 30px;
+}
+
+.waterfall .panel .repost {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+}
+
+.waterfall .panel .rcode {
+	position: absolute;
+	right: 10px;
+	top: 20px;
+	color: green;
+	padding: 5px;
+	border: 1px solid #e7e7cd;
+	background: #ffffe1;
+}
+
+.waterfall .panel span.hint {
+	color: #C41A16;
+	font-weight: bold;
+}
+
 #img-preview img {
 	width: 480px;
 	height: 400px;
 }
+
+#pendding {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	background: white;
+	display: none;
+	
+}
+
+#pendding .msg {
+	width: 100px;
+	background-color: green;
+	color: white;
+	padding: 5px;
+	margin: 0 auto;
+}
+
+
+#postweibo {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	background: white;
+	display: none;
+}
+
+#postweibo  .body {
+	width: 602px;
+	margin: 0 auto;
+	padding-top: 20px;
+}
+
+#postweibo  .body  h1.logo {
+	margin: 0;
+	padding: 0;
+	width: 140px;
+	height: 44px;
+	background: url('http://img.t.sinajs.cn/t4/appstyle/widget/images/library/base/wb_logo.png');
+	overflow: hidden;
+}
+
+#postweibo  .body  .panel {
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	-moz-box-shadow: 0 0 5px rgba(198,198,198,1);
+	-webkit-box-shadow: 0 0 5px rgba(198,198,198,1);
+	box-shadow: 0 0 5px rgba(198,198,198,1);
+	border: 1px solid #d2d2d2;
+	padding: 20px;
+	margin-top: 10px;
+}
+
+#postweibo  .body  .panel  .remains {
+	text-align: right;
+	line-height: 30px;
+}
+
+#postweibo  .body  .panel #weibo-text {
+	height: 73px;
+	width: 538px;
+	margin: 0px;
+	padding: 10px;
+	border: 1px solid rgb(190, 190, 190);
+	font-size: 14px;
+	word-wrap: break-word;
+	line-height: 18px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	outline: none;
+}
+
+#postweibo  .body  .panel .pic {
+	width: 242px;
+	height: 242px;
+	background-size: cover;
+	-webkit-transition: background 0.4s ease;
+	margin-top: 10px;
+}
+
+#postweibo  .body  .panel a.btn {
+	margin-top: 10px;
+}
+
+
+
+
+
+
+
+
+.footer {
+	border-top: 1px solid #3aa2a2;
+	background: #f6f6f6;
+	padding: 15px;
+	clear: both;
+	margin-top: 10px;
+	}

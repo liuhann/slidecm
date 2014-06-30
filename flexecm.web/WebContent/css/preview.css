@@ -8,6 +8,7 @@ html,body,h1,h2,h3,p,form,ul,ol,li,dl,dt,dd,form{padding:0;margin:0;list-style:n
 }
 .fr {
 	float: right;
+	text-align: right;
 }
 
 a {
@@ -297,14 +298,94 @@ header, div.header {
 }
 
 #site-map .item {
+	display:none;
 	float: right;
 	font-size: 14px;
 	line-height: 40px;
 	border-left: 1px solid #FFF;
 	border-right: 1px solid #EEE;
 	padding: 0px 8px;
+	position: relative;
 }
 
+#site-map .item .uname {
+	margin-left: 10px;
+	color: #0f71c7;
+}
+
+#site-map .item  span {
+	cursor: pointer;
+}
+
+
+#site-map .item dd.entry {
+	display: none;
+	position: absolute;
+	right:0px;
+	top: 42px;
+	position: absolute;
+	background-color: #eee;
+	width: 350px;
+}
+
+#site-map .item .entry .list {
+	height: auto!important;
+	height: 344px;
+	max-height: 344px;
+	overflow-y: auto;
+	margin: 5px 5px 5px 5px;
+	background-color: white;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+}
+#site-map .item .entry .summ {
+	margin: 5px;
+	text-align: right;
+}
+
+#site-map .item .entry .list li.sale {
+	padding: 8px 10px;
+	border-bottom: 1px solid #ccc;
+	overflow: hidden;
+	line-height: 17px;
+	vertical-align: bottom;
+}
+#site-map .item .entry .list li.sale.template {
+	display: none;
+}
+
+#site-map .item .entry .list li.sale:hover {
+	background-color: #fbfbfb;
+} 
+
+
+#site-map .item .entry li.sale div.img {
+	width: 50px;
+	height: 50px;
+	border: 1px solid #ddd;
+	padding: 0;
+	margin-right: 10px;
+	font-size: 0;
+}
+
+#site-map .item .entry li.sale div.title {
+	word-break: break-all;
+	word-wrap: break-word;
+	overflow: hidden;
+	margin-bottom: 5px;
+}
+
+#site-map .item .entry li.sale .price {
+	color: #E4393C;
+	font-weight: 700;
+}
+
+#site-map .item .entry li.sale .time {
+	color: #3b0;
+}
+ 
+ 
 
 #dialog {
 	display: none;
@@ -351,4 +432,27 @@ header, div.header {
 	left: 0;
 	z-index: 10;
 	background: rgba(63, 72, 79, 0.3);
+}
+
+#main {
+	display: none;
+}
+
+#hide-all {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 101;
+	background-color: #eee;
+}
+
+
+
+.footer {
+	border-top: 1px solid #3aa2a2;
+	background: #f6f6f6;
+	padding: 15px;
+	clear: both;
 }

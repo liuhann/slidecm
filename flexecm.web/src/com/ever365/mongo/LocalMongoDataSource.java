@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
@@ -26,15 +27,13 @@ public class LocalMongoDataSource implements MongoDataSource {
 	
 	private String db;
 	
-	private Long lastCalled;
-	
 	private String host;
 	private String port;
 	private String username;
 	private String password;
 	
-	private int connectionPerhost = 10;
-	private long checkInteval = 5 * 60 * 1000;
+	private int connectionPerhost = 20;
+	private long checkInteval =  60 * 1000;
 	
 	public void setConnectionPerhost(int connectionPerhost) {
 		this.connectionPerhost = connectionPerhost;
@@ -71,7 +70,6 @@ public class LocalMongoDataSource implements MongoDataSource {
 	@Override
 	public DBCollection getCollection(String dbName, String collName) {
 		if (dbconnections.get(dbName)==null) {
-			lastCalled = System.currentTimeMillis();
 			synchronized (this) {
 				if (dbconnections.get(dbName)==null) {
 					try {
@@ -93,21 +91,24 @@ public class LocalMongoDataSource implements MongoDataSource {
 							dbconnections.put(dbName, mongoDB);
 						} else {
 							mongoClient = new MongoClient(serverName, mo);
+							mongoClient.getDB(dbName).command("ping");
 							dbconnections.put(dbName, mongoClient.getDB(dbName));
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						return null;
 					}
 				}
 			}
 		}
-		
-		if (System.currentTimeMillis()-lastCalled > checkInteval) {
+		try {
+			DB pools = dbconnections.get(dbName);
+			CommandResult r = pools.command("ping");
+			return pools.getCollection(collName);
+		} catch (Exception e) {
 			dbconnections.remove(dbName);
 			return getCollection(dbName);
 		}
-		lastCalled = System.currentTimeMillis();
-		return dbconnections.get(dbName).getCollection(collName);
 	}
 
 	@Override

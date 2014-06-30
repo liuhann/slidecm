@@ -15,7 +15,6 @@ import org.springframework.web.context.ContextLoaderListener;
 
 import com.ever365.rest.AuthenticationUtil;
 import com.ever365.rest.CookieService;
-import com.ever365.rest.RestServiceServlet;
 
 
 /**
@@ -25,6 +24,8 @@ public class OAuthServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private CookieService cookieService;
+	public static final String SESSION_REDIRECT = "oauth_redirect";
+	
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -44,8 +45,8 @@ public class OAuthServlet extends HttpServlet {
 			cookieService = (CookieService) o;
 		}
 		
-		TopOAuthProvider topOAuthProvider = new TopOAuthProvider();
-		providers.put("/top", topOAuthProvider);
+		providers.put("/top", new TopOAuthProvider());
+		providers.put("/weibo", new WeiboOAuthProvider());
 	}
 
 	/**
@@ -54,17 +55,40 @@ public class OAuthServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String servletPath = getServicePath(request);
-		
-		OAuthProvider provider = providers.get(servletPath);
-		
-		Map<String, Object> detail = provider.authorize(request.getParameter(provider.getCode()));
-		
-		request.getSession().setAttribute(AuthenticationUtil.SESSION_CURRENT_USER, detail.get(OAuthProvider.USERID));
-		
-		if (cookieService!=null) {
-			cookieService.bindUserCookie(request, response, detail.get(OAuthProvider.USERID).toString());
+		try {
+			OAuthProvider provider = providers.get(servletPath);
+			Map<String, Object> detail = provider.authorize(request.getParameter(provider.getCode()));
+			
+			if (detail==null) {
+				response.sendRedirect("/");
+				return ;
+			}
+			if (detail.get(OAuthProvider.USERID)==null) {
+				response.sendRedirect("/");
+			}
+			String userId = detail.get(OAuthProvider.USERID) + "@" + provider.getName();
+			
+			request.getSession().setAttribute(AuthenticationUtil.SESSION_CURRENT_USER, userId);
+			AuthenticationUtil.setCurrentUser(userId);
+			if (cookieService!=null) {
+				String at = "";
+				if (detail.get(OAuthProvider.ACCESS_TOKEN)!=null) {
+					at = (String) detail.get(OAuthProvider.ACCESS_TOKEN);
+				}
+				cookieService.bindUserCookie(request, response, userId, at);
+			}
+		} catch (Throwable t) {
+			System.out.println(t.getLocalizedMessage());
 		}
-		response.sendRedirect("/");
+		
+		if (request.getSession().getAttribute(SESSION_REDIRECT)!=null) {
+			Object redirect = request.getSession().getAttribute(SESSION_REDIRECT);
+			request.getSession().removeAttribute(SESSION_REDIRECT);
+			response.sendRedirect(redirect.toString());
+		} else {
+			response.sendRedirect("/");
+		}
+		//response.sendRedirect("/");
 	}
 	
 	public String getServicePath(HttpServletRequest request)
@@ -83,7 +107,9 @@ public class OAuthServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		if (request.getParameter("redirect")!=null) {
+			request.getSession().setAttribute(SESSION_REDIRECT, request.getParameter("redirect"));
+		}
 	}
 
 }

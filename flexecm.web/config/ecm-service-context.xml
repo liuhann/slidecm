@@ -45,8 +45,6 @@
   		<property name="dataSource" ref="ecmDataSource"></property>
   	</bean>
 	
-	
-	<!-- 
 	<bean id="ecmDataSource" class="com.ever365.mongo.LocalMongoDataSource">
 	    <property name="host">
 	    	<value>mongo.duapp.com</value>
@@ -80,7 +78,7 @@
 	         <value>slide8</value>
 	     </property>
 	 </bean>
-	 -->
+	 <!--
 	<bean id="ecmDataSource" class="com.ever365.mongo.LocalMongoDataSource">
 	    <property name="host">
 	    	<value>127.0.0.1</value>
@@ -98,6 +96,6 @@
 	         <value>d:/temp</value>
 	     </property>
 	 </bean>
-	
+	-->
 	 
 </beans>

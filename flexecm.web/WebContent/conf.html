@@ -2,27 +2,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>卖家服务平台</title>
+<title>神购网_用户配置</title>
 
 <SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
 <script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
 
-<script src="seller.js"></script>
+<script src="js/conf.js"></script>
 
-<link rel="StyleSheet" href="seller.css"  type="text/css">
-
-<script type="text/javascript" src="plupload.full.js"></script>
-
-<link rel="stylesheet" type="text/css" href="jquery.datetimepicker.css">
-
-<script src="jquery.datetimepicker.js"></script>
-
-<link href="http://ueditor.baidu.com/umeditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" charset="utf-8" src="http://ueditor.baidu.com/umeditor/umeditor.config.js"></script>
-<script type="text/javascript" charset="utf-8" src="http://ueditor.baidu.com/umeditor/umeditor.min.js"></script>
-<script type="text/javascript" src="http://ueditor.baidu.com//umeditor/lang/zh-cn/zh-cn.js"></script>
+<link rel="StyleSheet" href="seller/seller.css"  type="text/css">
 
 </head>
+
+
 <body>
 	
 <div id="site-map">
@@ -41,16 +32,18 @@
 		</ul>
 	
 		<ul>
-			<li class="title">组织抢购</li>
-			<li class="link on requesting" onclick="getRequesting();">申请中</li>
-			<li class="link online" onclick="getOnlines();">进行中</li>
-			<li class="link finished" onclick="getFinished();">已完成</li>
-			<li class="title">转发抽奖</li>
-			<li class="link" onclick="getPresents();" for="my-presents-list">商品列表</li>
-			<li class="link repostlist" onclick="getRepostActivities();">已转发商品</li>
-			<li class="title">配置</li>
-			<li class="link" for="seller-config" onclick="config();">商家信息管理</li>
-			<li class="link" for="password-modify" onclick="modifypwd();">密码修改</li>
+			<li class="title">我的抢购</li>
+			<li class="link on books" onclick="getBooks();">已预约</li>
+			<li class="link deals" onclick="getDeals();">抢购成功</li>
+			
+			
+			<li class="title">微博转发抽奖</li>
+			<li class="link" onclick="getPresents();" for="my-presents-list">我的转发</li>
+			<li class="link repostlist" onclick="getRepostActivities();">我的奖品</li>
+			
+			<li class="title">帐号配置</li>
+			<li class="link" for="seller-config" onclick="config();">微博设置</li>
+			
 		</ul>
 		
 		<ul>
@@ -59,87 +52,13 @@
 		
 		<ul>
 			<li>
-				<img src="sg-weixin.png" style="width:140px; height:140px">
-				<div style="text-align: center;">关注官方微信</div> 
+				<iframe width="100%" height="120px" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=5211636746&verifier=d7b94838&dpc=1"></iframe>
 			</li>
 		</ul>
 		
 	</div>
 	
 	<div class="content seller">
-		<div id="posters" class="view">
-			
-			<div class="notice">
-			
-			</div>
-			
-			<div class="form">
-				<div>
-					<h1>抢购商品编辑</h1>
-				</div>
-				<div>
-					<span class="label">商品标题*</span>
-					<input id="title" >
-					<span class="msg"></span>
-				</div>
-				
-				<div>
-					<span class="label">副标题*</span>
-					<input id="subtitle" >
-					<span class="msg"></span>
-				</div>
-				
-				<div>
-					<span class="label">销售地址*</span>
-					<input id="sell-url" value="http://">
-					<span class="msg"></span>
-				</div>
-			
-				<div>
-					<span class="label">抢购数量*</span>
-					<input id="count" > <span class="msg">因抢购的并发性，可能最多卖出超过指定数量10%的商品，请知晓</span>
-				</div>
-				
-				<div>
-					<span class="label">抢购价格*</span>
-					<input id="price">  	
-					<span class="msg"></span>
-				</div>
-				
-				<div>
-					<span class="label">原价*</span>
-					<input id="oprice">
-					<span class="msg"></span> 
-				</div>
-				
-				
-				<div>
-					<span class="label">抢购时间*</span>
-					<input id="time">  	<span class="msg">格式为: YYYY-MM-DD hh:mm</span>
-				</div>
-				
-				<div>
-					<span class="label">抢购预约截至*</span>
-					<input id="until">  	<span class="msg">格式同上，如无需预约，请留为抢购时间之后</span>
-				</div>
-				
-				<div>
-					<span class="label">展示图*</span>
-					<a class="btn" id="btn-preview-upload">上传</a>  	<span>要求宽度480高度400，PNG或JPG格式图片</span> <br>
-					<div id="img-preview">
-					</div>
-				</div>
-			</div>
-			
-			<div style="padding: 5px;">
-				<span class="label">图文介绍*</span>
-				<script type="text/plain" id="editor" style="width:800px;height:480px;"></script>
-			</div>
-			<div style="padding: 20px;">
-				 <a class="btn" onclick="request();" id="btn_request">提交申请</a>
-				 <a class="btn" onclick="getRequesting();">取消</a>
-			</div>
-		</div>
 		
 		<div id="present-edit" class="view">
 			<div class="form">
@@ -310,16 +229,12 @@
 </div>
 
 
-
 <div class="footer">
-	
-</div>		
+		<div class="wrapper">
+			© 2014 神购网 | 京ICP备12000305号-1 | <a href="mailto:hello@ever365.com">联系我们</a>
+			<img style="float: right" src="img/bd-cloud-nav.png">
+		</div>
+</div>
 
-<script type="text/javascript">
-
-var um = UM.getEditor('editor');
-
-</script>
 </body>
 </html>
-

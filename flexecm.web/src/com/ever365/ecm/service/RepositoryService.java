@@ -69,7 +69,11 @@ public class RepositoryService {
 	
 	public void setIncrementingHelper(AutoIncrementingHelper incrementingHelper) {
 		this.incrementingHelper = incrementingHelper;
-		incrementingHelper.initIncreasor(PUBLIC_SEQ);
+		try {
+			incrementingHelper.initIncreasor(PUBLIC_SEQ);
+		} catch (Exception e) {
+			
+		}
 	}
 	public void setEntityDAO(EntityDAO entityDAO) {
 		this.entityDAO = entityDAO;

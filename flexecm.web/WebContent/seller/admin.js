@@ -6,37 +6,22 @@ $(document).ready(function() {
 			return;
 		}
 		getRequesting();
-	
 	}).fail(function() {
 		location.href = "/index.html";
 	});
 });
 
-
 function getRequesting() {
 	$("#sales-list").show();
-	$("#sales-list table td.sale").remove();
+	$("#sales-list table tr.sale").remove();
 	$.getJSON("/service/seller/admin/request/list", {}, function(data) {
-		
 		for ( var i = 0; i < data.length; i++) {
 			var sale = data[i];
-			var cloned = $("#sales-list tr.template").clone();
-			cloned.removeClass("template");
-			cloned.addClass("sale");
-			cloned.find(".name").html(sale.title);
-			
-			cloned.find(".time").html(formateTime(sale.time));
-			if (sale.until!="") {
-				cloned.find(".until").html(formateTime(sale.until));	
-			}
-			cloned.find(".price").html(sale.price);
-			cloned.find(".seller").html(sale.seller);
-			cloned.find(".count").html(sale.count);
-			cloned.data("sale", sale);
+			var cloned = initCloned(sale);
 			cloned.find("a.preview").click(function() {
 				var sale = $(this).pd("sale");
-				window.open("/book.html?oid="  + sale._id);
-			});
+				window.open("/book.html?id="  + sale.seq);
+			}).show();
 			
 			cloned.find("a.approve").click(function() {
 				var sale = $(this).pd("sale");
@@ -47,7 +32,7 @@ function getRequesting() {
 					getRequesting();
 				});
 				window.open("/book.html?oid="  + sale._id);
-			});
+			}).show();
 			$("#sales-list table").append(cloned);
 		}
 	});
@@ -55,22 +40,52 @@ function getRequesting() {
 
 function getOnlines() {
 	$("#sales-list").show();
-	$("#sales-list table td.sale").remove();
+	$("#sales-list table tr.sale").remove();
 	$.getJSON("/service/seller/admin/online/list", {}, function(data) {
+		for ( var i = 0; i < data.length; i++) {
+			var sale = data[i];
+			var cloned =initCloned(sale);
+			cloned.find("a.preview").click(function() {
+				var sale = $(this).pd("sale");
+				window.open("/book.html?id="  + sale.seq);
+			}).show();
+			
+			cloned.find("a.push").click(function() {
+				var sale = $(this).pd("sale");
+				$.post("/service/seller/admin/recommend", {
+					"id": sale.seq,
+					"set": "1"
+				}, function() {
+					alert("已经设置到首页");
+				});
+			}).show();
+			cloned.find("a.books").click(function() {
+				
+			}).show();
+			$("#sales-list table").append(cloned);
+		}
+	});
+}
+
+
+function getFinished() {
+	$("#sales-list").show();
+	$("#sales-list table tr.sale").remove();
+	$.getJSON("/service/seller/admin/finished/list", {}, function(data) {
 		
 		for ( var i = 0; i < data.length; i++) {
 			var sale = data[i];
 			var cloned =initCloned(sale);
 			cloned.find("a.preview").click(function() {
 				var sale = $(this).pd("sale");
-				window.open("/book.html?oid="  + sale._id);
+				window.open("/book.html?id="  + sale.seq);
 			});
 		
 			$("#sales-list table").append(cloned);
 		}
 	});
-	
 }
+
 
 function initCloned(sale) {
 	var cloned =  $("#sales-list tr.template").clone();
@@ -86,7 +101,7 @@ function initCloned(sale) {
 	cloned.find(".seller").html(sale.seller);
 	cloned.find(".count").html(sale.count);
 	cloned.data("sale", sale);
-		
+	cloned.find("td.action a").hide();
 	return cloned;
 }
 

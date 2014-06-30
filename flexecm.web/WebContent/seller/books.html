@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>卖家服务平台</title>
+
+<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
+<script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
+
+<link rel="StyleSheet" href="seller.css"  type="text/css">
+
+<script type="text/javascript">
+
+var currentCur = 0;
+
+$(document).ready(function() {
+	var id = query_string("id");
+	if (id==null) return;
+	getBookList(0,100);
+	
+});
+
+function next() {
+	currentCur +=100;
+	getBookList(currentCur,100);
+}
+
+function prev() {
+	currentCur -=100;
+	if (currentCur<=0) currentCur = 0; 
+	getBookList(currentCur,100);
+}
+
+
+function getBookList(sk, lim) {
+	$(".view").show();
+	
+	$.getJSON("/service/seller/books", {
+		"id": query_string("id"),
+		"skip": sk,
+		"limit": lim
+	}, function(data) {
+		$(".books-table tr.item").remove();		
+		for ( var i = 0; i < data.list.length; i++) {
+			var book = data.list[i];
+			var cloned = $(".books-table tr.template").clone();
+			cloned.addClass("item").removeClass("template");
+			cloned.find(".user").html(book.u);
+			cloned.find(".time").html(formate_time(book.t));
+			cloned.find(".code").html(book.o);
+			cloned.find(".ip").html(book.ip);
+			if (book.from!=null) {
+				cloned.find(".from").html(book.from);
+			}
+			$(".books-table").append(cloned);
+		}
+	});
+}
+
+function query_string(key) {
+	return (document.location.search.match(new RegExp("(?:^\\?|&)"+key+"=(.*?)(?=&|$)"))||['',null])[1];
+}
+
+function formate_time(time) {
+	var d = new Date(time);
+	return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + ((d.getMinutes()<10)?("0" + d.getMinutes()): d.getMinutes()); 
+}
+
+</script>
+
+</head>
+<body>
+
+<div id="site-map">
+	<div class="wrapper">
+		<div class="logo">
+			<img src="/img/shen.png">
+		</div>
+	</div>
+</div>
+	
+<div class="wrapper content">
+
+
+<div  class="view">
+	<div class="hello">
+		总计<span id="c_qiang">0</span>个预约  
+	</div>
+	
+	<table class="books-table">
+		<tr>
+			<th width="250px;">用户</th>
+			<th width="200px;">预约时间</th>
+			<th width="200px;">预约号</th>
+			<th width="150px;">IP地址</th>
+			<th width="200px;">来自</th>
+		</tr>
+		
+		<tr class="template">
+			<td class="user"></td>
+			<td class="time"></td>
+			<td class="code"></td>
+			<td class="ip"></td>
+			<td class="from"></td>
+		</tr>
+	</table>
+</div>
+		
+
+</div>	
+
+</body>
+</html>

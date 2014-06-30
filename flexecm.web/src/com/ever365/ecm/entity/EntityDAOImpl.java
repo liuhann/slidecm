@@ -56,9 +56,13 @@ public class EntityDAOImpl implements EntityDAO {
 	}
 
 	public void init() {
-		autoIncrementingHelper.initIncreasor(ENTITIES);
-		getEntityCollection().ensureIndex(Model.PROP_MODIFIED.getLocalName());
-		getEntityCollection().ensureIndex(Model.PROP_PARENT_ID.getLocalName());
+		try {
+			autoIncrementingHelper.initIncreasor(ENTITIES);
+			getEntityCollection().ensureIndex(Model.PROP_MODIFIED.getLocalName());
+			getEntityCollection().ensureIndex(Model.PROP_PARENT_ID.getLocalName());
+		} catch (Exception er) {
+			;
+		}
 	}
 	
 	@Override

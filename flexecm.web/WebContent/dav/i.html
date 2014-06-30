@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>神购网-转发抽奖平台</title>
+<!-- 
+<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
+ -->
+<link rel="StyleSheet" href="../seller/seller.css"  type="text/css">
+
+<SCRIPT type=text/javascript src="/js/jquery.min.js"></SCRIPT>
+<SCRIPT type=text/javascript src="i.js"></SCRIPT>
+
+</head>
+<body>
+
+<div id="site-map">
+	<div class="wrapper">
+		<div class="logo">
+			<img src="/img/shen.png">
+		</div>
+	</div>
+</div>
+
+<div class="wrapper">
+
+	<div class="post content">
+		<div id="present" class="waterfall" style="margin: 30px auto; float: none;width: 480px; height: 530px;">
+			<div class="bg"  style="width: 480px; height: 400px;"></div>
+			<div class="desc">森林浆果，梦幻婚礼写真发饰度假森系 树叶发梳刘海梳花环弹簧夹-淘宝网</div>
+			<div class="panel">
+				<div class="from"><span class="hint dav">小马</span>发布的微博,商品由 <span class="seller hint"></span> 提供</div>
+				<div class="method total">抽取 <span class="hint"></span>名转发者赠送</div>
+				<div class="method per">每 <span class="hint"></span> 个转发者赠送1件</div>
+				
+				<div class="rcode" style="display:none;">您已转发， 转发码  <span class="hint"></span></div>
+				<div class="repost"><a style="vertical-align: bottom;" href="/dav/rule.html">转发和抽奖规则</a>&nbsp;  <a class="btnrepost btn" style="padding: 6px 12px;" href="javascript:repost();" class="btn">一键转发</a></div>
+			</div>
+		</div>
+		
+		<!-- 
+		<div class="attention" style="border: 1px solid #E6E6E6;background-color: #DBFFE1;padding: 20px;">
+			<ol style="margin-left: 20px;font-size: 16px; list-style: decimal;">
+				<li>您需要关注博主，并转发微博才能参加抽奖</li>
+				<li>你需要用微博账号登陆神购网，转发后将获得一个转发id，抽奖以此id为依据</li>
+		</ol>
+		</div>
+		 -->
+		
+	</div>
+	
+	<div class="recommend nav">
+		<ul>
+			<li>
+				<iframe width="100%" height="120px" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=5211636746&verifier=d7b94838&dpc=1"></iframe>
+			</li>
+		</ul>
+		
+		<div class="template" style="float: none;width: 280px; height: 290px;">
+			<div class="bg"  style="width: 280px;height: 160px;"></div>
+			<div class="desc">森林浆果，梦幻婚礼写真发饰度假森系 树叶发梳刘海梳花环弹簧夹-淘宝网</div>
+			<div class="panel">
+				<div class="from"><span class="hint dav">小马</span>发布的微博,商品由 <span class="seller hint"></span> 提供</div>
+				<div class="method total">抽取 <span class="hint"></span>名转发者赠送</div>
+				<div class="method per">每 <span class="hint"></span> 个转发者赠送1件</div>
+				<div class="repost"><a class="btnrepost btn" style="padding: 6px 12px;" href="javascript:repost();" class="btn">去看看</a></div>
+			</div>
+		</div>
+		
+		
+		
+	</div>
+</div>
+
+<div id="pendding">
+	<div class="msg">
+		请求处理中....	
+	</div>
+</div>
+
+
+<div id="postweibo" >
+	<div  class="body">
+		<h1 class="logo"></h1>
+		
+		<div class="panel">
+			<div class="remains">还剩余123字</div>
+			<div class="text">
+				<textarea id="weibo-text"></textarea>
+			</div>
+			<div class="pic">
+			</div>
+			
+			<div >
+				<a class="btn" href="javascript:postWeibo();">分享</a>  <a onclick="javascript:hidePost();">取消</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="footer">
+		<div class="wrapper">
+			© 2014 神购网 | 京ICP备12000305号-1 | <a href="mailto:hello@ever365.com">联系我们</a>
+			<img style="float: right" src="/img/bd-cloud-nav.png">
+		</div>
+</div>
+
+
+</body>
+</html>

@@ -2,234 +2,225 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>神购_购物抢购就来这里_爱生活更爱抢</title>
+<title>神购_购物大神的舞台_爱生活更爱抢</title>
+
+<meta property="wb:webmaster" content="10a24afd2203d051" />
 
 <SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
-<script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
+<script>
+	!window.jQuery&& document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');
+</script>
+<SCRIPT type=text/javascript src="js/shen.js"></SCRIPT>
 
 
-<script src="/js/shen.js"></script>
-<link rel="StyleSheet" href="css/shen.css"  type="text/css">
+<link rel="StyleSheet" href="css/shen.css" type="text/css">
 </head>
 <body>
 
-<div id="site-map">
-	<div class="wrapper">
-		<div class="logo">
-			<img src="/img/shen.png">
-		</div>
-		<div class="item login" >
-			<a href="javascript:loginDialog();">登陆</a>
-		</div>
-		
-		<div class="item user" >
-		</div>
-		
-		
-		<div class="item">
-			<a href="javascript:loginDialog();">邀请好友</a>				
-		</div>
-		<div class="item">
-			<a href="/seller/login.html">我是商家</a>	
+	<div id="site-map">
+		<div class="wrapper">
+			<div class="logo">
+				<img src="/img/shen.png">
+			</div>
+			<div class="item login">
+				<a href="javascript:loginDialog();">登陆</a>
+			</div>
+			<div class="item user">
+				<a href="/service/logout">退出登录</a>
+			</div>
+
+			<div class="item user">
+				<a href="conf.html">帐号设置</a>
+			</div>
+			
+			<!-- 
+			<div class="item user" id="books-container">
+				<dl>
+					<dt>
+						<span>我的预约</span>
+					</dt>
+					<dd class="entry">
+						<div class="list">
+							<ul>
+								<li class="sale template">
+									<div class="fl title">
+										<a target="_blank"></a>
+									</div>
+									<div>
+										￥<span class="price"></span> <span class="time"></span>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="summ">
+							您共有<span class="total">0</span>个预约
+						</div>
+					</dd>
+				</dl>
+			</div>
+			<div class="item user" id="deals-container">
+				<dl>
+					<dt>
+						<span>我的神码</span>
+					</dt>
+					<dd class="entry">
+						<div class="list">
+							<ul>
+								<li class="sale template">
+									<div class="fl title">
+										<a target="_blank"></a>
+									</div>
+									<div class="fr">
+										￥<span class="price"></span><br> <a class="time"></a>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div class="summ">
+							您共抢到<span class="total">0</span>个神码
+						</div>
+					</dd>
+				</dl>
+			</div>
+
+ 			-->
+
+			<div class="item user">
+				<span class="uname"></span>
+			</div>
+
+
+			<div class="item seller">
+				<a href="javascript:sellerDialog();">我是商家</a>
+			</div>
 		</div>
 	</div>
-</div>
 
 
-<div id="dialog">
+	<div id="dialog">
 
-	<div class="content">
-		<h2 class="title">使用以下账号登陆  <a class="close" href="javascript:closeDialog();">X</a></h2>
-		
-		<ul class="list">
-			<li class="account"><a href="https://oauth.taobao.com/authorize?response_type=code&client_id=21796075&redirect_uri=http://godbuy.ever365.com/oauth/top&view=web">
-				<img src="/img/ico-taobao.png">用淘宝帐号登陆 </a>
-			</li>
-			<li><a>
-				<img src="/img/ico-weibo.png">
-				用微博账号登陆</a></li>
-			<li>
-				<a href="/service/seller/test/login">
-					体验用户登陆
-				</a>
-			</li>
-		</ul>
+		<div class="content">
+			<h2 class="title">
+				使用以下账号登陆 <a class="close" href="javascript:closeDialog();">X</a>
+			</h2>
+
+			<ul class="list">
+				<li class="account"><a
+					href="https://oauth.taobao.com/authorize?response_type=code&client_id=21796075&redirect_uri=http://www.ever365.com/oauth/top&view=web">
+						<img src="/img/ico-taobao.png">用淘宝帐号登陆
+				</a></li>
+				<li><a
+					href="https://api.weibo.com/oauth2/authorize?client_id=3339035727&response_type=code&redirect_uri=http://www.ever365.com/oauth/weibo">
+						<img src="/img/ico-weibo.png"> 用微博账号登陆
+				</a></li>
+
+			</ul>
+		</div>
+		<div class="bg"></div>
+
 	</div>
-	<div class="bg"></div>
 
-</div>
+	<div id="forecast"></div>
 
-<div id="forecast">
+	<div id="pendding">
+		<s></s>
+		<div class="loadding">正在载入中....</div>
+	</div>
+
+
+	<div class="wrapper" id="main">
+		<div class="left">
+			<!-- 
+			<div class="nextgen">
+				<div class="status">大V平台，敬请期待</div>
+			</div>
+			 -->
+			<div id="weipost">
+				<div class="title-bar">
+		              微博转发抽奖
+				</div>
+				<div class="list">
+					<div class="template" >
+						<div class="bg"  ></div>
+						<div class="desc"></div>
+						<div class="panel">
+							<div class="from"><span class="hint dav"></span>发布的微博,商品由 <span class="seller hint"></span> 提供</div>
+							<div class="method total">抽取 <span class="hint"></span>名转发者赠送</div>
+							<div class="method per">每 <span class="hint"></span> 个转发者赠送1件</div>
+							<div class="repost"><a class="go btn" style="padding: 6px 12px;" href="javascript:void(0);" class="btn" target="_blank">去看看</a></div>
+						</div>
+					</div>
+				
+				</div>
+			</div>
+			
+			
+			<div class="bestbuy np-shopping">
+
 	
-</div>
+				<div class="shoplist">
+		          <div class="padding">
+		            <div class="tit-bar">
+		              <em>今日值得买</em>
+		            </div>
+		            <div class="list-container">
+		              <ul><li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120771&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="韩版女装大码雪纺连衣裙"> <img data-src="http://p8.qhimg.com/dr/100_100_100/t013c966db6d1db2d9f.jpg" src="http://p8.qhimg.com/dr/100_100_100/t013c966db6d1db2d9f.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120771&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">韩版女装大码雪纺连衣裙</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120771&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">435人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120771&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥68元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120807&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="【新品套餐】中国四大绿茶(龙井 碧螺春 毛峰 瓜片)赠送礼袋"> <img data-src="http://p8.qhimg.com/dr/100_100_100/t01f07818f9cca79109.jpg" src="http://p8.qhimg.com/dr/100_100_100/t01f07818f9cca79109.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120807&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">【新品套餐】中国四大绿茶(龙井 碧螺春 毛峰 瓜片)赠送礼袋</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120807&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">95人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120807&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥45元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120841&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="乔丹男户外越野休闲鞋"> <img data-src="http://p2.qhimg.com/dr/100_100_100/t01371170500bfe73ec.jpg" src="http://p2.qhimg.com/dr/100_100_100/t01371170500bfe73ec.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120841&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">乔丹男户外越野休闲鞋</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120841&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">64人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120841&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥139元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120533&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="梦克拉18K金吊坠 唯美 钻石吊坠 心往"> <img data-src="http://p3.qhimg.com/dr/100_100_100/t0115cf5c0b0259cb41.jpg" src="http://p3.qhimg.com/dr/100_100_100/t0115cf5c0b0259cb41.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120533&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">梦克拉18K金吊坠 唯美 钻石吊坠 心往</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120533&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">197人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120533&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥799元</a> </div> </div> </li>
+		              <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120537&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="2014新茶 金银花 特级 花草茶 野生 金银花茶 降火茶叶"> <img data-src="http://p6.qhimg.com/dr/100_100_100/t01180bb2152623f131.jpg" src="http://p6.qhimg.com/dr/100_100_100/t01180bb2152623f131.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120537&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">2014新茶 金银花 特级 花草茶 野生 金银花茶 降火茶叶</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120537&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">124人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120537&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥28元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120577&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="蕾丝拼接中袖碎花连衣裙 "> <img data-src="http://p9.qhimg.com/dr/100_100_100/t01a4c6ee78b8f7bce0.jpg" src="http://p9.qhimg.com/dr/100_100_100/t01a4c6ee78b8f7bce0.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120577&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">蕾丝拼接中袖碎花连衣裙 </a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120577&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">355人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120577&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥54元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120595&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="【￥99两件】2款4色，随便挑"> <img data-src="http://p1.qhimg.com/dr/100_100_100/t01bb5c0b601ac0c464.jpg" src="http://p1.qhimg.com/dr/100_100_100/t01bb5c0b601ac0c464.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120595&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">【￥99两件】2款4色，随便挑</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120595&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">152人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120595&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥79元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120609&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="抢购贝玲妃毛孔遮盖脸部底霜/反孔精英 7.5ml"> <img data-src="http://p6.qhimg.com/dr/100_100_100/t0160809d2357199fe3.jpg" src="http://p6.qhimg.com/dr/100_100_100/t0160809d2357199fe3.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120609&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">抢购贝玲妃毛孔遮盖脸部底霜/反孔精英 7.5ml</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120609&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">23人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120609&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥45元</a> </div> </div> </li>
+		              <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120623&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="夏装欧洲站复古女装波点泡泡袖两件套高腰蓬蓬雪纺连衣裙"> <img data-src="http://p6.qhimg.com/dr/100_100_100/t015c53add4bb2afa3d.jpg" src="http://p6.qhimg.com/dr/100_100_100/t015c53add4bb2afa3d.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120623&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">夏装欧洲站复古女装波点泡泡袖两件套高腰蓬蓬雪纺连衣裙</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120623&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">518人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120623&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥59元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120621&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="美国本土嘉宝香桃苹果燕麦米粉2段 Gerber（6个月以上）227g"> <img data-src="http://p8.qhimg.com/dr/100_100_100/t018a59ff4f86129075.jpg" src="http://p8.qhimg.com/dr/100_100_100/t018a59ff4f86129075.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120621&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">美国本土嘉宝香桃苹果燕麦米粉2段 Gerber（6个月以上）227g</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120621&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">11人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120621&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥24元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120633&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="户清 超细纤维雪尼尔卡通头擦手巾三条装"> <img data-src="http://p2.qhimg.com/dr/100_100_100/t016f6e84b1e081aade.jpg" src="http://p2.qhimg.com/dr/100_100_100/t016f6e84b1e081aade.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120633&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">户清 超细纤维雪尼尔卡通头擦手巾三条装</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120633&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">69人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120633&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥9.9元</a> </div> </div> </li>  <li style="height: 89px; "> <a href="http://youhui.360.cn/tejia?tejiaid=120647&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank" class="img" title="￥65  夏季新款欧洲站露肩雪纺衫欧根纱蓬蓬半身裙两件套"> <img data-src="http://p6.qhimg.com/dr/100_100_100/t01cd5cb743709ac46e.jpg" src="http://p6.qhimg.com/dr/100_100_100/t01cd5cb743709ac46e.jpg" style="width: 89px; "></a> <div class="util" style=""> <h3><a href="http://youhui.360.cn/tejia?tejiaid=120647&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥65  夏季新款欧洲站露肩雪纺衫欧根纱蓬蓬半身裙两件套</a></h3> <div class="bottom"> <a href="http://youhui.360.cn/tejia?tejiaid=120647&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">682人认为值</a> <a href="http://youhui.360.cn/tejia?tejiaid=120647&amp;fname=se_tejia&amp;eee=se_tejia&amp;src=se6_newtab" target="_blank">￥65元</a> </div> </div> </li>  </ul>
+		            </div>
+		          </div>
+		        </div>
+				
+			</div>
+			
+			<!-- 
+			<a class="ads template">
+				<div class="tips">
+					<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套</h2>
 
-<div class="wrapper" id="main">
-	<div class="left">
-		<a class="ads">
-			<div class="tips">
-				<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套</h2>
-				
-				<h1 class="price">¥ 195</h1>
-				<h2 class="book"><span>4323</span>人预约</h2>
-				<h2 class="time">2012年3月23日 22:30</h2>
-			</div>
-			<div class="img">
-				<img class="spla" src="test.jpg" >
-			</div>
-		</a>
-		
-		<a class="ads">
-			<div class="tips">
-				<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套</h2>
-				
-				<h1 class="price">¥ 195</h1>
-				<h2 class="book"><span>4323</span>人预约</h2>
-				<h2 class="time">2012年3月23日 22:30</h2>
-			</div>
-			<div class="img">
-				<img class="spla" src="test.jpg" >
-			</div>
-		</a>
-		
-		
-		<a class="ads">
-			<div class="tips">
-				<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套</h2>
-				
-				<h1 class="price">¥ 195</h1>
-				<h2 class="book"><span>4323</span>人预约</h2>
-				<h2 class="time">2012年3月23日 22:30</h2>
-			</div>
-			<div class="img">
-				<img class="spla" src="test.jpg" >
-			</div>
-		</a>
-		
-		
-		
-		<a class="ads">
-			<div class="tips">
-				<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套</h2>
-				
-				<h1 class="price">¥ 195</h1>
-				<h2 class="book"><span>4323</span>人预约</h2>
-				<h2 class="time">2012年3月23日 22:30</h2>
-			</div>
-			<div class="img">
-				<img class="spla" src="test.jpg" >
-			</div>
-		</a>
-		
-		
-		<a class="ads">
-			<div class="tips">
-				<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套</h2>
-				
-				<h1 class="price">¥ 195</h1>
-				<h2 class="book"><span>4323</span>人预约</h2>
-				<h2 class="time">2012年3月23日 22:30</h2>
-			</div>
-			<div class="img">
-				<img class="spla" src="test.jpg" >
-			</div>
-		</a>
-		
-		<a class="ads">
-			<div class="tips">
-				<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套</h2>
-				
-				<h1 class="price">¥ 195</h1>
-				<h2 class="book"><span>4323</span>人预约</h2>
-				<h2 class="time">2012年3月23日 22:30</h2>
-			</div>
-			<div class="img">
-				<img class="spla" src="test.jpg" >
-			</div>
-		</a>
+					<h1 class="price">¥ 195</h1>
+					<h2 class="book">
+						<span>4323</span>人预约
+					</h2>
+					<h2 class="time">2012年3月23日 22:30</h2>
+				</div>
+				<div class="img">
+					<img class="spla" src="test.jpg">
+				</div>
+			</a>
+			 -->
+		</div>
+
+		<div class="timeline">
+			<div class="title"></div>
+
+			<ul id="timeline">
+				<li class="item template">
+					<div class="bg"></div> <!-- 
+				<img src="t2.jpg" class="bg"> -->
+					<div class="time">1小时后开始</div>
+					<div class="dot"></div>
+					<div class="status">
+						<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套【</h2>
+						<div class="tips">
+							<span class="price">¥195</span> <a class="go">进入</a>
+							<!-- 
+						<div class="online"><span class="count">1234</span>人在线</div>
+						 -->
+						</div>
+					</div>
+				</li>
+			</ul>
+
+		</div>
 	</div>
-	
-	<div class="timeline">
-		<div class="title"></div>
-		
-		<ul id="timeline">
-			<li class="item">
-				<img src="t2.jpg" class="bg">				
-				<div class="time">
-					1小时后开始
-				</div>
-				<div class="dot">
-				</div>
-				<div class="status">
-					<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套【</h2>
-					<div class="tips">
-						<span class="price">¥195</span>
-						 <a class="go">进入抢购</a>
-						<div class="online"><span class="count">1234</span>人在线</div>
-						</div>
-				</div>
-				
-			</li>
-			
-			<li class="item">
-				<img src="t2.jpg" class="bg">				
-				<div class="time">
-					1小时后开始
-				</div>
-				<div class="dot">
-				</div>
-				<div class="status">
-					<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套【</h2>
-					<div class="tips">
-						<span class="price">¥195</span>
-						 <a class="go">进入抢购</a>
-						<div class="online"><span class="count">1234</span>人在线</div>
-						</div>
-				</div>
-			</li>
-			
-			<li class="item">
-				<img src="t2.jpg" class="bg">				
-				<div class="time">
-					1小时后开始
-				</div>
-				<div class="dot">
-				</div>
-				<div class="status">
-					<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套【</h2>
-					<div class="tips">
-						<span class="price">¥195</span>
-						 <a class="go">进入抢购</a>
-						<div class="online"><span class="count">1234</span>人在线</div>
-						</div>
-				</div>
-				
-			</li>
-			
-			
-			<li class="item">
-				<img src="t2.jpg" class="bg">				
-				<div class="time">
-					1小时后开始
-				</div>
-				<div class="dot">
-				</div>
-				<div class="status">
-					<h2 class="title">【包邮】亿巢家纺全棉贡缎提花四件套【</h2>
-					<div class="tips">
-						<span class="price">¥195</span>
-						 <a class="go">进入抢购</a>
-						<div class="online"><span class="count">1234</span>人在线</div>
-						</div>
-				</div>
-			</li>
-		</ul>
-		
+
+	<div class="footer">
+		<div class="wrapper">
+			© 2014 神购网 | 京ICP备12000305号-1 | <a href="mailto:hello@ever365.com">联系我们</a>
+			<img style="float: right" src="img/bd-cloud-nav.png">
+		</div>
 	</div>
-</div>
-
-<div class="footer">
-
-</div>
 
 </body>
 </html>

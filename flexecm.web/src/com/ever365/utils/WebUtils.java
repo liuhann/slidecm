@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,13 +16,24 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.MultipartPostMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.ever365.rest.HttpStatusException;
+import com.sun.corba.se.spi.orb.StringPair;
 
 public class WebUtils {
 	
@@ -57,16 +69,50 @@ public class WebUtils {
 			getMethod.releaseConnection();
 		}
 		return jsonObject;
-		
 	}
 	
-	public static JSONObject doPost(String requestUrl, Map<String, String> params) {
-		HttpClient httpClient = new HttpClient();
+	public static JSONObject doPost(String requestUrl, Map<String, Object> params) {
+		HttpClient httpClient = new HttpClient(new SimpleHttpConnectionManager(true));
 		PostMethod postMethod = new PostMethod(requestUrl);
 		
-		for (String key : params.keySet()) {
-			postMethod.setParameter(key, params.get(key));
+		List parts=new ArrayList();
+		
+		boolean multipart = false;
+		for (final String key : params.keySet()) {
+			Object value = params.get(key);
+			if (value instanceof String) {
+				parts.add(new StringPart(key, (String)value));
+				postMethod.setParameter(key, (String)value);
+			} else if (value instanceof InputStream) {
+				if (params.get("size")==null) {
+					logger.info("POST param with size==?");
+					throw new HttpStatusException(com.ever365.rest.HttpStatus.BAD_REQUEST);
+				}
+				final long size = (Long)params.get("size");
+				final InputStream stream = (InputStream) value;
+				parts.add(new FilePart(key, new PartSource() {
+					@Override
+					public long getLength() {
+						return size;
+					}
+					@Override
+					public String getFileName() {
+						return key;
+					}
+					@Override
+					public InputStream createInputStream() throws IOException {
+						return stream;
+					}
+					})
+				);
+				multipart = true;
+			}
 		}
+		if (multipart) {
+			postMethod.getParams().clear();
+			postMethod.setRequestEntity(new MultipartRequestEntity((Part[]) parts.toArray(new Part[parts.size()]), 
+					postMethod.getParams()));
+		} 
 		
 		JSONObject jsonObject = null;
 		try {
@@ -90,6 +136,7 @@ public class WebUtils {
 			logger.debug("IOException on get url" + requestUrl);
 		} finally {
 			postMethod.releaseConnection();
+			httpClient.getHttpConnectionManager().closeIdleConnections(0); 
 		}
 		return jsonObject;
 	}

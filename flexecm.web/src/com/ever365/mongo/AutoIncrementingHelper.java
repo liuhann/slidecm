@@ -12,7 +12,6 @@ import com.mongodb.DBObject;
 public class AutoIncrementingHelper {
 	
 	private MongoDataSource dataSource;
-	private Long x = 1L;
 	
 	private Map<String, Integer> incMap = MapUtils.newMap("seq", 1);
 	
@@ -21,22 +20,29 @@ public class AutoIncrementingHelper {
 	}
 
 	public void initIncreasor(String name) {
-		if (dataSource.getCollection("counters").findOne(new BasicDBObject("_id", name))==null) {
-			DBObject dbo = new BasicDBObject();
-			dbo.put("_id", name);
-			dbo.put("seq", 0L);
-			dataSource.getCollection("counters").insert(dbo);
-			x = 0L;
+		try {
+			if (dataSource.getCollection("counters").findOne(new BasicDBObject("_id", name))==null) {
+				DBObject dbo = new BasicDBObject();
+				dbo.put("_id", name);
+				dbo.put("seq", 2L);
+				dataSource.getCollection("counters").insert(dbo);
+			} 
+		} catch (Exception e) {
+			;;
 		}
 	}
 	
 	public Long getNextSequence(String name) {
-		BasicDBObject query = new BasicDBObject("_id", name);
-		DBObject update = new BasicDBObject();
-		update.put("$inc", incMap);
-		
-		DBObject dbo = dataSource.getCollection("counters").findAndModify(query, update);
-		return (Long) dbo.get("seq");
+		try {
+			BasicDBObject query = new BasicDBObject("_id", name);
+			DBObject update = new BasicDBObject();
+			update.put("$inc", incMap);
+			DBObject dbo = dataSource.getCollection("counters").findAndModify(query, update);
+			return (Long) dbo.get("seq");
+		} catch (Exception e ){
+			initIncreasor(name);
+			return 1L;
+		}
 	}
 	
 	public Long getCurrentSequence(String name) {
@@ -44,7 +50,8 @@ public class AutoIncrementingHelper {
 		
 		DBObject q = dataSource.getCollection("counters").findOne(query);
 		if (q==null) {
-			return -1L;
+			initIncreasor(name);
+			return 1L;
 		} else {
 			return (Long) q.get("seq");
 		}

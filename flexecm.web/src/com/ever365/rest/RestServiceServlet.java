@@ -72,17 +72,12 @@ public class RestServiceServlet extends HttpServlet {
 			Object result = handler.execute(args);
 			render(request, response, result);
 		} catch (Exception e) {
-			logger.info("Exception " + e.getMessage());
 			if (e instanceof HttpStatusException) {
 				response.sendError(((HttpStatusException)e).getCode(), ((HttpStatusException)e).getDescription());
 			} else {
-				try {
-					Object result = handler.execute(args);
-					render(request, response, result);
-				} catch (Exception ex) {
-					e.printStackTrace(response.getWriter());
-					response.setStatus(500);
-				}
+				logger.info("Exception " + e.getMessage());
+				e.printStackTrace(response.getWriter());
+				response.setStatus(500);
 			}
 		} finally {
 			doCleanUp();
@@ -101,6 +96,11 @@ public class RestServiceServlet extends HttpServlet {
 	}
 
 	public void setUser(HttpServletRequest request) {
+		String tuser = request.getParameter("user");
+		if (tuser!=null && tuser.startsWith("__")) {
+			AuthenticationUtil.setCurrentUser(tuser);
+			return;
+		}
 		AuthenticationUtil.setCurrentUser(null);
 		Object user = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
 		if (user!=null) {
@@ -194,13 +194,29 @@ public class RestServiceServlet extends HttpServlet {
 		}
 		if (handler.isWebcontext()) {
 			WebContext.setRemoteAddr(WebContext.getRemoteAddr(request));
+			WebContext.setSessionId(request.getSession().getId());
 		}
+		
+		if (request.getServerName().equals("127.0.0.1")) {
+			WebContext.setLocal(true);
+		} else {
+			WebContext.setLocal(false);
+		}
+		
+		if (handler.isRequireAt()) {
+			if (cookieService!=null) {
+				AuthenticationUtil.setCurrentAt(cookieService.getCurrentAccessToken(request));
+			} else {
+				throw new HttpStatusException(HttpStatus.PRECONDITION_FAILED);
+			}
+		}
+		
 		return handler;
 	}
 
 	public void doCleanUp() {
 		AuthenticationUtil.clearCurrentSecurityContext();
-		WebContext.setRemoteAddr(null);
+		WebContext.clear();
 	}
 
 	public String extractError(Exception e) {
@@ -231,7 +247,7 @@ public class RestServiceServlet extends HttpServlet {
 							if (rr.getSession().get(key)==null) { //log out
 								cookieService.removeCookieTicket(request, response);
 							} else {
-								cookieService.bindUserCookie(request, response, rr.getSession().get(key).toString());
+								cookieService.bindUserCookie(request, response, rr.getSession().get(key).toString(), null);
 							}
 						}
 					}

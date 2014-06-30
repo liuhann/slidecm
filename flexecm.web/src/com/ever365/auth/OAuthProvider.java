@@ -6,6 +6,8 @@ public interface OAuthProvider {
 
 	public static final String CODE = "code";
 	
+	public static final String ACCESS_TOKEN = "at";
+	
 	public static final String USERID = "userid";
 	
 	String getCode();

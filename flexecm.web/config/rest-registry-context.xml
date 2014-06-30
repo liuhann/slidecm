@@ -19,6 +19,8 @@
 	            <ref bean="rest.public"/>
 	            <ref bean="rest.manage"/>
 	            <ref bean="rest.authority"/>
+	            <ref bean="rest.repost"/>
+	            
 	        </list>
 	    </property>
 	</bean>

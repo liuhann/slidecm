@@ -56,6 +56,7 @@ public class HttpServiceRegistry {
 				mi.setUri(rs.uri());
 				mi.setAuthenticated(rs.authenticated());
 				mi.setWebcontext(rs.webcontext());
+				mi.setRequireAt(rs.reqireAt());
 				Annotation[][] paramAnno = method.getParameterAnnotations();
 				Class<?>[] paramTypes = method.getParameterTypes();
 				for (int i = 0; i < paramAnno.length; i++) {
