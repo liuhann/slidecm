@@ -24,6 +24,7 @@ public class OAuthServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private CookieService cookieService;
+	private AuthorityService authorityService;
 	public static final String SESSION_REDIRECT = "oauth_redirect";
 	
 	
@@ -44,9 +45,10 @@ public class OAuthServlet extends HttpServlet {
 		if (o!=null) {
 			cookieService = (CookieService) o;
 		}
+		authorityService = (AuthorityService) ContextLoaderListener.getCurrentWebApplicationContext().getBean("rest.authority");
 		
 		providers.put("/top", new TopOAuthProvider());
-		providers.put("/weibo", new WeiboOAuthProvider());
+		providers.put("/weibo", (OAuthProvider)ContextLoaderListener.getCurrentWebApplicationContext().getBean("oauth.weibo"));
 	}
 
 	/**
@@ -56,26 +58,24 @@ public class OAuthServlet extends HttpServlet {
 		
 		String servletPath = getServicePath(request);
 		try {
-			OAuthProvider provider = providers.get(servletPath);
-			Map<String, Object> detail = provider.authorize(request.getParameter(provider.getCode()));
+			Map<String, Object> detail = authorityService.validate(servletPath, request.getParameter("code"));
 			
-			if (detail==null) {
-				response.sendRedirect("/");
+			if (detail==null || detail.get(OAuthProvider.USERID)==null) {
+				response.sendRedirect("/?oauth fail");
 				return ;
 			}
-			if (detail.get(OAuthProvider.USERID)==null) {
-				response.sendRedirect("/");
-			}
-			String userId = detail.get(OAuthProvider.USERID) + "@" + provider.getName();
+			
+			String userId = (String)detail.get(OAuthProvider.USERID);
+			String realName = (String)detail.get(OAuthProvider.REAL_NAME);
 			
 			request.getSession().setAttribute(AuthenticationUtil.SESSION_CURRENT_USER, userId);
+			request.getSession().setAttribute(AuthenticationUtil.SESSION_CURRENT_USER_RN, realName);
+			
 			AuthenticationUtil.setCurrentUser(userId);
+			AuthenticationUtil.setRealName(realName);
+			
 			if (cookieService!=null) {
-				String at = "";
-				if (detail.get(OAuthProvider.ACCESS_TOKEN)!=null) {
-					at = (String) detail.get(OAuthProvider.ACCESS_TOKEN);
-				}
-				cookieService.bindUserCookie(request, response, userId, at);
+				cookieService.bindUserCookie(request, response, userId);
 			}
 		} catch (Throwable t) {
 			System.out.println(t.getLocalizedMessage());

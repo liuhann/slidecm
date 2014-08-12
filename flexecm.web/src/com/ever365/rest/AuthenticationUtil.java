@@ -15,15 +15,25 @@ public class AuthenticationUtil
 	public static String SYSTEM = "system";
 	
 	public static String SESSION_CURRENT_USER = ".cu";
+	public static String SESSION_CURRENT_USER_RN = ".rn";
 	
     private static ThreadLocal<String> currentUser = new ThreadLocal<String>();
-    private static ThreadLocal<String> currentAt = new ThreadLocal<String>();
+    private static ThreadLocal<String> realName = new ThreadLocal<String>();
     
 	public static List<String> getCurrentAuthorities()  {
 		List<String> r = new ArrayList<String>();
 		r.add(currentUser.get());
 		return r;
 	}
+	
+
+	public static void setRealName(String user) {
+		realName.set(user);
+    }
+	
+	public static String getRealName() {
+    	return realName.get();
+    }
 	
 	public static boolean isAdmin() {
 		if (AuthorityService.ADMIN.equals(currentUser.get())) {
@@ -40,25 +50,6 @@ public class AuthenticationUtil
 	public static String getCurrentUser() {
     	return currentUser.get();
     }
-	
-	public static String getCurrentWeiboUser() {
-    	if (currentUser.get()!=null && currentUser.get().endsWith("@weibo")) {
-    		return currentUser.get().substring(0, currentUser.get().length()-6);
-    	} else {
-    		return null;
-    	}
-    }
-	
-	
-	public static void setCurrentAt(String user) {
-		currentAt.set(user);
-    }
-	
-	public static String getCurrentAt() {
-    	return currentAt.get();
-    }
-	
-	
   
     /**
      * Remove the current security information
@@ -66,6 +57,7 @@ public class AuthenticationUtil
     public static void clearCurrentSecurityContext()
     {
     	currentUser.set(null);
-    	currentAt.set(null);
+    	realName.set(null);
+    	//currentAt.set(null);
     }
 }

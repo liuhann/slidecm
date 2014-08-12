@@ -29,5 +29,9 @@
 	     <property name="incrementingHelper">
 	         <ref bean="autoIncrementingHelper"/>
 	     </property>
+	     <property name="weiboOAuthProvider">
+	         <ref bean="oauth.weibo"/>
+	     </property>
+	     
 	 </bean>
 </beans>

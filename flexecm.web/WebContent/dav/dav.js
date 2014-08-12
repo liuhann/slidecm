@@ -5,26 +5,15 @@ $(document).ready(function() {
 });
 
 function home() {
-	navOn("presents");
 	$("#presents .waterfall").remove();
 	
-	$.getJSON("/service/dav/info", {}, function(data) {
-		$(".view").hide();
-		$("#presents").show();
-		cu = data;
-		$("span.cu").html(cu.name);
-		
-		$.getJSON("/service/present/list", {
-		}, function(list) {
-			for ( var i = 0; i < list.length; i++) {
-				var present = list[i];
-				var cloned = initWaterFall(present);
-				$("#presents").append(cloned);
-			}
-		});
-	}).fail(function() {
-		$(".view").hide();
-		$("#invite").show();
+	$.getJSON("/service/present/list", {
+	}, function(list) {
+		for ( var i = 0; i < list.length; i++) {
+			var present = list[i];
+			var cloned = initWaterFall(present);
+			$("#presents").append(cloned);
+		}
 	});
 }
 
@@ -38,6 +27,9 @@ function postWeibo() {
 	});
 }
 
+function hidePost() {
+	$("#postweibo").hide();
+}
 
 function getReposts() {
 	navOn("reposts");
@@ -60,6 +52,8 @@ function initWaterFall(present) {
 	
 	cloned.find(".method.per span").html(present.per);
 	cloned.find(".method.total span").html(present.total);
+	cloned.find(".reqire.fans span").html(formatNumber(present.fans));
+	
 	cloned.find(".method").hide();
 	if (present.total>0) {
 		cloned.find(".method.total").show();
@@ -67,22 +61,38 @@ function initWaterFall(present) {
 		cloned.find(".method.per").show();
 	}
 	
-	cloned.find(".bg").css("background","url('/service/preview?id=" + present.preview + "')");
+	cloned.find(".bg").css("background-image","url('/service/preview?id=" + present.preview + "')");
 	
-	if (present.status==0) {
+	if (present.status==1) {
 		cloned.find("a.btnrepost").click(function() {
+			
 			var present = $(this).pd("present");
+			$("#presents").hide();
 			$("#postweibo").show();
-			$("#weibo-text").html("福利来了，" + present.desc + "，马上转发，将有可能获得哦。赠送数量：" 
-					+ ((present.total==0)?( "每" + present.per +"个转发者赠送一个"):(present.total )) + 
-			"点击第三方平台转发有效哦 http://www.ever365.com/dav/i.html?" + present.seq);
+			var text = "福利来了，" + present.desc + "，马上转发此微博即有机会获得，" 
+					+ ((present.total==0)?( "每" + present.per +"个转发者赠送一个"):("一共" + present.total + "个" )) + 
+			",第三方平台抽取，点此地址进行转发：http://shengo.duapp.com/dav/i.html?" + present.seq;
+			$("#weibo-text").html(text);
+			checktext(text);
 			$("#postweibo").data("present", present);
-			$("#postweibo div.pic").css("background","url('/service/preview?id=" + present.preview + "')");
+			$("#postweibo div.pic").css("background-image","url('/service/preview?id=" + present.preview + "')");
+			
+			$("#weibo-text").change(function() {
+				var text = $("#weibo-text").val();
+				checktext(text);
+			});
+			
+			function checktext(text) {
+				var remains = 140-text.length;
+				if (remains>0) {
+					$("#weibo-text-remains").html("还可输入" + remains + "字");
+				} else {
+					$("#weibo-text-remains").html("已超过" + (-remains) + "字");
+				}
+			}
 		});
-	} else if (present.status==1) {
-		
+	} else if (present.status==2) {
 		cloned.find("a.btnrepost").html("查看");
-		
 		cloned.find("a.btnrepost").click(function() {
 			location.href = "/dav/i.html?" + present.seq;
 		});
@@ -123,6 +133,14 @@ function penddingOut() {
 function formateTime(d) {
 	var t = new Date(d);
 	return t.getFullYear() + "-" + (t.getMonth()+1) + "-" + t.getDate() + "  " + t.getHours() + ":" + ((t.getMinutes()<10)? ("0"+t.getMinutes()):t.getMinutes());
+}
+
+function formatNumber(n) {
+	if (n>10000) {
+		return Math.floor(n/10000) + "万";
+	} else {
+		return n;
+	}
 }
 
 $.fn.pd = function(name) {

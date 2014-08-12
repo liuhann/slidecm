@@ -18,42 +18,13 @@
 <div id="site-map">
 	<div class="wrapper">
 		<div class="logo">
-			<img src="/img/shen.png">
+			<img src="../img/shen.png">
 		</div>
 	</div>
 </div>
 
 <div class="wrapper">
 
-	<div class="nav seller">
-		<ul>
-			<li>您好, <span class="cu"></span></li>
-		</ul>
-	
-		<ul>
-			<li class="title">转发抽奖</li>
-			<li class="link presents" onclick="home();">可选择商品</li>
-			<li class="link reposts" onclick="getReposts();">已转发商品 </li>
-		</ul>
-		
-		<ul>
-			<li class="link"><a href="/service/logout">退出</a></li>
-		</ul>
-		
-		<ul>
-			<li>
-				<iframe width="100%" height="120px" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=5211636746&verifier=d7b94838&dpc=1"></iframe>
-			
-			</li>
-			<li>
-				<img src="../seller/sg-weixin.png" style="width:140px; height:140px">
-				<div style="text-align: center;">关注官方微信</div> 
-			</li>
-		</ul>
-		
-	</div>
-	
-	<div class="content seller">
 		<div id="presents" class="view">
 			
 			<div class="template">
@@ -63,24 +34,11 @@
 					<div class="from">由 <span class="seller hint"></span> 提供</div>
 					<div class="method total">抽取 <span class="hint"></span>名转发者赠送</div>
 					<div class="method per">每 <span class="hint"></span> 个转发者赠送1件</div>
+					<div class="require fans">最低粉丝要求:<span class="hint"></span></div>
 					<div class="repost"><a class="btnrepost btn" style="padding: 5px 8px;" class="btn">发布微博</a></div>
 				</div>
-								
-			</div>
-			
-		</div>
-		
-		
-		<div id="invite" class="view">
-			<div class="hello">
-				您好，请输入邀请码 <input id="invite-code">  <a class="btn" onclick="davAdd();">确定</a>
-			</div>
-			
-			<div class="hello">
-				还没有验证码？ 如果您有足够的粉丝和影响力，欢迎您私信我获取。
 			</div>
 		</div>
-	</div>
 </div>
 
 
@@ -90,13 +48,12 @@
 	</div>
 </div>
 
-
 <div id="postweibo" >
 	<div  class="body">
 		<h1 class="logo"></h1>
 		
 		<div class="panel">
-			<div class="remains">还剩余123字</div>
+			<div class="remains"  id="weibo-text-remains"></div>
 			<div class="text">
 				<textarea id="weibo-text"></textarea>
 			</div>
@@ -113,15 +70,6 @@
 	
 	
 </div>
-
-
-<div class="footer">
-		<div class="wrapper">
-			© 2014 神购网 | 京ICP备12000305号-1 | <a href="mailto:hello@ever365.com">联系我们</a>
-			<img style="float: right" src="/img/bd-cloud-nav.png">
-		</div>
-</div>
-
 
 </body>
 </html>

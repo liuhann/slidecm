@@ -8,7 +8,8 @@ public interface OAuthProvider {
 	
 	public static final String ACCESS_TOKEN = "at";
 	
-	public static final String USERID = "userid";
+	public static final String USERID = "uid";
+	public static final String REAL_NAME = "rn";
 	
 	String getCode();
 	

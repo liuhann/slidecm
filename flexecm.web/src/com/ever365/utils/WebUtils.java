@@ -80,10 +80,7 @@ public class WebUtils {
 		boolean multipart = false;
 		for (final String key : params.keySet()) {
 			Object value = params.get(key);
-			if (value instanceof String) {
-				parts.add(new StringPart(key, (String)value));
-				postMethod.setParameter(key, (String)value);
-			} else if (value instanceof InputStream) {
+			if (value instanceof InputStream) {
 				if (params.get("size")==null) {
 					logger.info("POST param with size==?");
 					throw new HttpStatusException(com.ever365.rest.HttpStatus.BAD_REQUEST);
@@ -106,6 +103,9 @@ public class WebUtils {
 					})
 				);
 				multipart = true;
+			} else {
+				parts.add(new StringPart(key,value.toString()));
+				postMethod.setParameter(key, value.toString());
 			}
 		}
 		if (multipart) {

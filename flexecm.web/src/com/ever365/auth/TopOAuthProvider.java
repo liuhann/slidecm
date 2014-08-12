@@ -11,7 +11,6 @@ import com.ever365.utils.WebUtils;
 
 
 public class TopOAuthProvider implements OAuthProvider {
-
 	private static final String TAOBAO_USER_NICK = "taobao_user_nick";
 	
 	@Override

@@ -4,15 +4,13 @@
 <meta charset="UTF-8">
 <title>神购网_用户配置</title>
 
-<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
-<script>!window.jQuery && document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');</script>
+<SCRIPT type=text/javascript src="/js/jquery.min.js"></SCRIPT>
 
 <script src="js/conf.js"></script>
 
 <link rel="StyleSheet" href="seller/seller.css"  type="text/css">
 
 </head>
-
 
 <body>
 	
@@ -21,6 +19,14 @@
 		<div class="logo">
 			<img src="/img/shen.png">
 		</div>
+		
+		<div class="item">
+			<a href="/seller/index.html" target="_blank">我是商家</a>
+		</div>
+		
+		<div class="item">
+			<a href="/dav/index.html">我是大V</a>
+		</div>
 	</div>
 </div>
 	
@@ -28,21 +34,17 @@
 
 	<div class="nav seller">
 		<ul>
-			<li>您好, <span class="cu"></span></li>
-		</ul>
-	
-		<ul>
-			<li class="title">我的抢购</li>
-			<li class="link on books" onclick="getBooks();">已预约</li>
-			<li class="link deals" onclick="getDeals();">抢购成功</li>
-			
+			<li class="title">帐号配置</li>
+			<li class="link on weibo" for="seller-config" onclick="weiboConfig();">微博设置</li>
+			<li class="link post" onclick="postConfig();">收货地址</li>
 			
 			<li class="title">微博转发抽奖</li>
-			<li class="link" onclick="getPresents();" for="my-presents-list">我的转发</li>
-			<li class="link repostlist" onclick="getRepostActivities();">我的奖品</li>
+			<li class="link reposts" onclick="getReposts();" >我的转发</li>
+			<li class="link gifts" onclick="getGifts();">我的奖品</li>
 			
-			<li class="title">帐号配置</li>
-			<li class="link" for="seller-config" onclick="config();">微博设置</li>
+			<li class="title">我的抢购</li>
+			<li class="link books" onclick="getBooks();">已预约</li>
+			<li class="link deals" onclick="getDeals();">抢购成功</li>
 			
 		</ul>
 		
@@ -50,191 +52,135 @@
 			<li class="link"><a href="/service/logout">退出</a></li>
 		</ul>
 		
-		<ul>
-			<li>
-				<iframe width="100%" height="120px" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=0&isWeibo=0&isFans=0&uid=5211636746&verifier=d7b94838&dpc=1"></iframe>
-			</li>
-		</ul>
 		
 	</div>
 	
 	<div class="content seller">
 		
-		<div id="present-edit" class="view">
+		<div id="weibo-config" class="view">
 			<div class="form">
 				<div>
-					<h1>商品编辑</h1>
+					<h1>微博信息</h1>
 				</div>
 				<div>
-					<span class="label">商品描述 *</span>
-					<textarea id="present-desc" style="width: 500px; height: 80px;"></textarea>
+					<span class="label">用户名</span>
+					<span class="msg" id="weibo-name">www</span>
 				</div>
 				
 				<div>
-					<span class="label">销售地址*</span>
-					<input id="present-url" value="http://">
-					<span class="msg"></span>
+					<span class="label">用户头像</span>
+					<span ><img id="weibo-head" src="/img/head-grey.jpg"></span>
 				</div>
-				
 				<div>
-					<span class="label">赠送数量</span>
-					总计赠送 <input id="present-total" style="width:80px;" >个, 或每 <input id="present-per" style="width:80px;"> 个转发赠送1个
-					<span class="msg"></span>
+					<span class="label">操作</span>
+					<a class="btn" href="javascript:cancelWeibo()">取消微博授权并注销</a>
 				</div>
-
-				<div>
-					<span class="label">展示图*</span>
-					<a class="btn" id="repost-btn-preview-upload">上传</a>  	<span>要求宽度480高度400，PNG或JPG格式图片</span> <br>
-					<div id="repost-img-preview">
-					</div>
-				</div>
-			</div>
-			<div style="padding: 20px;">
-				 <a class="btn" onclick="requestPresent();">提交</a>
-				 <a class="btn" onclick="getPresents();">取消</a>
-			</div>
-		</div>
-		
-		<div id="sales-list" class="view">
-			<div class="hello">
-				<span id="cu"></span> 您有<span id="c_qiang">0</span>个抢购进行中。 
-				<a class="btn" onclick="frmRequest();">抢购活动申请</a>
-				<a class="btn" onclick="frmRepost();">创建转发商品</a>
-			</div>
 			
-			<table class="sales-table">
-				<tr>
-					<th width="350px;">商品名称</th>
-					<th width="120px;">抢购时间</th>
-					<th width="120px;">预约截至</th>
-					<th width="50px;">价格</th>
-					<th width="100px;">状态</th>
-					<th width="50px;">预约</th>
-					<th >操作</th>
-				</tr>
-				
-				<tr class="template">
-					<td class="name"></td>
-					<td class="time"></td>
-					<td class="until"></td>
-					<td class="price"></td>
-					<td class="status"></td>
-					<td><a class="books"></a></td>
-					<td class="action">
-						<a class="modify" >修改</a>
-						<a class="remove" >删除</a>
-						<a class="preview" >预览</a>
-						<a class="deals">成交列表</a>
-						<a class="request">再申请</a>
-					</td>
-				</tr>
-			</table>
-		</div>
-		
-		<div id="my-presents-list" class="view">
-			<div class="hello">
-				<a class="btn" onclick="frmRepost();">创建转发商品</a>
-			</div>
-			<table >
-				<tr>
-					<th width="500px;">描述</th>
-					<th width="200px;">赠送方式</th>
-					<th >操作</th>
-				</tr>
-				
-				<tr class="template">
-					<td class="desc"></td>
-					<td class="method"></td>
-					<td class="action">
-						<a class="remove" >删除</a>
-					</td>
-				</tr>
-			</table>
-		</div>
-		
-		
-		
-		<div id="password-modify" class="view">
-			<div class="form">
-				<div>
-					<h1>修改密码</h1>
-				</div>
-				<div>
-					<span class="label">旧密码*</span>
-					<input id="oldpwd" type="password" >
-					<span class="msg"></span>
-				</div>
-				
-				<div>
-					<span class="label">新密码*</span>
-					<input id="modifypwd" type="password">
-					<span class="msg"></span>
-				</div>
-				<div>
-					<span class="label">重复密码*</span>
-					<input id="cfmmodifypwd"  type="password">
-					<span class="msg"></span>
-				</div>
-				<div>
-					<a class="btn" id="btn-config-pwd" onclick="passwordcfm();">确认修改</a>
-				</div>
 			</div>
 		</div>
 		
-		<div id="seller-config" class="view">
+		<div id="receive-config" class="view">
 			<div class="form">
 				<div>
-					<h1>修改信息</h1>
+					<h1>收货地址编辑</h1>
 				</div>
 				<div>
-					<span class="label">店铺地址*</span>
-					<input id="shopurl" >
-					<span class="msg"></span>
+					<span class="label">收货人</span>
+					<input type="text" id="post-receiver">
 				</div>
 				
 				<div>
-					<span class="label">联系人</span>
-					<input id="contact" >
-					<span class="msg"></span>
+					<span class="label">详细地址</span>
+					<input type="text" id="post-location-detail">
 				</div>
+				
 				<div>
 					<span class="label">手机号码</span>
-					<input id="mobile" >
-					<span class="msg"></span>
+					<input type="text" id="post-mobile">
 				</div>
 				<div>
-					<span class="label">电子邮件</span>
-					<input id="email" >
-					<span class="msg"></span>
+					<span class="label">固定电话(可选)</span>
+					<input type="text" id="post-phone">
 				</div>
-				
+								
 				<div>
-					<span class="label">其他联系方式</span>
-					<input id="imcontact" >
-					<span class="msg"></span>
-				</div>
-				<div>
-					<a class="btn" id="btn-config-modify" onclick="configcfm()">确认修改</a>
+					<span class="label">&nbsp;</span>
+					<a class="btn" href="javascript:updatePostConfig()">更新收货地址</a>
 				</div>
 			</div>
 		</div>
+
+		<div id="repost-list" class="view">
+			<table >
+				<tr>
+					<th width="450px;">商品描述</th>
+					<th width="100px;">转发时间</th>
+					<th width="80px;">转发序号</th>
+					<th width="120px;">微博用户</th>
+					<th width="100px;">状态</th>
+					<th ></th>
+				</tr>
+				<tr class="template">
+					<td class="content"></td>
+					<td class="time"></td>
+					<td class="code"></td>
+					<td class="dav"></td>
+					<td class="status"></td>
+					<td class="action">
+						<a class="view" target="_blank">详情查看</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div id="books-list" class="view">
+			<table >
+				<tr>
+					<th width="400px;">商品名称</th>
+					<th width="150px;">抢购时间</th>
+					<th width="150px;">预约号</th>
+					<th>操作</th>
+				</tr>
+				<tr class="template">
+					<td class="title"></td>
+					<td class="time"></td>
+					<td class="code"></td>
+					<td class="action">
+						<a class="view go" target="_blank">去抢购页面</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		
+		<div id="deals-list" class="view">
+			<table >
+				<tr>
+					<th width="400px;">商品名称</th>
+					<th width="150px;">抢购时间</th>
+					<th width="150px;">抢购码</th>
+					<th>操作</th>
+				</tr>
+				<tr class="template">
+					<td class="title"></td>
+					<td class="time"></td>
+					<td class="code"></td>
+					<td class="action">
+						<a class="view go" target="_blank">去抢购页面</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
 	</div>
 </div>
 
-
-<div id="pendding">
+<div id="pendding" style="/* display: none; */">
 	<div class="msg">
 		请求处理中....	
 	</div>
 </div>
 
-
-<div class="footer">
-		<div class="wrapper">
-			© 2014 神购网 | 京ICP备12000305号-1 | <a href="mailto:hello@ever365.com">联系我们</a>
-			<img style="float: right" src="img/bd-cloud-nav.png">
-		</div>
-</div>
 
 </body>
 </html>

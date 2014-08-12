@@ -7,8 +7,14 @@ $(document).ready(function() {
 				if (index.cu) {
 					$("#site-map div.item.login").hide();
 					$("#site-map div.item.user").show();
-					$("#site-map div.item.user .uname").html(index.cu).show();
-					cu = index.cu;
+					
+					if (index.rn) {
+						cu = index.rn;
+					} else {
+						cu = index.cu;
+					}
+					
+					$("#site-map div.item.user .uname").html(cu).show();
 				} else {
 					$("#site-map div.item.login").show();
 					$("#site-map div.item.user").hide();
@@ -31,6 +37,15 @@ $(document).ready(function() {
 					$("#main .left").append(cloned);
 				}
 				*/
+				
+
+				for(var i=0; i<index.weibo.length; i++) {
+					var cloned = $("#weipost .template").clone();
+					var present = index.weibo[i];
+					initWaterfall(cloned, present);
+					$("#weipost .list").append(cloned);
+				}
+				/*
 				for(var i=0; i<index.recents.length; i++) {
 					var sale = index.recents[i];
 					
@@ -52,75 +67,9 @@ $(document).ready(function() {
 					
 					$("#timeline").append(cloned);
 				}
-				
-				
-				for(var i=0; i<index.weibo.length; i++) {
-					var cloned = $("#weipost .template").clone();
-					var present = index.weibo[i];
-					initWaterfall(cloned, present);
-					$("#weipost .list").append(cloned);
-				}
+				*/
 			}
 	);
-
-	
-	$("#books-container").hoverDelay({
-				hoverDuring: 300,
-				outDuring: 500,
-				hoverEvent: function(){
-					$("#books-container").find("dd").show().addClass("hovered");
-					if($("#books-container").data("list")==null) {
-						$.getJSON("/service/books", {}, function(list) {
-							$("#books-container").data("list", list);
-							var total = 0;
-							for ( var i = 0; i < list.length; i++) {
-								var book  = list[i];
-								if (book.sale.time<new Date().getTime()) continue;
-								total ++;
-								var cloned = $("#books-container li.sale.template").clone();
-								cloned.removeClass("template");
-								cloned.find(".title a").html(book.sale.title);
-								cloned.find(".price").html(book.sale.price);
-								cloned.find(".title a").attr("href", "/book.html?id=" + book.m);
-								cloned.find(".time").html(humanity_time(book.sale.time));
-								$("#books-container div.list ul").append(cloned);
-							}
-							
-							$("#books-container .total").html(total);
-						});
-					}
-				},
-		    outEvent: function(){
-		    	$($("#books-container")).find("dd").hide();
-		    }
-	});
-	
-	$("#deals-container").hoverDelay({
-		hoverDuring: 300,
-		outDuring: 500,
-		hoverEvent: function(){
-			$("#deals-container").find("dd").show();
-			if($("#deals-container").data("list")==null) {
-				$.getJSON("/service/deals", {}, function(list) {
-					$("#deals-container").data("list", list);
-					for ( var i = 0; i < list.length; i++) {
-						var book  = list[i];
-						var cloned = $("#deals-container li.sale.template").clone();
-						cloned.removeClass("template");
-						cloned.find(".title a").html(book.sale.title);
-						cloned.find(".price").html(book.sale.price);
-						cloned.find(".title a").attr("href", "/book.html?id=" + book.m);
-						cloned.find(".time").html(book.order);
-						$("#deals-container div.list ul").append(cloned);
-					}
-					$("#deals-container .total").html(list.length);
-				});
-			}
-		},
-	    outEvent: function(){
-	    	$($("#deals-container")).find("dd").hide();
-	    }
-	});
 });
 
 

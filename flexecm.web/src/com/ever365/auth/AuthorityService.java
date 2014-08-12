@@ -23,6 +23,12 @@ public class AuthorityService {
 	private String ap;
 	private MongoDataSource dataSource;
 
+	private Map<String, OAuthProvider> authProviders;
+	
+	public void setAuthProviders(Map<String, OAuthProvider> authProviders) {
+		this.authProviders = authProviders;
+	}
+
 	public void setAp(String ap) {
 		this.ap = ap;
 	}
@@ -30,7 +36,31 @@ public class AuthorityService {
 	public void setDataSource(MongoDataSource dataSource) {
 		this.dataSource = dataSource;
 	}
-
+	
+	@RestService(method="GET", uri="/logout", authenticated=false)
+	public RestResult logout(@RestParam(value="re") String redirect) {
+		RestResult rr = new RestResult();
+		Map<String, Object> session = new HashMap<String, Object>();
+		session.put(AuthenticationUtil.SESSION_CURRENT_USER, null);
+		rr.setSession(session);
+		if (redirect==null) {
+			rr.setRedirect("/");
+		} else {
+			rr.setRedirect(redirect);
+		}
+		return rr;
+	}
+	
+	public Map<String, Object> validate(String from, String code) {
+		OAuthProvider provider = authProviders.get(from);
+		if (provider==null) {
+			return null;
+		} else {
+			return provider.authorize(code);
+		}
+	}
+	
+	@Deprecated
 	@RestService(method="GET", uri="/person/exist")
 	public boolean personExists(@RestParam(value="name")String userName) {
 		DBCollection acoll = getAuthorityCollection();
@@ -41,12 +71,14 @@ public class AuthorityService {
 		return dataSource.getCollection(COLL_AUTHORITIES);
 	}
 
+	@Deprecated
 	@RestService(method="GET", uri="/person/current", authenticated=false)
 	public String getCurrentPerson() {
 		return AuthenticationUtil.getCurrentUser();
 	}
 	
-	@RestService(method="POST", uri="/password/modify")
+	@Deprecated
+	@RestService(method="POST", uri="/person/password")
 	public void modifyPassword(@RestParam(value="old",required=true)String old,
 			@RestParam(value="new", required=true)String newpass) {
 		
@@ -58,6 +90,7 @@ public class AuthorityService {
 		}
 	}
 	
+	@Deprecated
 	@RestService(method="POST", uri="/person/add", runAsAdmin=true)
 	public boolean createPerson(@RestParam(value="userId")String userName,
 			@RestParam(value="password")String password) {
@@ -70,11 +103,13 @@ public class AuthorityService {
 		return true;
 	}
 	
+	@Deprecated
 	@RestService(method="POST", uri="/person/remove", runAsAdmin=true)
 	public void removePerson(@RestParam(value="id")String userName) {
 		getAuthorityCollection().remove(new BasicDBObject(U, userName));
 	}
 
+	@Deprecated
 	@RestService(method="POST", uri="/person/checkpassword", authenticated=false)
 	public boolean checkPassword(@RestParam(value="name")String userName,
 			@RestParam(value="password")String password) {
@@ -89,7 +124,8 @@ public class AuthorityService {
 			return false;
 		}
 	}
-
+	
+	@Deprecated
 	@RestService(method="POST", uri="/person/login", authenticated=false)
 	public RestResult login(@RestParam(value="name")String userName,
 			@RestParam(value="password")String password) {
@@ -115,27 +151,5 @@ public class AuthorityService {
 				throw new HttpStatusException(HttpStatus.UNAUTHORIZED);
 			}	
 		}
-	}
-	
-	@RestService(method="GET", uri="/logout", authenticated=false)
-	public RestResult logout(@RestParam(value="re") String redirect) {
-		RestResult rr = new RestResult();
-		Map<String, Object> session = new HashMap<String, Object>();
-		session.put(AuthenticationUtil.SESSION_CURRENT_USER, null);
-		rr.setSession(session);
-		if (redirect==null) {
-			rr.setRedirect("/");
-		} else {
-			rr.setRedirect(redirect);
-		}
-		return rr;
-	}
-	
-	public void addOAuthPerson(@RestParam(value="id")String id, @RestParam(value="from") String from, @RestParam(value="at") String access_token) {
-		DBObject dbo = new BasicDBObject();
-		dbo.put(U, id);
-		dbo.put("from", from);
-		dbo.put(P, access_token);
-		getAuthorityCollection().insert(dbo);
 	}
 }

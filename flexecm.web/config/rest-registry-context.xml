@@ -20,7 +20,7 @@
 	            <ref bean="rest.manage"/>
 	            <ref bean="rest.authority"/>
 	            <ref bean="rest.repost"/>
-	            
+	            <ref bean="oauth.weibo"/>
 	        </list>
 	    </property>
 	</bean>
@@ -29,8 +29,14 @@
 	     <property name="dataSource">
 			<ref bean="ecmDataSource"/>	         
 	     </property>
-	     <property name="ap" value="overlord123">
+	     <property name="authProviders">
+	         <map>
+	             <entry key="/weibo">
+					<ref bean="oauth.weibo"/>
+	             </entry>
+	         </map>
 	     </property>
+	     
 	</bean>
 	
 	<bean id="rest.cookie" class="com.ever365.rest.CookieService">
@@ -38,6 +44,14 @@
 			<ref bean="ecmDataSource"/>	         
 	     </property>
 	</bean>
+	
+	<bean id="oauth.weibo" class="com.ever365.auth.WeiboOAuthProvider">
+	    <property name="dataSource">
+			<ref bean="ecmDataSource"/>	         
+	     </property>
+	</bean>
+	
+	
 	 
 		 
 </beans>

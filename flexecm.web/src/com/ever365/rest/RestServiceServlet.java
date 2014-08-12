@@ -26,6 +26,8 @@ import org.json.JSONObject;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.ContextLoaderListener;
 
+import com.ever365.auth.WeiboOAuthProvider;
+
 
 /**
  * Servlet implementation class RestServiceServlet
@@ -36,6 +38,8 @@ public class RestServiceServlet extends HttpServlet {
 	private static final String CONTENT_TYPE = "text/html; charset=UTF-8";
 	private HttpServiceRegistry registry;
 	private CookieService cookieService;
+	private WeiboOAuthProvider weiboOAuthProvider;
+
 	Logger logger = Logger. getLogger(RestServiceServlet.class.getName());
     /**
      * @see HttpServlet#HttpServlet()
@@ -52,6 +56,12 @@ public class RestServiceServlet extends HttpServlet {
 		if (o!=null) {
 			cookieService = (CookieService) o;
 		}
+		
+		o = ContextLoaderListener.getCurrentWebApplicationContext().getBean("oauth.weibo");
+		if (o!=null) {
+			weiboOAuthProvider = (WeiboOAuthProvider) o;
+		}
+		
 	}
 
 	/**
@@ -102,6 +112,8 @@ public class RestServiceServlet extends HttpServlet {
 			return;
 		}
 		AuthenticationUtil.setCurrentUser(null);
+		AuthenticationUtil.setRealName(null);
+		
 		Object user = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER);
 		if (user!=null) {
 			AuthenticationUtil.setCurrentUser((String)user);
@@ -111,7 +123,23 @@ public class RestServiceServlet extends HttpServlet {
 				if (user!=null) {
 					AuthenticationUtil.setCurrentUser((String)user);
 					request.getSession().setAttribute(AuthenticationUtil.SESSION_CURRENT_USER, user);
-				} 
+				}
+			}
+		}
+		if (AuthenticationUtil.getCurrentUser()==null) return;
+		
+		//设置用户显示名字的逻辑处理
+		Object urn = request.getSession().getAttribute(AuthenticationUtil.SESSION_CURRENT_USER_RN);
+		if (urn!=null) {
+			AuthenticationUtil.setRealName(urn.toString());
+		} else {
+			if (weiboOAuthProvider!=null) {
+				Map<String, Object> winfo = weiboOAuthProvider.getWeiboInfo();
+				if (winfo!=null) {
+					String rn = (String)winfo.get("rn");
+					AuthenticationUtil.setRealName(rn);
+					request.getSession().setAttribute(AuthenticationUtil.SESSION_CURRENT_USER_RN, rn);
+				}
 			}
 		}
 	}
@@ -203,14 +231,6 @@ public class RestServiceServlet extends HttpServlet {
 			WebContext.setLocal(false);
 		}
 		
-		if (handler.isRequireAt()) {
-			if (cookieService!=null) {
-				AuthenticationUtil.setCurrentAt(cookieService.getCurrentAccessToken(request));
-			} else {
-				throw new HttpStatusException(HttpStatus.PRECONDITION_FAILED);
-			}
-		}
-		
 		return handler;
 	}
 
@@ -247,7 +267,7 @@ public class RestServiceServlet extends HttpServlet {
 							if (rr.getSession().get(key)==null) { //log out
 								cookieService.removeCookieTicket(request, response);
 							} else {
-								cookieService.bindUserCookie(request, response, rr.getSession().get(key).toString(), null);
+								cookieService.bindUserCookie(request, response, rr.getSession().get(key).toString());
 							}
 						}
 					}
@@ -283,7 +303,7 @@ public class RestServiceServlet extends HttpServlet {
 			HttpServletResponse response, StreamObject result)
 			throws UnsupportedEncodingException, IOException {
 		
-		logger.info("handle file download " + result.getFileName() + "  " + result.getSize() + " " + result.getMimeType());
+		//logger.info("handle file download " + result.getFileName() + "  " + result.getSize() + " " + result.getMimeType());
 		long modifiedSince = request.getDateHeader("If-Modified-Since");
 		
 		if (modifiedSince>0L) {

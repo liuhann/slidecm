@@ -2,16 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>神购_购物大神的舞台_爱生活更爱抢</title>
+<title>神购网_购物大神的舞台</title>
 
 <meta property="wb:webmaster" content="10a24afd2203d051" />
 
-<SCRIPT type=text/javascript src="http://lib.sinaapp.com/js/jquery/1.8.2/jquery.min.js"></SCRIPT>
-<script>
-	!window.jQuery&& document.write('<SCRIPT src="/js/jquery.min.js"><\\/SCRIPT>');
-</script>
+<SCRIPT type=text/javascript src="/js/jquery.min.js"></SCRIPT>
 <SCRIPT type=text/javascript src="js/shen.js"></SCRIPT>
-
 
 <link rel="StyleSheet" href="css/shen.css" type="text/css">
 </head>
@@ -23,14 +19,18 @@
 				<img src="/img/shen.png">
 			</div>
 			<div class="item login">
+				<!--  
 				<a href="javascript:loginDialog();">登陆</a>
+				-->
+				<a href="https://api.weibo.com/oauth2/authorize?client_id=2444138001&response_type=code&redirect_uri=http://shengo.duapp.com/oauth/weibo"><img src="img/ico-weibo.png">用微博帐号登陆</a>
+				
 			</div>
 			<div class="item user">
 				<a href="/service/logout">退出登录</a>
 			</div>
 
 			<div class="item user">
-				<a href="conf.html">帐号设置</a>
+				<a href="conf.html">我的帐号</a>
 			</div>
 			
 			<!-- 
@@ -82,17 +82,17 @@
 					</dd>
 				</dl>
 			</div>
-
  			-->
 
 			<div class="item user">
 				<span class="uname"></span>
 			</div>
 
-
+			<!-- 
 			<div class="item seller">
 				<a href="javascript:sellerDialog();">我是商家</a>
 			</div>
+			 -->
 		</div>
 	</div>
 
@@ -103,22 +103,12 @@
 			<h2 class="title">
 				使用以下账号登陆 <a class="close" href="javascript:closeDialog();">X</a>
 			</h2>
-
-			<ul class="list">
-				<li class="account"><a
-					href="https://oauth.taobao.com/authorize?response_type=code&client_id=21796075&redirect_uri=http://www.ever365.com/oauth/top&view=web">
-						<img src="/img/ico-taobao.png">用淘宝帐号登陆
-				</a></li>
-				<li><a
-					href="https://api.weibo.com/oauth2/authorize?client_id=3339035727&response_type=code&redirect_uri=http://www.ever365.com/oauth/weibo">
-						<img src="/img/ico-weibo.png"> 用微博账号登陆
-				</a></li>
-
-			</ul>
 		</div>
 		<div class="bg"></div>
 
 	</div>
+
+
 
 	<div id="forecast"></div>
 

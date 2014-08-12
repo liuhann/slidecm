@@ -96,7 +96,7 @@ public class CookieService {
 	 * @param username
 	 */
 	public void bindUserCookie(HttpServletRequest request,
-			HttpServletResponse response, String username, String at) {
+			HttpServletResponse response, String username) {
 		String ticket = getCookieTicket(request);
 		DBCollection cookiesCol = dataSource.getCollection("cookies");
 		if (ticket != null) {
@@ -105,11 +105,9 @@ public class CookieService {
 				cookiesCol.insert(BasicDBObjectBuilder.start()
 						.add("user", username).add("ticket", ticket)
 						.add("remote", request.getRemoteAddr())
-						.add("created", new Date())
-						.add("at", at).get());
+						.add("created", new Date()).get());
 			} else {
 				ticDoc.put("user", username);
-				ticDoc.put("at", at);
 				cookiesCol.update(new BasicDBObject("ticket", ticket), ticDoc);
 			}
 		} else {
@@ -119,7 +117,6 @@ public class CookieService {
 					.add("user", username).add("ticket", ticket)
 					.add("remote", WebContext.getRemoteAddr(request))
 					.add("agent", request.getHeader("User-Agent"))
-					.add("at", at)
 					.add("created", new Date()).get());
 		}
 	}

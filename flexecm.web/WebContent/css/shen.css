@@ -79,6 +79,10 @@ a.btn.disabled {
 	position: relative;
 }
 
+#site-map .item:HOVER {
+	background-color: white;
+}
+
 #site-map .item .uname {
 	margin-left: 10px;
 	color: #0f71c7;

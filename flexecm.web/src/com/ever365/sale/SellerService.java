@@ -118,33 +118,32 @@ public class SellerService {
 	@RestService(method="GET", uri="/seller/info")
 	public Map<String, Object> getSellerInfo() {
 		DBCollection coll = dataSource.getCollection(COLL_SELLER);
-
-		DBObject exist = coll.findOne(new BasicDBObject("name",AuthenticationUtil.getCurrentUser()));
+		DBObject exist = coll.findOne(new BasicDBObject("uid",AuthenticationUtil.getCurrentUser()));
+		Map<String, Object> r = new HashMap<String, Object>();
+		r.put("rn", AuthenticationUtil.getRealName());
+		r.put("cu", AuthenticationUtil.getCurrentUser());
 		if (exist==null) {
-			throw new HttpStatusException(HttpStatus.NOT_FOUND);
+			return r;
+		} else {
+			r.putAll(exist.toMap());
 		}
-		return exist.toMap();
+		return r;
 	}
 	
 	@RestService(method="POST", uri="/seller/info")
 	public Map setSellerInfo(@RestParam(required=true, value="name") String name,
 			@RestParam(required=true, value="shop") String shop,
-			@RestParam(required=true, value="user") String user,
-			@RestParam(required=true, value="phone") String phone,
-			@RestParam(required=true, value="email") String email,
-			@RestParam(required=true, value="other") String other) {
+			@RestParam(required=true, value="contact") String user,
+			@RestParam(required=true, value="mobile") String mobile
+			) {
 		DBCollection coll = dataSource.getCollection(COLL_SELLER);
-
-		DBObject dbo = coll.findOne(new BasicDBObject("name",AuthenticationUtil.getCurrentUser()));
-		if (dbo==null) {
-			throw new HttpStatusException(HttpStatus.NOT_FOUND);
-		}
+		DBObject dbo = new BasicDBObject();
+		dbo.put("name", name);
 		dbo.put("shop", shop);
 		dbo.put("user", user);
-		dbo.put("phone", phone);
-		dbo.put("email", email);
-		dbo.put("other", other);
-		coll.update(new BasicDBObject("name",AuthenticationUtil.getCurrentUser()), dbo);
+		dbo.put("mobile", mobile);
+		dbo.put("uid", AuthenticationUtil.getCurrentUser());
+		coll.update(new BasicDBObject("uid",AuthenticationUtil.getCurrentUser()), dbo, true, false);
 		return dbo.toMap();
 	}
 	
@@ -734,6 +733,7 @@ public class SellerService {
 	public Map<String, Object> getSaleIndex() {
 		Map<String, Object> index = new HashMap<String, Object>();
 		index.put("cu", AuthenticationUtil.getCurrentUser());
+		index.put("rn", AuthenticationUtil.getRealName());
 		index.put("t", System.currentTimeMillis());
 		
 		/*
@@ -746,13 +746,13 @@ public class SellerService {
 		}
 		index.put("ads", ads);
 		*/
-		index.put("recents", getRecents());
+		//index.put("recents", getRecents());
 		index.put("weibo", getWeibos());
 		return index;
 	}
 
 	public List<Map<String, Object>> getWeibos() {
-		return repostService.getAllOnlinePosts();
+		return repostService.getTodayPresent();
 	}
 	
 	@RestService(uri="/sale/recent", method="GET", authenticated=false)

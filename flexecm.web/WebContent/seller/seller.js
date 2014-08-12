@@ -6,19 +6,24 @@ var datePickerOptions = {
 };
 
 $(document).ready(function() {
+
+	addImageWidge('btn-preview-upload', 'img-preview', 'posters');
+	addImageWidge('repost-btn-preview-upload', 'repost-img-preview', 'present-edit');
+
+	$("#time").datetimepicker(datePickerOptions);
+	$("#until").datetimepicker(datePickerOptions);
+	$("#repost-time").datetimepicker(datePickerOptions);
+	
 	$.getJSON("/service/seller/info", {}, function(data) {
 		cu = data;
-		$("span.cu").html(cu.name);
-		getRequesting();
-		addImageWidge('btn-preview-upload', 'img-preview', 'posters');
-		addImageWidge('repost-btn-preview-upload', 'repost-img-preview', 'present-edit');
-		
-		$("#time").datetimepicker(datePickerOptions);
-		$("#until").datetimepicker(datePickerOptions);
-		$("#repost-time").datetimepicker(datePickerOptions);
-	}).fail(function() {
-		
-		//location.href = "/seller/login.html";
+		if (cu.name==null) {
+			alert("请完善商家信息");
+			config();
+		} else {
+			getPresents();
+		}
+	}).fail(function( jqxhr, textStatus, error) {
+		location.href = "/";
 	});
 });
 
@@ -35,13 +40,14 @@ function frmRepost() {
 
 function requestPresent() {
 	pendding();
-	
 	$.post("/service/seller/present/add", {
 		"title": $("#present-title").val(),
 		"url": $("#present-url").val(),
 		"per" :  $("#present-per").val(),
 		"total": $("#present-total").val(),
 		"desc": $("#present-desc").val(),
+		"dav": $("#present-special").val(),
+		"fans": $("#present-fans").val(),
 		"preview" : $("#present-edit").data("preview")
 	}, function(data) {
 		penddingOut();
@@ -53,7 +59,7 @@ function requestPresent() {
 
 function getPresents() {
 	pendding();
-	$.getJSON("/service/seller/present/my", {},function(list){
+	$.getJSON("/service/seller/present", {},function(list){
 		penddingOut();
 		navOn("my-presents-list");
 		
@@ -71,19 +77,66 @@ function getPresents() {
 				cloned.find(".method").html("每" + present.per + "个转发送1个");
 			}
 			cloned.find(".desc").html(present.desc);
-			
-			cloned.find("a.remove").click(function() {
-				var p = $(this).pd("present");
-				$.post("/service/seller/present/remove", {
-					"id": p._id
-				}, function() {
-					getPresents();
-				});
-			});
+			cloned.find(".action a").hide();
+			if (present.status==0) {
+				cloned.find(".status").html("待审核");
+				cloned.find("a.remove").click(function() {
+					var p = $(this).pd("present");
+					$.post("/service/seller/present/remove", {
+						"id": p._id
+					}, function() {
+						getPresents();
+					});
+				}).show();
+				
+			} else if (present.status==1) {
+				cloned.find(".status").html("审核通过");
+			} else if (present.status==2) {
+				cloned.find(".status").html("已发微博");
+				cloned.find("a.view").attr("href", "/dav/i.html?" + present.seq).show();
+			} else if (present.status==3) {
+				cloned.find(".status").html("已抽奖");
+				cloned.find("a.view").attr("href", "/dav/i.html?" + present.seq).show();
+			}
 			
 			$("#my-presents-list table").append(cloned);
 		}
 		
+	});
+}
+
+
+function getWeibos() {
+	if (cu==null) {
+		return;
+	}
+	pendding();
+	navOn("repostlist");
+	$("#my-presents-posted table tr.cloned").remove();
+	$("#my-presents-posted").show();
+	$.getJSON("/service/present/onlines", {}, function(list) {
+		penddingOut();
+		
+		
+		for(var i=0;i<list.length; i++) {
+			var gift = list[i];
+			
+			var cloned = $("#my-presents-posted table tr.template").clone().addClass("cloned").removeClass("template");
+			cloned.data("gfit", gift);
+			
+			cloned.find("td.desc").html(gift.desc);
+			if (gift.total>0) {
+				cloned.find(".method").html("共赠送" + gift.total + "个");	
+			} else {
+				cloned.find(".method").html("每" + gift.per + "个转发送1个");
+			}
+			cloned.find("td.dav").html(gift.dav);
+			cloned.find("td.time").html(formateTime(gift.time));
+			cloned.find("td.count").html(gift.count);
+			cloned.find("a.view").show();
+			cloned.find("a.view").attr("href", "/dav/i.html?" + gift.seq);
+			$("#my-presents-posted table").append(cloned);
+		}
 	});
 }
 
@@ -149,6 +202,10 @@ function request() {
 }
 
 function getRequesting() {
+	if (cu==null) {
+		return;
+	}
+	
 	navOn("requesting");
 	$("#sales-list").show();
 	
@@ -165,6 +222,10 @@ function getRequesting() {
 }
 
 function getOnlines() {
+	if (cu==null) {
+		return;
+	}
+	
 	navOn("online");
 	$("#sales-list").show();
 	
@@ -180,6 +241,10 @@ function getOnlines() {
 }
 
 function getFinished() {
+	if (cu==null) {
+		return;
+	}
+	
 	navOn("finished");
 	$("#sales-list").show();
 	
@@ -278,27 +343,42 @@ function initSaleTR(sale) {
 
 function config() {
 	navOn("seller-config");
-	$("#shopurl").val(cu.shop);
-	$("#contact").val(cu.user);
-	$("#mobile").val(cu.phone);
-	$("#email").val(cu.email);
-	$("#imcontact").val(cu.other);
+	if (cu!=null) {
+		$("#seller-name").val(cu.name);
+		$("#seller-url").val(cu.shop);
+		$("#seller-contact").val(cu.contact);
+		$("#seller-mobile").val(cu.mobile);
+	} else {
+		
+	}
 }
 
 function configcfm() {
+	
+	if ($("#seller-name").val()=="") {
+		alert("请提供商家名称");
+		return;
+	}
+	if ($("#seller-url").val()=="") {
+		alert("请提供店铺网址");
+		return;
+	}
+	
 	if ($("#btn-config-modify").hasClass("diabled"))  return;
+	
+	
 	$("#btn-config-modify").addClass("disabled").html("提交中");
+	
+	
+	
 	$.post("/service/seller/info", {
-		"name": cu.name,
-		"shop": $("#shopurl").val(),
-		"user": $("#contact").val(),
-		"phone": $("#mobile").val(),
-		"email" : $("#email").val(),
-		"other": $("#imcontact").val()
+		"name": $("#seller-name").val(),
+		"shop": $("#seller-url").val(),
+		"contact": $("#seller-contact").val(),
+		"mobile": $("#seller-mobile").val()
 	}, function(data) {
 		alert("信息修改成功");
-		$("#btn-config-modify").removeClass("disabled").html("确认修改");
-		cu = JSON.parse(data);
+		getPresents();
 	});
 }
 
